@@ -1,0 +1,49 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/goods/goods-category/index",
+    "pages/goods/goods-detail/index",
+    "pages/goods/goods-list/index",
+    "pages/user/user-center/index",
+    "pages/base/search/index",
+    "pages/shopping-cart/index",
+    "pages/order/order-list/index",
+    "pages/order/order-detail/index",
+    "pages/order/order-confirm/index",
+    "pages/order/order-logistics/index",
+    "pages/user/user-address/list/index",
+    "pages/user/user-address/form/index",
+    "pages/coupon/my-coupons/index",
+    "pages/merchant/index/index",
+    "pages/merchant/login/index",
+    "pages/lottery/index/index",
+    "pages/integral/packet/index"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "如囍优选",
+    "navigationBarBackgroundColor": "#fefefe",
+    "backgroundColor": "#f3f4f7"
+  },
+  "tabBar": {
+    "backgroundColor": "#ffffff",
+    "color": "#484848",
+    "selectedColor": "#2967ff",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/goods/goods-category/index",
+        "text": "分类"
+      },
+      {
+        "pagePath": "pages/user/user-center/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {}
+}

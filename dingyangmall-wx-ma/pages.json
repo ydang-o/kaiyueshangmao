@@ -1,0 +1,38 @@
+{
+  "pages": [
+    { "path": "pages/home/index", "style": { "navigationBarTitleText": "首页", "enablePullDownRefresh": true } },
+    { "path": "pages/goods/goods-category/index", "style": { "navigationBarTitleText": "分类" } },
+    { "path": "pages/goods/goods-detail/index", "style": { "navigationBarTitleText": "商品详情" } },
+    { "path": "pages/goods/goods-list/index", "style": { "navigationBarTitleText": "商品列表" } },
+    { "path": "pages/user/user-center/index", "style": { "navigationBarTitleText": "我的" } },
+    { "path": "pages/base/search/index", "style": { "navigationBarTitleText": "搜索" } },
+    { "path": "pages/shopping-cart/index", "style": { "navigationBarTitleText": "购物车" } },
+    { "path": "pages/order/order-list/index", "style": { "navigationBarTitleText": "订单列表", "enablePullDownRefresh": true } },
+    { "path": "pages/order/order-detail/index", "style": { "navigationBarTitleText": "订单详情" } },
+    { "path": "pages/order/order-confirm/index", "style": { "navigationBarTitleText": "确认订单" } },
+    { "path": "pages/order/order-logistics/index", "style": { "navigationBarTitleText": "物流信息" } },
+    { "path": "pages/user/user-address/list/index", "style": { "navigationBarTitleText": "收货地址" } },
+    { "path": "pages/user/user-address/form/index", "style": { "navigationBarTitleText": "编辑地址" } },
+    { "path": "pages/coupon/my-coupons/index", "style": { "navigationBarTitleText": "我的优惠券" } },
+    { "path": "pages/merchant/index/index", "style": { "navigationBarTitleText": "商家" } },
+    { "path": "pages/merchant/login/index", "style": { "navigationBarTitleText": "商家登录" } },
+    { "path": "pages/lottery/index/index", "style": { "navigationBarTitleText": "积分抽奖" } },
+    { "path": "pages/integral/packet/index", "style": { "navigationBarTitleText": "积分红包" } }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "如囍优选",
+    "navigationBarBackgroundColor": "#fefefe",
+    "backgroundColor": "#f3f4f7"
+  },
+  "tabBar": {
+    "backgroundColor": "#ffffff",
+    "color": "#484848",
+    "selectedColor": "#2967ff",
+    "list": [
+      { "pagePath": "pages/home/index", "text": "首页" },
+      { "pagePath": "pages/goods/goods-category/index", "text": "分类" },
+      { "pagePath": "pages/user/user-center/index", "text": "我的" }
+    ]
+  }
+}

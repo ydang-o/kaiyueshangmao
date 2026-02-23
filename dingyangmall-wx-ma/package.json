@@ -1,0 +1,9 @@
+{
+  "name": "dingyangmall-wx-ma",
+  "version": "1.0.0",
+  "description": "uni-app project for iOS and WeChat mini program",
+  "main": "main.js",
+  "uni-app": {
+    "scripts": {}
+  }
+}

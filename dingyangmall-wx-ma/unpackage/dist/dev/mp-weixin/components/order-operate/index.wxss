@@ -1,0 +1,14 @@
+
+.service.data-v-5b4ed546 { background-color: #2967ff;
+}
+.cancel-order.data-v-5b4ed546, .delete-order.data-v-5b4ed546 { background-color: #999;
+}
+.check-logistics.data-v-5b4ed546 { background-color: #ff976a;
+}
+.payment.data-v-5b4ed546 { background-color: #2967ff;
+}
+.confirm-goods.data-v-5b4ed546 { background-color: #19be6b;
+}
+.evaluation.data-v-5b4ed546 { background-color: #ff976a;
+}
+

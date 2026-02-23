@@ -1,0 +1,10 @@
+
+.goods-container.data-v-61dcd72a { display: flex; justify-content: space-between; flex-wrap: wrap; box-sizing: content-box; padding: 20rpx;
+}
+.goods-box.data-v-61dcd72a { width: 346rpx; height: 560rpx; background-color: #fff; overflow: hidden; margin-bottom: 40rpx; border-radius: 20rpx; box-shadow: 0 0 60rpx rgba(211,211,211,1);
+}
+.goods-box .img-box.data-v-61dcd72a { width: 100%; height: 349rpx; overflow: hidden;
+}
+.goods-box .img-box image.data-v-61dcd72a { width: 100%; height: 336rpx;
+}
+
