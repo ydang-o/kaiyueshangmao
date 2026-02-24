@@ -1,0 +1,111 @@
+/* 天猫系主题基础层：颜色、排版、圆角、阴影、基础控件 */
+
+page {
+  background-color: #f7f8fa;
+  color: #1f2329;
+}
+
+.tm-page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #fafbff 0%, #f6f7fb 45%, #f7f8fa 100%);
+}
+
+.tm-text-primary {
+  color: #1f2329;
+}
+
+.tm-text-secondary {
+  color: #6b7280;
+}
+
+.tm-text-muted {
+  color: #9ca3af;
+}
+
+.tm-brand {
+  color: #ff0036;
+}
+
+.tm-price {
+  color: #ff0036;
+  font-weight: 700;
+}
+
+.tm-price::before {
+  content: "¥";
+  font-size: 0.85em;
+  margin-right: 2rpx;
+}
+
+.tm-card {
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 32rpx rgba(17, 24, 39, 0.08);
+}
+
+.tm-pill {
+  border-radius: 999rpx;
+}
+
+.tm-section {
+  margin: 20rpx;
+}
+
+.tm-section-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tm-section-subtitle {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #6b7280;
+}
+
+/* ColorUI 常见结构统一风格 */
+.cu-card.article.no-card .cu-item,
+.cu-card.article .cu-item {
+  border-radius: 18rpx;
+  background: #ffffff;
+  box-shadow: 0 8rpx 28rpx rgba(15, 23, 42, 0.06);
+  margin-bottom: 18rpx;
+}
+
+.cu-list.menu .cu-item,
+.cu-list.menu-avatar .cu-item {
+  background: #ffffff;
+}
+
+.cu-tag {
+  border-radius: 999rpx;
+}
+
+.cu-btn {
+  border-radius: 999rpx;
+  font-weight: 500;
+}
+
+.cu-load.loading::after {
+  color: #9ca3af;
+}
+
+.cu-load.over::after {
+  color: #9ca3af;
+}
+
+.tm-primary-btn {
+  background: linear-gradient(135deg, #ff2b56 0%, #ff0036 100%);
+  color: #ffffff;
+}
+
+.tm-secondary-btn {
+  background: #111827;
+  color: #ffffff;
+}
+
+.tm-outline-btn {
+  border: 1px solid #ffd3de;
+  background: #fff5f7;
+  color: #ff0036;
+}

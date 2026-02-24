@@ -1,0 +1,81 @@
+/* 天猫系业务组件层 */
+
+.tm-search-bar {
+  margin: 16rpx 20rpx;
+  padding: 0 22rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
+  background: #f3f5f9;
+  border: 1px solid #eceff5;
+}
+
+.tm-search-input {
+  font-size: 28rpx;
+  color: #111827;
+}
+
+.tm-grid-card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  box-shadow: 0 6rpx 24rpx rgba(15, 23, 42, 0.06);
+}
+
+.tm-product-image {
+  border-radius: 16rpx;
+  background: #f3f4f6;
+}
+
+.tm-product-title {
+  font-size: 28rpx;
+  line-height: 1.45;
+  color: #111827;
+}
+
+.tm-product-desc {
+  font-size: 24rpx;
+  line-height: 1.45;
+  color: #6b7280;
+}
+
+.tm-product-price {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #ff0036;
+}
+
+.tm-top-nav {
+  border-bottom: 1px solid #f0f1f5;
+  background: #ffffff;
+}
+
+.tm-tab-active {
+  color: #ff0036 !important;
+  font-weight: 700;
+  position: relative;
+}
+
+.tm-tab-active::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8rpx;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 6rpx;
+  border-radius: 999rpx;
+  background: #ff0036;
+}
+
+.tm-form-card {
+  margin: 20rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  box-shadow: 0 8rpx 28rpx rgba(15, 23, 42, 0.06);
+}
+
+.tm-empty-wrap {
+  padding: 80rpx 40rpx;
+  text-align: center;
+  color: #9ca3af;
+}
