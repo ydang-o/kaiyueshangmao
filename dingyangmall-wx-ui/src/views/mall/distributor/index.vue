@@ -502,10 +502,9 @@ function handleCommand(command, row) {
   }
 };
 
-/** 跳转角色分配 */
+/** 跳转角色分配（角色管理已移除，提示用户） */
 function handleAuthRole(row) {
-  const userId = row.userId;
-  router.push("/system/user-auth/role/" + userId);
+  proxy.$modal.msgWarning("角色管理功能已移除");
 };
 
 /** 重置密码按钮操作 */

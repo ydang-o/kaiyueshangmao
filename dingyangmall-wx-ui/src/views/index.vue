@@ -83,8 +83,7 @@
       <el-col :span="12">
         <el-card header="核心业务快捷入口" class="box-card">
           <div class="quick-actions">
-            <el-button type="primary" plain @click="handleNav('/system/user')">一级经销商管理</el-button>
-            <el-button type="success" plain @click="handleNav('/monitor/job')">积分分发管理</el-button>
+            <el-button type="primary" plain @click="handleNav('/mall/distributor')">一级经销商管理</el-button>
             <el-button type="warning" plain @click="handleNav('/mall/goodsspu')">商品上架管理</el-button>
             <el-button type="danger" plain @click="handleNav('/mall/orderinfo')">订单发货处理</el-button>
           </div>

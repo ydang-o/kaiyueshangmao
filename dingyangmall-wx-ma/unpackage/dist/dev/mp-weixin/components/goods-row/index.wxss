@@ -1,0 +1,6 @@
+
+.row-img.data-v-3557433b { width: 200rpx; height: 200rpx; border-radius: 10rpx;
+}
+.row-info.data-v-3557433b { flex: 1; margin-left: 20rpx;
+}
+

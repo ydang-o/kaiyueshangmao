@@ -1,0 +1,34 @@
+
+.container.data-v-a8e01db4 { padding: 40rpx; min-height: 100vh; background: #f3f4f7;
+}
+.header.data-v-a8e01db4 { text-align: center; padding: 40rpx 0;
+}
+.title.data-v-a8e01db4 { font-size: 44rpx; font-weight: bold;
+}
+.sub-title.data-v-a8e01db4 { margin-top: 20rpx; color: #666;
+}
+.points.data-v-a8e01db4 { margin-top: 20rpx; font-size: 32rpx;
+}
+.limit.data-v-a8e01db4 { margin-top: 10rpx; font-size: 28rpx; color: #999;
+}
+.wheel-area.data-v-a8e01db4 { text-align: center; padding: 40rpx 0;
+}
+.draw-btn.data-v-a8e01db4 { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: #fff; width: 400rpx; height: 88rpx; line-height: 88rpx; border-radius: 44rpx; font-size: 32rpx;
+}
+.section-title.data-v-a8e01db4 { font-size: 32rpx; font-weight: bold; margin-bottom: 20rpx;
+}
+.prize-grid.data-v-a8e01db4 { display: flex; flex-wrap: wrap;
+}
+.prize-item.data-v-a8e01db4 { width: 33.33%; padding: 20rpx; text-align: center;
+}
+.prize-img.data-v-a8e01db4 { width: 120rpx; height: 120rpx;
+}
+.prize-name.data-v-a8e01db4 { font-size: 24rpx; margin-top: 10rpx;
+}
+.record-list.data-v-a8e01db4 { margin-top: 40rpx;
+}
+.record-item.data-v-a8e01db4 { background: #fff; padding: 24rpx; margin-bottom: 20rpx; border-radius: 10rpx; display: flex; justify-content: space-between;
+}
+.empty.data-v-a8e01db4 { text-align: center; color: #999; padding: 40rpx;
+}
+

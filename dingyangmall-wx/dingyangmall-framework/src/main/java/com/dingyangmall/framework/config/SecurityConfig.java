@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
+
 import com.dingyangmall.framework.config.properties.PermitAllUrlProperties;
 import com.dingyangmall.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.dingyangmall.framework.security.handle.AuthenticationEntryPointImpl;
@@ -111,10 +112,10 @@ public class SecurityConfig
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.requestMatchers("/login", "/register", "/captchaImage", "/weixin/portal/**", "/weixin/api/**", "/dingyangmall-wiki/**").permitAll()
+                requests.requestMatchers("/login", "/register", "/captchaImage", "/weixin/portal/**", "/weixin/api/**", "/dingyangmall-wiki/**", "/app/member/login", "/app/member/register", "/app/member/send-sms-code").permitAll()
                     // 静态资源，可匿名访问
                     .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**.html", "/**.css", "/**.js", "/profile/**").permitAll()
-                    .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**", "/druid/**").permitAll()
+                    .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**", "/druid/**", "/doc.html", "/webjars/**").permitAll()
                     // 除上面外的所有请求全部需要鉴权认证
                     .anyRequest().authenticated();
             })

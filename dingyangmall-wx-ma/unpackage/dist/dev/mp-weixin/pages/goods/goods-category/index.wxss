@@ -1,8 +1,20 @@
 
-.page.data-v-d57e90ac { padding: 32rpx;
+.VerticalNav.nav.data-v-d57e90ac { width: 220rpx; white-space: initial;
 }
-.title.data-v-d57e90ac { font-size: 36rpx; font-weight: 600; color: #333;
+.VerticalNav.nav .cu-item.data-v-d57e90ac { font-size: 14px; font-weight: 300; color: #333; width: 100%; text-align: center; background-color: #f1f1f1; margin: 0; border: none; height: 50px; position: relative;
 }
-.tip.data-v-d57e90ac { margin-top: 20rpx; color: #666; line-height: 1.8;
+.VerticalNav.nav .cu-item.cur.data-v-d57e90ac { font-size: 15px; font-weight: 500; border-radius: 10rpx 0 0 10rpx; background-color: #fff;
+}
+.VerticalBox.data-v-d57e90ac { display: flex;
+}
+.VerticalMain.data-v-d57e90ac { background-color: #fff;
+}
+.img-banner.data-v-d57e90ac { width: 94%; height: 148rpx; margin: auto;
+}
+.cate-list.data-v-d57e90ac { display: flex; flex-wrap: wrap; width: 100%;
+}
+.cate.data-v-d57e90ac { width: 150rpx; font-size: 14px; margin: 15rpx; text-align: center;
+}
+.cate-img.data-v-d57e90ac { width: 140rpx; height: 140rpx;
 }
 

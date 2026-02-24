@@ -23,7 +23,9 @@ import com.dingyangmall.mall.constant.MallConstants;
 import com.dingyangmall.mall.dto.PlaceOrderDTO;
 import com.dingyangmall.mall.entity.OrderInfo;
 import com.dingyangmall.mall.entity.OrderItem;
+import com.dingyangmall.mall.entity.OrderLogistics;
 import com.dingyangmall.mall.enums.OrderInfoEnum;
+import com.dingyangmall.mall.service.Kuaidi100QueryService;
 import com.dingyangmall.mall.service.OrderInfoService;
 import com.dingyangmall.weixin.config.WxPayConfiguration;
 import com.dingyangmall.weixin.constant.MyReturnCode;
@@ -55,6 +57,7 @@ public class OrderInfoApi {
 
     private final OrderInfoService orderInfoService;
     private final com.dingyangmall.mall.service.OrderLogisticsService orderLogisticsService;
+    private final Kuaidi100QueryService kuaidi100QueryService;
 	private final MallConfigProperties mallConfigProperties;
 
 	/**
@@ -197,9 +200,9 @@ public class OrderInfoApi {
 	 */
 	@PostMapping("/notify-order")
 	public String notifyOrder(@RequestBody String xmlData) throws WxPayException {
-		log.info("支付回调:"+xmlData);
 		WxPayService wxPayService = WxPayConfiguration.getPayService();
 		WxPayOrderNotifyResult notifyResult = wxPayService.parseOrderNotifyResult(xmlData);
+		log.info("支付回调, 订单号: {}, 金额: {} 分", notifyResult.getOutTradeNo(), notifyResult.getTotalFee());
 		OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery()
 				.eq(OrderInfo::getOrderNo,notifyResult.getOutTradeNo()));
 		if(orderInfo != null){
@@ -246,8 +249,7 @@ public class OrderInfoApi {
 			try {
 				response.getWriter().print(JSONUtil.parseObj(map));
 			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				log.error("物流回调写响应失败", e1);
 			}
 		}
 		return null;
@@ -299,24 +301,24 @@ public class OrderInfoApi {
 	 */
 	@PostMapping("/notify-refunds")
 	public String notifyRefunds(@RequestBody String xmlData) {
-		log.info("退款回调:"+xmlData);
 		WxPayService wxPayService = WxPayConfiguration.getPayService();
 		try {
 			WxPayRefundNotifyResult notifyResult = wxPayService.parseRefundNotifyResult(xmlData);
+			log.info("退款回调, 退款单号: {}", notifyResult.getReqInfo() != null ? notifyResult.getReqInfo().getOutRefundNo() : "unknown");
 			orderInfoService.notifyRefunds(notifyResult);
 			return WxPayNotifyResponse.success("成功");
 		} catch (Exception e) {
-			e.printStackTrace();
-			return WxPayNotifyResponse.fail(e.getMessage());
+			log.error("退款回调处理异常", e);
+			return WxPayNotifyResponse.fail("处理失败");
 		}
 	}
 
 
 
     /**
-     * 获取物流信息
-     * @param id
-     * @return
+     * 获取物流信息（含快递100实时轨迹，未配置时仅返回本地物流信息）
+     * @param id 订单 ID
+     * @return logistics 订单物流基本信息，track 实时轨迹（快递100）
      */
     @GetMapping("/logistics/{id}")
     public AjaxResult getLogistics(@PathVariable("id") String id){
@@ -327,7 +329,17 @@ public class OrderInfoApi {
         if(!orderInfo.getUserId().equals(ThirdSessionHolder.getWxUserId())){
              return AjaxResult.error("无权操作");
         }
-        return AjaxResult.success(orderLogisticsService.getById(orderInfo.getLogisticsId()));
+        OrderLogistics logistics = orderLogisticsService.getById(orderInfo.getLogisticsId());
+        if (logistics == null) {
+            return AjaxResult.success(new HashMap<String, Object>() {{
+                put("logistics", null);
+                put("track", null);
+            }});
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("logistics", logistics);
+        result.put("track", kuaidi100QueryService.query(logistics));
+        return AjaxResult.success(result);
     }
 }
 

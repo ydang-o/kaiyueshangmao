@@ -91,25 +91,25 @@ public class GlobalExceptionHandler
     }
 
     /**
-     * 拦截未知的运行时异常
+     * 拦截未知的运行时异常（不向客户端暴露异常详情，避免信息泄露）
      */
     @ExceptionHandler(RuntimeException.class)
     public AjaxResult handleRuntimeException(RuntimeException e, HttpServletRequest request)
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生未知异常.", requestURI, e);
-        return AjaxResult.error(e.getMessage());
+        return AjaxResult.error(HttpStatus.ERROR, "系统繁忙，请稍后再试");
     }
 
     /**
-     * 系统异常
+     * 系统异常（不向客户端暴露异常详情，避免信息泄露）
      */
     @ExceptionHandler(Exception.class)
     public AjaxResult handleException(Exception e, HttpServletRequest request)
     {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',发生系统异常.", requestURI, e);
-        return AjaxResult.error(e.getMessage());
+        return AjaxResult.error(HttpStatus.ERROR, "系统繁忙，请稍后再试");
     }
 
     /**

@@ -3,7 +3,11 @@ package com.dingyangmall.web.api;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.utils.StringUtils;
+import com.dingyangmall.common.core.domain.entity.SysUser;
+import com.dingyangmall.common.core.domain.model.LoginUser;
 import com.dingyangmall.framework.web.service.SmsService;
+import com.dingyangmall.framework.web.service.TokenService;
+import com.dingyangmall.mall.constant.MallReturnCode;
 import com.dingyangmall.mall.dto.AppRegisterBody;
 import com.dingyangmall.mall.entity.UmsMember;
 import com.dingyangmall.mall.dto.IntegralPacketDTO;
@@ -15,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.dingyangmall.mall.utils.MemberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -29,8 +35,13 @@ import java.util.Map;
 @RequestMapping("/app/member")
 public class AppMemberApi {
 
+    private static final Logger log = LoggerFactory.getLogger(AppMemberApi.class);
+
     @Autowired
     private UmsMemberService umsMemberService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private SmsService smsService;
@@ -107,6 +118,49 @@ public class AppMemberApi {
         } catch (NumberFormatException e) {
             return AjaxResult.error("无效的用户ID");
         }
+    }
+
+    /**
+     * C端用户登录
+     */
+    @PostMapping("/login")
+    public AjaxResult login(@RequestBody AppRegisterBody loginBody) {
+        String phone = loginBody.getPhone();
+        String password = loginBody.getPassword();
+        
+        if (StringUtils.isAnyBlank(phone, password)) {
+            return AjaxResult.error("手机号和密码不能为空");
+        }
+        
+        UmsMember member = umsMemberService.getOne(Wrappers.<UmsMember>lambdaQuery().eq(UmsMember::getPhone, phone));
+        if (member == null) {
+            return AjaxResult.error(MallReturnCode.ERR_70003.getCode(), MallReturnCode.ERR_70003.getMsg());
+        }
+        
+        if (!bCryptPasswordEncoder.matches(password, member.getPassword())) {
+            return AjaxResult.error(MallReturnCode.ERR_70007.getCode(), MallReturnCode.ERR_70007.getMsg());
+        }
+        
+        // 生成Token
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(member.getId());
+        
+        // 填充SysUser以避免LoginUser.getUsername()空指针异常
+        SysUser sysUser = new SysUser();
+        sysUser.setUserId(member.getId());
+        sysUser.setUserName(member.getPhone());
+        sysUser.setNickName(member.getNickname());
+        sysUser.setPassword(member.getPassword());
+        loginUser.setUser(sysUser);
+        
+        String token = tokenService.createToken(loginUser);
+        
+        // 脱敏处理，不返回密码
+        member.setPassword(null);
+        
+        AjaxResult ajax = AjaxResult.success(member);
+        ajax.put("token", token);
+        return ajax;
     }
 
     /**

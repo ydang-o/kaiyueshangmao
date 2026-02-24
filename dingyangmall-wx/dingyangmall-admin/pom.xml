@@ -24,10 +24,11 @@
             <optional>true</optional> <!-- 表示依赖不会传递 -->
         </dependency>
 
-        <!-- spring-doc -->
+        <!-- knife4j -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
         </dependency>
 
          <!-- Mysql驱动包 -->
@@ -41,6 +42,11 @@
             <groupId>com.dingyangmall</groupId>
             <artifactId>dingyangmall-framework</artifactId>
         </dependency>
+        <!-- 系统模块（SysUploadFile 等）-->
+        <dependency>
+            <groupId>com.dingyangmall</groupId>
+            <artifactId>dingyangmall-system</artifactId>
+        </dependency>
 
         <!-- 定时任务 (已移除) -->
         <!-- 代码生成 (已移除) -->
@@ -52,18 +58,7 @@
             <artifactId>dingyangmall-mall</artifactId>
         </dependency>
 
-        <!-- Embedded Redis -->
-        <dependency>
-            <groupId>it.ozimov</groupId>
-            <artifactId>embedded-redis</artifactId>
-            <version>0.7.3</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-simple</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+
 
     </dependencies>
 

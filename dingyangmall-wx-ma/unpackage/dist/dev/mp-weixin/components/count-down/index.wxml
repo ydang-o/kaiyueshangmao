@@ -1,0 +1,1 @@
+<text><block wx:if="{{day}}"><text>{{day+"天"}}</text></block><block wx:if="{{hour}}"><text>{{hour+"小时"}}</text></block><block wx:if="{{minute}}"><text>{{minute+"分"}}</text></block><block wx:if="{{second}}"><text>{{second+"秒"}}</text></block></text>

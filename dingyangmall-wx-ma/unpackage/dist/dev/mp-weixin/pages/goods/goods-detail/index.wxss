@@ -1,8 +1,20 @@
 
-.page.data-v-15355106 { padding: 32rpx;
+.product-bg.data-v-15355106 { width: 100%; position: relative;
 }
-.title.data-v-15355106 { font-size: 36rpx; font-weight: 600; color: #333;
+.product-bg swiper.data-v-15355106 { width: 100%; height: calc(100vw); position: relative;
 }
-.tip.data-v-15355106 { margin-top: 20rpx; color: #666; line-height: 1.8;
+.page-index.data-v-15355106 { position: absolute; right: 30rpx; bottom: 30rpx;
+}
+.to-down.data-v-15355106 { margin-bottom: 100rpx;
+}
+.screen.data-v-15355106 { width: 94% !important; border-radius: 20rpx; min-height: 900rpx; margin: auto; background-color: #ececec;
+}
+.screen-image.data-v-15355106 { padding-top: 80rpx; height: 780rpx !important;
+}
+.shopping-cart.data-v-15355106 { background-color: #2d2d2f !important; font-weight: 300; width: 220rpx;
+}
+.buy-now.data-v-15355106 { background-color: #2967ff !important; font-weight: 300; width: 220rpx;
+}
+.cu-bar.tabbar.shop .action.data-v-15355106 { width: unset;
 }
 

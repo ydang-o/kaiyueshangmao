@@ -1,11 +1,13 @@
-﻿/**
+/**
  * Copyright (C) 2018-2019
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
+ *
+ * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath，端口与后端一致（7500）。
  */
 export default {
-  //服务器地址，即后台服务的访问地址；本地开发填http://localhost:7500即可，正式服务器环境https://后台地址/prod-api；如果要用真机调试要把localhost换成局域网ip，手机和电脑要处于同一局域网中
+  // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
   basePath: 'http://localhost:7500',
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame
   //广告开关（true/false）

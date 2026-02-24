@@ -1,4 +1,0 @@
-/* pages/merchant/index/index.wxss */
-.border {
-  border: 1rpx solid #eee;
-}

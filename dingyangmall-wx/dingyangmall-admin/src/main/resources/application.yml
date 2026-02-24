@@ -1,4 +1,4 @@
-﻿# 项目相关配置
+# 项目相关配置
 dingyangmall:
   # 名称
   name: RuoYi
@@ -89,12 +89,12 @@ spring:
           # #连接池最大阻塞等待时间（使用负值表示没有限制）
           max-wait: -1ms
 
-# token配置
+# token配置（生产环境请通过环境变量 JWT_SECRET 注入至少32位随机密钥）
 token:
   # 令牌自定义标识
   header: Authorization
-  # 令牌密钥
-  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌密钥，生产务必使用环境变量：JWT_SECRET
+  secret: ${JWT_SECRET:abcdefghijklmnopqrstuvwxyz}
   # 令牌有效期（默认30分钟）
   expireTime: 30
 
@@ -164,3 +164,17 @@ wx:
 mall:
   # 支付、物流回调地址，即后台服务7500端口的外网访问域名，要保证外网能访问，如：https://后台地址/prod-api
   notify-host: http://xx.xxxx.com
+  # 快递100（Api100）实时查询：https://api.kuaidi100.com 注册后获取
+  kuaidi100-key: ${KUAIDI100_KEY:}
+  kuaidi100-customer: ${KUAIDI100_CUSTOMER:}
+
+# 腾讯云短信（未配置或 enabled=false 时仅模拟发送，验证码只写 Redis）
+tencent:
+  sms:
+    enabled: ${TENCENT_SMS_ENABLED:false}
+    secret-id: ${TENCENT_SMS_SECRET_ID:}
+    secret-key: ${TENCENT_SMS_SECRET_KEY:}
+    sms-sdk-app-id: ${TENCENT_SMS_SDK_APP_ID:}
+    sign-name: ${TENCENT_SMS_SIGN_NAME:}
+    template-id: ${TENCENT_SMS_TEMPLATE_ID:}
+    region: ap-guangzhou

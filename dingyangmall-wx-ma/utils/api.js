@@ -3,6 +3,8 @@
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
+ *
+ * 所有请求的根地址均来自 config/env.js 的 basePath（端口 7500），勿在别处写死端口或域名。
  */
 import __config from '../config/env'
 
@@ -172,7 +174,11 @@ module.exports = {
     return request('/weixin/api/ma/wxuser', 'post', data, true)
   },
   goodsCategoryGet: (data) => {//商品分类查询
-    return request('/weixin/api/ma/goodscategory/tree' , 'get', data, true)
+    return request('/weixin/api/ma/goodscategory/tree', 'get', data, true)
+  },
+  // 首页公告列表（若后端有该接口则返回数组，无则前端不展示公告）
+  getNoticeList: () => {
+    return request('/weixin/api/ma/notice/list', 'get', null, false)
   },
   goodsPage: (data) => {//商品列表
     return request('/weixin/api/ma/goodsspu/page', 'get', data, false)
@@ -255,28 +261,5 @@ module.exports = {
   },
   userAddressDel: (id) => {//用户收货地址删除
     return request('/weixin/api/ma/useraddress/' + id, 'delete', null, false)
-  },
-  sendPacket: (data) => {//发送积分红包
-    return request('/app/member/send-packet', 'post', data, true)
-  },
-  sendSmsCode: (phone) => {//发送验证码
-    return request('/app/member/send-sms-code?phone=' + phone, 'get', null, false)
-  },
-  // 商家端接口
-  merchantLogin: (data) => {
-    return request('/login', 'post', data, true) // Login uses standard request but path is /login, wait, request uses basePath. basePath is localhost:8080/weixin/api/ma? No, basePath is http://localhost:8080.
-    // Let's check env.js for basePath.
-  },
-  getCaptcha: () => {
-    return request('/captchaImage', 'get', null, false)
-  },
-  merchantScanUser: (code) => {
-    return merchantRequest('/api/mall/merchant/scan/user/' + code, 'get', null, true)
-  },
-  merchantGivePoints: (data) => {
-    return merchantRequest('/api/mall/merchant/scan/points', 'post', data, true)
-  },
-  merchantVerifyCoupon: (data) => {
-    return merchantRequest('/api/mall/merchant/scan/coupon/verify', 'post', data, true)
   }
 }

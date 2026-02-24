@@ -11,6 +11,7 @@
     { "path": "pages/order/order-detail/index", "style": { "navigationBarTitleText": "订单详情" } },
     { "path": "pages/order/order-confirm/index", "style": { "navigationBarTitleText": "确认订单" } },
     { "path": "pages/order/order-logistics/index", "style": { "navigationBarTitleText": "物流信息" } },
+    { "path": "pages/order/order-refunds/form/index", "style": { "navigationBarTitleText": "申请退款" } },
     { "path": "pages/user/user-address/list/index", "style": { "navigationBarTitleText": "收货地址" } },
     { "path": "pages/user/user-address/form/index", "style": { "navigationBarTitleText": "编辑地址" } },
     { "path": "pages/coupon/my-coupons/index", "style": { "navigationBarTitleText": "我的优惠券" } },
@@ -30,9 +31,9 @@
     "color": "#484848",
     "selectedColor": "#2967ff",
     "list": [
-      { "pagePath": "pages/home/index", "text": "首页" },
-      { "pagePath": "pages/goods/goods-category/index", "text": "分类" },
-      { "pagePath": "pages/user/user-center/index", "text": "我的" }
+      { "pagePath": "pages/home/index", "text": "首页", "iconPath": "static/tabbar/home.png", "selectedIconPath": "static/tabbar/home-active.png" },
+      { "pagePath": "pages/goods/goods-category/index", "text": "分类", "iconPath": "static/tabbar/category.png", "selectedIconPath": "static/tabbar/category-active.png" },
+      { "pagePath": "pages/user/user-center/index", "text": "我的", "iconPath": "static/tabbar/user.png", "selectedIconPath": "static/tabbar/user-active.png" }
     ]
   }
 }

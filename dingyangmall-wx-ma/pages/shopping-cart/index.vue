@@ -12,7 +12,7 @@
     </view>
     <view class="cu-bar bg-white solid-bottom solid-top fixed bar-top">
       <view class="action">共{{ shoppingCartData.length }}件宝贝</view>
-      <view class="action"><button class="cu-btn line-gray sm" @tap="operation">{{ operation ? '管理' : '完成' }}</button></view>
+      <view class="action"><button class="cu-btn line-gray sm" @tap="toggleOperation">{{ operation ? '管理' : '完成' }}</button></view>
     </view>
     <view class="content-wrap">
       <checkbox-group @change="checkboxChange">
@@ -120,7 +120,7 @@ export default {
     getApp().initPage().then(() => this.goodsRecom())
   },
   methods: {
-    operation() { this.operation = !this.operation; this.checkboxHandle(this.selectValue) },
+    toggleOperation() { this.operation = !this.operation; this.checkboxHandle(this.selectValue) },
     shoppingCartPage() {
       getApp().api.shoppingCartPage(this.page).then(res => {
         const records = (res.data && res.data.records) || []

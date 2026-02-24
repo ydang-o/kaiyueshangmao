@@ -14,6 +14,15 @@ public class MemberUtils {
      */
     public static String getMemberId() {
         try {
+            Long userId = com.dingyangmall.common.utils.SecurityUtils.getUserId();
+            if (userId != null) {
+                return String.valueOf(userId);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        
+        try {
             HttpServletRequest request = ServletUtils.getRequest();
             String memberId = request.getHeader("member-id");
             if (StringUtils.isNotEmpty(memberId)) {
@@ -22,7 +31,6 @@ public class MemberUtils {
         } catch (Exception e) {
             // ignore
         }
-        // TODO: Implement proper security context retrieval once Member Login is fully implemented
-        return "1";
+        return null;
     }
 }

@@ -11,6 +11,7 @@
     "pages/order/order-detail/index",
     "pages/order/order-confirm/index",
     "pages/order/order-logistics/index",
+    "pages/order/order-refunds/form/index",
     "pages/user/user-address/list/index",
     "pages/user/user-address/form/index",
     "pages/coupon/my-coupons/index",
@@ -33,15 +34,21 @@
     "list": [
       {
         "pagePath": "pages/home/index",
-        "text": "首页"
+        "text": "首页",
+        "iconPath": "static/tabbar/home.png",
+        "selectedIconPath": "static/tabbar/home-active.png"
       },
       {
         "pagePath": "pages/goods/goods-category/index",
-        "text": "分类"
+        "text": "分类",
+        "iconPath": "static/tabbar/category.png",
+        "selectedIconPath": "static/tabbar/category-active.png"
       },
       {
         "pagePath": "pages/user/user-center/index",
-        "text": "我的"
+        "text": "我的",
+        "iconPath": "static/tabbar/user.png",
+        "selectedIconPath": "static/tabbar/user-active.png"
       }
     ]
   },

@@ -10,6 +10,7 @@ import com.dingyangmall.mall.service.TbLotteryConfigService;
 import com.dingyangmall.mall.service.TbLotteryRecordService;
 import com.dingyangmall.mall.utils.MemberUtils;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * @author dingyangmall
  * @date 2026-02-13
  */
+@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/app/lottery")
@@ -59,7 +61,7 @@ public class AppLotteryApi {
         } catch (RuntimeException e) {
             return AjaxResult.error(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("抽奖失败", e);
             return AjaxResult.error("抽奖失败，请稍后重试");
         }
     }

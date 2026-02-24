@@ -18,8 +18,9 @@ import com.dingyangmall.common.core.domain.model.LoginUser;
 import com.dingyangmall.common.enums.BusinessType;
 import com.dingyangmall.common.utils.SecurityUtils;
 import com.dingyangmall.common.utils.StringUtils;
-import com.dingyangmall.common.utils.file.FileUploadUtils;
+import com.dingyangmall.common.constant.Constants;
 import com.dingyangmall.common.utils.file.MimeTypeUtils;
+import com.dingyangmall.web.service.SysUploadFileService;
 import com.dingyangmall.framework.web.service.TokenService;
 import com.dingyangmall.system.service.ISysUserService;
 
@@ -37,6 +38,9 @@ public class SysProfileController extends BaseController
 
     @Autowired
     private TokenService tokenService;
+
+    @Autowired
+    private SysUploadFileService sysUploadFileService;
 
     /**
      * 个人信息
@@ -121,7 +125,8 @@ public class SysProfileController extends BaseController
         if (!file.isEmpty())
         {
             LoginUser loginUser = getLoginUser();
-            String avatar = FileUploadUtils.upload(DingyangmallConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            com.dingyangmall.web.domain.SysUploadFile entity = sysUploadFileService.save(file);
+            String avatar = Constants.RESOURCE_PREFIX + "/file/" + entity.getFileId();
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
             {
                 AjaxResult ajax = AjaxResult.success();

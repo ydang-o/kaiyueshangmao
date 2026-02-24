@@ -1,7 +1,0 @@
-{
-  "navigationBarTitleText": "商品详情",
-  "usingComponents": {
-    "base-rade": "/components/base-rade/index",
-    "poster": "/components/wxa-plugin-canvas/poster/index"
-  }
-}

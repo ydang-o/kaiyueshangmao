@@ -22,6 +22,12 @@ public class MallConfigProperties {
 
 	private String notifyHost = "notify-host";
 
+	/** 原物流相关 key，保留兼容 */
 	private String logisticsKey = "logistics-key";
+
+	/** 快递100（Api100）授权 Key，用于实时查询签名 */
+	private String kuaidi100Key = "";
+	/** 快递100（Api100）公司编号 Customer */
+	private String kuaidi100Customer = "";
 }
 

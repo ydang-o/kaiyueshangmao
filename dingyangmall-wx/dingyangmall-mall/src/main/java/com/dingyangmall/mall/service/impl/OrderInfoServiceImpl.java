@@ -301,7 +301,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 					orderItem2.setStatus(orderItem.getStatus());
 					orderItemService.updateById(orderItem2);
 				} catch (WxPayException e) {
-					e.printStackTrace();
+					log.error("微信退款请求失败", e);
 					throw new RuntimeException(e.getReturnMsg() + "" + e.getCustomErrorMsg() + "" + e.getErrCodeDes());
 				}
 			}else if("2".equals(orderItem.getStatus())){//拒绝退款

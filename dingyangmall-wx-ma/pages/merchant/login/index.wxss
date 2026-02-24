@@ -1,5 +1,0 @@
-/* pages/merchant/login/index.wxss */
-.captcha-img {
-  width: 200rpx;
-  height: 80rpx;
-}

@@ -1,0 +1,14 @@
+
+.margin-bottom-bar.data-v-4bbfaecc { margin-bottom: 120rpx;
+}
+.bar-rt.data-v-4bbfaecc { text-align: right;
+}
+.submit-btn.data-v-4bbfaecc { background-color: #2967ff; font-weight: 300; width: 220rpx;
+}
+.row-img.data-v-4bbfaecc { width: 200rpx; height: 200rpx; border-radius: 10rpx;
+}
+.row-info.data-v-4bbfaecc { flex: 1;
+}
+.loc-info.data-v-4bbfaecc { min-height: 40rpx;
+}
+

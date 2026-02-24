@@ -1,96 +1,431 @@
-<p align="center">
-	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-d3d0a9303e11d522a06cd263f3079027715.png">
-</p>
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.8</h1>
-<h4 align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</h4>
-<p align="center">
-	<a href="https://gitee.com/y_project/RuoYi-Vue/stargazers"><img src="https://gitee.com/y_project/RuoYi-Vue/badge/star.svg?theme=dark"></a>
-	<a href="https://gitee.com/y_project/RuoYi-Vue"><img src="https://img.shields.io/badge/RuoYi-v3.8.8-brightgreen.svg"></a>
-	<a href="https://gitee.com/y_project/RuoYi-Vue/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"></a>
-</p>
+# 鼎阳商城 - 接口文档
 
-## 平台简介
+本文档汇总 **管理端（dingyangmall-admin）** 与 **移动端**（小程序、Android、iOS）所调用的全部后端接口。  
+**请求根地址**：以各端配置为准（如小程序 `config/env.js` 的 `basePath`、App 端配置的 baseUrl），默认 `http://localhost:7500`，应用 `context-path: /`。
 
-若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+---
 
-* 前端采用Vue、Element UI。
-* 后端采用Spring Boot、Spring Security、Redis & Jwt。
-* 权限认证使用Jwt，支持多终端认证系统。
-* 支持加载动态权限菜单，多方式轻松权限控制。
-* 高效率开发，使用代码生成器可以一键生成前后端代码。
-* 提供了技术栈（[Vue3](https://v3.cn.vuejs.org) [Element Plus](https://element-plus.org/zh-CN) [Vite](https://cn.vitejs.dev)）版本[RuoYi-Vue3](https://github.com/yangzongzhuan/RuoYi-Vue3)，保持同步更新。
-* 提供了单应用版本[RuoYi-Vue-fast](https://github.com/yangzongzhuan/RuoYi-Vue-fast)，Oracle版本[RuoYi-Vue-Oracle](https://github.com/yangzongzhuan/RuoYi-Vue-Oracle)，保持同步更新。
-* 不分离版本，请移步[RuoYi](https://gitee.com/y_project/RuoYi)，微服务版本，请移步[RuoYi-Cloud](https://gitee.com/y_project/RuoYi-Cloud)
-* 阿里云折扣场：[点我进入](http://aly.ruoyi.vip)，腾讯云秒杀场：[点我进入](http://txy.ruoyi.vip)&nbsp;&nbsp;
-* 阿里云优惠券：[点我领取](https://www.aliyun.com/minisite/goods?userCode=brki8iof&share_source=copy_link)，腾讯云优惠券：[点我领取](https://cloud.tencent.com/redirect.php?redirect=1025&cps_key=198c8df2ed259157187173bc7f4f32fd&from=console)&nbsp;&nbsp;
+## 文档结构说明
 
-## 内置功能
+| 端 | 路径前缀 | 认证方式 | 说明 |
+|----|----------|----------|------|
+| **管理端** | 无统一前缀（如 `/system`、`/monitor`、`/orderinfo` 等） | `Authorization: Bearer {token}` | 后台 PC 管理，需管理员登录 |
+| **移动端** | `/weixin/api/ma/*`、`/app/*` | `third-session` 等（见下方通用说明） | 小程序、Android、iOS 用户端共用 |
+| **商家端** | `/api/mall/merchant/*`、`/login`、`/captchaImage` | `Authorization: Bearer {merchantToken}` | 商家扫码、核销等，与用户端登录分离 |
 
-1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。
-2.  部门管理：配置系统组织机构（公司、部门、小组），树结构展现支持数据权限。
-3.  岗位管理：配置系统用户所属担任职务。
-4.  菜单管理：配置系统菜单，操作权限，按钮权限标识等。
-5.  角色管理：角色菜单权限分配、设置角色按机构进行数据范围权限划分。
-6.  字典管理：对系统中经常使用的一些较为固定的数据进行维护。
-7.  参数管理：对系统动态配置常用参数。
-8.  通知公告：系统通知公告信息发布维护。
-9.  操作日志：系统正常操作日志记录和查询；系统异常信息日志记录和查询。
-10. 登录日志：系统登录日志记录查询包含登录异常。
-11. 在线用户：当前系统中活跃用户状态监控。
-12. 定时任务：在线（添加、修改、删除)任务调度包含执行结果日志。
-13. 代码生成：前后端代码的生成（java、html、xml、sql）支持CRUD下载 。
-14. 系统接口：根据业务代码自动生成相关的api接口文档。
-15. 服务监控：监视当前系统CPU、内存、磁盘、堆栈等相关信息。
-16. 缓存监控：对系统的缓存信息查询，命令统计等。
-17. 在线构建器：拖动表单元素生成相应的HTML代码。
-18. 连接池监视：监视当前系统数据库连接池状态，可进行分析SQL找出系统性能瓶颈。
+---
 
-## 在线体验
+# 第一部分：管理端接口
 
-- admin/admin123  
-- 陆陆续续收到一些打赏，为了更好的体验已用于演示服务器升级。谢谢各位小伙伴。
+以下为 **dingyangmall-admin** 后台管理端全部 REST 接口。
 
-演示地址：http://vue.ruoyi.vip  
-文档地址：http://doc.ruoyi.vip
+---
 
-## 演示图
+## 一、首页与登录
 
-<table>
-    <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/cd1f90be5f2684f4560c9519c0f2a232ee8.jpg"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/1cbcf0e6f257c7d3a063c0e3f2ff989e4b3.jpg"/></td>
-    </tr>
-    <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-8074972883b5ba0622e13246738ebba237a.png"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-9f88719cdfca9af2e58b352a20e23d43b12.png"/></td>
-    </tr>
-    <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-39bf2584ec3a529b0d5a3b70d15c9b37646.png"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-936ec82d1f4872e1bc980927654b6007307.png"/></td>
-    </tr>
-	<tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-b2d62ceb95d2dd9b3fbe157bb70d26001e9.png"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-d67451d308b7a79ad6819723396f7c3d77a.png"/></td>
-    </tr>	 
-    <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/5e8c387724954459291aafd5eb52b456f53.jpg"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/644e78da53c2e92a95dfda4f76e6d117c4b.jpg"/></td>
-    </tr>
-	<tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-8370a0d02977eebf6dbf854c8450293c937.png"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-49003ed83f60f633e7153609a53a2b644f7.png"/></td>
-    </tr>
-	<tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-d4fe726319ece268d4746602c39cffc0621.png"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-c195234bbcd30be6927f037a6755e6ab69c.png"/></td>
-    </tr>
-    <tr>
-        <td><img src="https://oscimg.oschina.net/oscnet/b6115bc8c31de52951982e509930b20684a.jpg"/></td>
-        <td><img src="https://oscimg.oschina.net/oscnet/up-5e4daac0bb59612c5038448acbcef235e3a.png"/></td>
-    </tr>
-</table>
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/` | 首页欢迎语 | 无 |
+| POST | `/login` | 登录（用户名、密码、验证码、uuid） | 无 |
+| GET | `/getInfo` | 获取当前用户信息、角色、权限 | 需登录 |
+| GET | `/getRouters` | 获取当前用户路由/菜单树 | 需登录 |
+| POST | `/register` | 用户注册 | 无（需配置开启） |
+| POST | `/registerDistributor` | 分销商注册 | 无（需配置开启） |
 
+---
 
-## 若依前后端分离交流群
+## 二、通用与公共
 
-QQ群： [![加入QQ群](https://img.shields.io/badge/已满-937441-blue.svg)](https://jq.qq.com/?_wv=1027&k=5bVB1og) [![加入QQ群](https://img.shields.io/badge/已满-887144332-blue.svg)](https://jq.qq.com/?_wv=1027&k=5eiA4DH) [![加入QQ群](https://img.shields.io/badge/已满-180251782-blue.svg)](https://jq.qq.com/?_wv=1027&k=5AxMKlC) [![加入QQ群](https://img.shields.io/badge/已满-104180207-blue.svg)](https://jq.qq.com/?_wv=1027&k=51G72yr) [![加入QQ群](https://img.shields.io/badge/已满-186866453-blue.svg)](https://jq.qq.com/?_wv=1027&k=VvjN2nvu) [![加入QQ群](https://img.shields.io/badge/已满-201396349-blue.svg)](https://jq.qq.com/?_wv=1027&k=5vYAqA05) [![加入QQ群](https://img.shields.io/badge/已满-101456076-blue.svg)](https://jq.qq.com/?_wv=1027&k=kOIINEb5) [![加入QQ群](https://img.shields.io/badge/已满-101539465-blue.svg)](https://jq.qq.com/?_wv=1027&k=UKtX5jhs) [![加入QQ群](https://img.shields.io/badge/已满-264312783-blue.svg)](https://jq.qq.com/?_wv=1027&k=EI9an8lJ) [![加入QQ群](https://img.shields.io/badge/已满-167385320-blue.svg)](https://jq.qq.com/?_wv=1027&k=SWCtLnMz) [![加入QQ群](https://img.shields.io/badge/已满-104748341-blue.svg)](https://jq.qq.com/?_wv=1027&k=96Dkdq0k) [![加入QQ群](https://img.shields.io/badge/已满-160110482-blue.svg)](https://jq.qq.com/?_wv=1027&k=0fsNiYZt) [![加入QQ群](https://img.shields.io/badge/已满-170801498-blue.svg)](https://jq.qq.com/?_wv=1027&k=7xw4xUG1) [![加入QQ群](https://img.shields.io/badge/已满-108482800-blue.svg)](https://jq.qq.com/?_wv=1027&k=eCx8eyoJ) [![加入QQ群](https://img.shields.io/badge/已满-101046199-blue.svg)](https://jq.qq.com/?_wv=1027&k=SpyH2875) [![加入QQ群](https://img.shields.io/badge/已满-136919097-blue.svg)](https://jq.qq.com/?_wv=1027&k=tKEt51dz) [![加入QQ群](https://img.shields.io/badge/已满-143961921-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=0vBbSb0ztbBgVtn3kJS-Q4HUNYwip89G&authKey=8irq5PhutrZmWIvsUsklBxhj57l%2F1nOZqjzigkXZVoZE451GG4JHPOqW7AW6cf0T&noverify=0&group_code=143961921) [![加入QQ群](https://img.shields.io/badge/已满-174951577-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=ZFAPAbp09S2ltvwrJzp7wGlbopsc0rwi&authKey=HB2cxpxP2yspk%2Bo3WKTBfktRCccVkU26cgi5B16u0KcAYrVu7sBaE7XSEqmMdFQp&noverify=0&group_code=174951577) [![加入QQ群](https://img.shields.io/badge/已满-161281055-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=Fn2aF5IHpwsy8j6VlalNJK6qbwFLFHat&authKey=uyIT%2B97x2AXj3odyXpsSpVaPMC%2Bidw0LxG5MAtEqlrcBcWJUA%2FeS43rsF1Tg7IRJ&noverify=0&group_code=161281055) [![加入QQ群](https://img.shields.io/badge/已满-138988063-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=XIzkm_mV2xTsUtFxo63bmicYoDBA6Ifm&authKey=dDW%2F4qsmw3x9govoZY9w%2FoWAoC4wbHqGal%2BbqLzoS6VBarU8EBptIgPKN%2FviyC8j&noverify=0&group_code=138988063) [![加入QQ群](https://img.shields.io/badge/151450850-blue.svg)](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=DkugnCg68PevlycJSKSwjhFqfIgrWWwR&authKey=pR1Pa5lPIeGF%2FFtIk6d%2FGB5qFi0EdvyErtpQXULzo03zbhopBHLWcuqdpwY241R%2F&noverify=0&group_code=151450850) 点击按钮入群。
+### 2.1 验证码与短信
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/captchaImage` | 获取图形/数学验证码（返回 uuid、img base64） | 无 |
+| GET | `/common/sms/send` | 发送短信验证码（Query: phone） | 无 |
+
+### 2.2 文件与下载
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/profile/file/{id}` | 根据文件 ID 查看/下载文件（MySQL 存储） | 无 |
+| GET | `/common/download` | 通用文件下载（fileName, delete） | - |
+| GET | `/common/download/resource` | 本地资源下载（resource） | - |
+| POST | `/common/upload` | 单文件上传（存 MySQL） | - |
+| POST | `/common/uploads` | 多文件上传（存 MySQL） | - |
+
+---
+
+## 三、系统管理
+
+### 3.1 个人信息（/system/user/profile）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/system/user/profile` | 获取当前登录用户个人信息 | 需登录 |
+| PUT | `/system/user/profile` | 修改个人信息（昵称、邮箱、手机、性别） | 需登录 |
+| PUT | `/system/user/profile/updatePwd` | 修改密码（oldPassword, newPassword） | 需登录 |
+| POST | `/system/user/profile/avatar` | 上传头像（avatarfile） | 需登录 |
+
+### 3.2 仪表盘（/system/dashboard）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/system/dashboard/data` | 仪表盘数据（用户总数、积分发放量、待发货订单、今日核销数） | - |
+
+### 3.3 通知公告（/system/notice）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/system/notice/list` | 分页查询通知公告列表 | system:notice:list |
+| GET | `/system/notice/{noticeId}` | 根据 ID 获取公告详情 | system:notice:query |
+| POST | `/system/notice` | 新增通知公告 | system:notice:add |
+| PUT | `/system/notice` | 修改通知公告 | system:notice:edit |
+| DELETE | `/system/notice/{noticeIds}` | 删除通知公告（支持多 ID） | system:notice:remove |
+
+---
+
+## 四、系统监控
+
+### 4.1 在线用户（/monitor/online）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/monitor/online/list` | 在线用户列表（可选 ipaddr、userName） | monitor:online:list |
+| DELETE | `/monitor/online/{tokenId}` | 强退指定用户 | monitor:online:forceLogout |
+
+### 4.2 操作日志（/monitor/operlog）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/monitor/operlog/list` | 分页查询操作日志 | monitor:operlog:list |
+| POST | `/monitor/operlog/export` | 导出操作日志 Excel | monitor:operlog:export |
+| DELETE | `/monitor/operlog/{operIds}` | 删除操作日志 | monitor:operlog:remove |
+| DELETE | `/monitor/operlog/clean` | 清空操作日志 | monitor:operlog:remove |
+
+### 4.3 登录日志（/monitor/logininfor）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/monitor/logininfor/list` | 分页查询登录日志 | monitor:logininfor:list |
+| POST | `/monitor/logininfor/export` | 导出登录日志 Excel | monitor:logininfor:export |
+| DELETE | `/monitor/logininfor/{infoIds}` | 删除登录日志 | monitor:logininfor:remove |
+| DELETE | `/monitor/logininfor/clean` | 清空登录日志 | monitor:logininfor:remove |
+| GET | `/monitor/logininfor/unlock/{userName}` | 解锁指定用户账户 | monitor:logininfor:unlock |
+
+### 4.4 服务器监控（/monitor/server）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/monitor/server` | 获取服务器信息（CPU、内存、磁盘等） | monitor:server:list |
+
+---
+
+## 五、商城业务（Mall）- 管理端
+
+### 5.1 抽奖（/mall/lottery）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/mall/lottery/config` | 获取当前抽奖配置 | mall:lottery:config |
+| POST | `/mall/lottery/config` | 保存抽奖配置 | mall:lottery:config |
+| GET | `/mall/lottery/record/page` | 分页查询抽奖记录 | mall:lottery:record |
+
+### 5.2 商品券（/mall/coupon）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/mall/coupon/page` | 分页查询商品券 | mall:coupon:index |
+| GET | `/mall/coupon/{id}` | 根据 ID 查询商品券 | mall:coupon:get |
+| POST | `/mall/coupon` | 新增商品券 | mall:coupon:add |
+| PUT | `/mall/coupon` | 修改商品券 | mall:coupon:edit |
+| DELETE | `/mall/coupon/{id}` | 删除商品券 | mall:coupon:del |
+
+### 5.3 积分规则（/integralrule）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/integralrule/page` | 分页查询积分规则 | mall:integralrule:index |
+| GET | `/integralrule/{id}` | 根据 ID 查询积分规则 | mall:integralrule:get |
+| POST | `/integralrule` | 新增积分规则 | mall:integralrule:add |
+| PUT | `/integralrule` | 修改积分规则 | mall:integralrule:edit |
+| DELETE | `/integralrule/{id}` | 删除积分规则 | mall:integralrule:del |
+
+### 5.4 订单（/orderinfo）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/orderinfo/page` | 分页查询订单 | mall:orderinfo:index |
+| GET | `/orderinfo/count` | 按条件统计订单数量 | - |
+| GET | `/orderinfo/{id}` | 订单详情（含物流、用户信息） | mall:orderinfo:get |
+| POST | `/orderinfo` | 新增订单 | mall:orderinfo:add |
+| PUT | `/orderinfo` | 修改订单 | mall:orderinfo:edit |
+| DELETE | `/orderinfo/{id}` | 删除订单 | mall:orderinfo:del |
+| PUT | `/orderinfo/cancel/{id}` | 取消订单（仅未支付） | mall:orderinfo:edit |
+| PUT | `/orderinfo/doOrderRefunds` | 操作退款（RequestBody: OrderItem） | mall:orderinfo:edit |
+
+### 5.5 会员（/mall/member）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/mall/member/page` | 分页查询会员 | mall:member:index |
+| GET | `/mall/member/{id}` | 根据 ID 查询会员 | mall:member:get |
+| POST | `/mall/member` | 新增会员 | mall:member:add |
+| PUT | `/mall/member` | 修改会员 | mall:member:edit |
+| DELETE | `/mall/member/{id}` | 删除会员 | mall:member:del |
+
+### 5.6 购物车（/shoppingcart）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/shoppingcart/page` | 分页查询购物车 | mall:shoppingcart:index |
+| GET | `/shoppingcart/{id}` | 根据 ID 查询购物车 | mall:shoppingcart:get |
+| POST | `/shoppingcart` | 新增购物车 | mall:shoppingcart:add |
+| PUT | `/shoppingcart` | 修改购物车 | mall:shoppingcart:edit |
+| DELETE | `/shoppingcart/{id}` | 删除购物车 | mall:shoppingcart:del |
+
+### 5.7 用户收货地址（/useraddress）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/useraddress/page` | 分页查询用户地址 | mall:useraddress:index |
+| GET | `/useraddress/{id}` | 根据 ID 查询地址 | mall:useraddress:get |
+| POST | `/useraddress` | 新增用户地址 | mall:useraddress:add |
+| PUT | `/useraddress` | 修改用户地址 | mall:useraddress:edit |
+| DELETE | `/useraddress/{id}` | 删除用户地址 | mall:useraddress:del |
+
+### 5.8 SPU 商品（/goodsspu）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/goodsspu/page` | 分页查询 SPU 商品 | mall:goodsspu:index |
+| GET | `/goodsspu/list` | 列表查询（id、name 等简易字段） | - |
+| GET | `/goodsspu/count` | 按条件统计商品数量 | - |
+| GET | `/goodsspu/{id}` | 根据 ID 查询 SPU 详情 | mall:goodsspu:get |
+| POST | `/goodsspu` | 新增 SPU 商品 | mall:goodsspu:add |
+| PUT | `/goodsspu` | 修改 SPU 商品 | mall:goodsspu:edit |
+| PUT | `/goodsspu/shelf` | 商品上下架（shelf, ids） | mall:goodsspu:edit |
+| DELETE | `/goodsspu/{id}` | 删除 SPU 商品 | mall:goodsspu:del |
+
+### 5.9 商品类目（/goodscategory）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/goodscategory/page` | 分页查询商品类目 | mall:goodscategory:index |
+| GET | `/goodscategory/tree` | 获取类目树形结构 | mall:goodscategory:index |
+| GET | `/goodscategory/{id}` | 根据 ID 查询类目 | mall:goodscategory:get |
+| POST | `/goodscategory` | 新增商品类目 | mall:goodscategory:add |
+| PUT | `/goodscategory` | 修改商品类目 | mall:goodscategory:edit |
+| DELETE | `/goodscategory/{id}` | 删除商品类目 | mall:goodscategory:del |
+
+### 5.10 订单物流（/orderlogistics）
+
+| 方法 | 路径 | 说明 | 权限 |
+|------|------|------|------|
+| GET | `/orderlogistics/page` | 分页查询订单物流 | mall:orderlogistics:index |
+| GET | `/orderlogistics/{id}` | 根据 ID 查询物流 | mall:orderlogistics:get |
+| POST | `/orderlogistics` | 新增订单物流 | mall:orderlogistics:add |
+| PUT | `/orderlogistics` | 修改订单物流 | mall:orderlogistics:edit |
+| DELETE | `/orderlogistics/{id}` | 删除订单物流 | mall:orderlogistics:del |
+| GET | `/orderlogistics/dict/{type}` | 获取物流相关枚举字典 | - |
+
+---
+
+# 第二部分：移动端（小程序 / Android / iOS）接口
+
+以下为 **移动端**（小程序、Android、iOS）共用的接口，路径均相对于 basePath（如 `http://localhost:7500`）。  
+当前文档以小程序项目 **dingyangmall-wx-ma** 的调用为准，**Android、iOS App** 对接同一套路径与协议即可。  
+小程序请求会带 `app-id`；用户登录后各端带统一登录态（如小程序 `third-session`、App 端 Token 等）。
+
+---
+
+## 一、认证与用户
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 1 | 小程序登录 | POST | `/weixin/api/ma/wxuser/login` | App.vue 静默登录、商家相关 | 入参含 jsCode 等 |
+| 2 | 微信用户新增 | POST | `/weixin/api/ma/wxuser` | 用户信息完善 | |
+| 3 | 会员信息查询 | GET | `/app/member/info` | 个人中心、订单等 | 需登录态 |
+| 4 | 每日签到 | POST | `/app/member/sign-in` | 我的-每日签到 | |
+| 5 | 发送短信验证码 | GET | `/app/member/send-sms-code` | 积分红包等 | Query: phone |
+| 6 | 发送积分红包 | POST | `/app/member/send-packet` | 积分红包页 | |
+
+---
+
+## 二、商品与分类
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 7 | 商品分类树 | GET | `/weixin/api/ma/goodscategory/tree` | 首页宫格、分类页 | |
+| 8 | 商品分页列表 | GET | `/weixin/api/ma/goodsspu/page` | 首页、商品列表、搜索 | current, size, categorySecond, keyword, hot 等 |
+| 9 | 商品详情 | GET | `/weixin/api/ma/goodsspu/{id}` | 商品详情页 | 路径参数 id |
+
+---
+
+## 三、公告（可选）
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 10 | 公告列表 | GET | `/weixin/api/ma/notice/list` | 首页公告轮播 | 无此接口时首页不展示公告 |
+
+---
+
+## 四、购物车
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 11 | 购物车分页 | GET | `/weixin/api/ma/shoppingcart/page` | 购物车页 | |
+| 12 | 购物车新增 | POST | `/weixin/api/ma/shoppingcart` | 商品详情加购 | |
+| 13 | 购物车修改 | PUT | `/weixin/api/ma/shoppingcart` | 购物车改数量等 | |
+| 14 | 购物车删除 | POST | `/weixin/api/ma/shoppingcart/del` | 购物车删除 | |
+| 15 | 购物车数量 | GET | `/weixin/api/ma/shoppingcart/count` | TabBar 角标、个人中心等 | |
+
+---
+
+## 五、订单
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 16 | 订单提交 | POST | `/weixin/api/ma/orderinfo` | 确认订单页 | |
+| 17 | 订单分页 | GET | `/weixin/api/ma/orderinfo/page` | 订单列表 | status, current, size |
+| 18 | 订单详情 | GET | `/weixin/api/ma/orderinfo/{id}` | 订单详情页 | |
+| 19 | 订单取消 | PUT | `/weixin/api/ma/orderinfo/cancel/{id}` | 订单详情 | |
+| 20 | 申请退款 | POST | `/weixin/api/ma/orderinfo/refunds` | 申请退款页 | |
+| 21 | 确认收货 | PUT | `/weixin/api/ma/orderinfo/receive/{id}` | 订单详情 | |
+| 22 | 订单物流 | GET | `/weixin/api/ma/orderinfo/logistics/{id}` | 物流信息页 | |
+| 23 | 订单删除 | DELETE | `/weixin/api/ma/orderinfo/{id}` | 订单列表/详情 | |
+| 24 | 订单各状态数量 | GET | `/weixin/api/ma/orderinfo/countAll` | 个人中心角标等 | 可带状态 |
+| 25 | 统一下单(支付) | POST | `/weixin/api/ma/orderinfo/unifiedOrder` | 确认订单支付 | |
+
+---
+
+## 六、收货地址
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 26 | 地址分页 | GET | `/weixin/api/ma/useraddress/page` | 收货地址列表 | |
+| 27 | 地址新增 | POST | `/weixin/api/ma/useraddress` | 编辑地址页 | |
+| 28 | 地址删除 | DELETE | `/weixin/api/ma/useraddress/{id}` | 地址列表 | |
+
+---
+
+## 七、优惠券
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 29 | 我的优惠券 | GET | `/app/coupon/my` | 我的优惠券页 | Query: status |
+
+---
+
+## 八、抽奖
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 30 | 抽奖配置 | GET | `/app/lottery/config` | 积分抽奖页 | |
+| 31 | 抽奖 | POST | `/app/lottery/draw` | 积分抽奖页 | |
+| 32 | 抽奖记录 | GET | `/app/lottery/record` | 积分抽奖页 | |
+
+---
+
+## 九、商家端（需商家 Token）
+
+| 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
+|------|----------|------|------|------------|------|
+| 33 | 图形验证码 | GET | `/captchaImage` | 商家登录页 | 与管理端共用 |
+| 34 | 商家登录 | POST | `/login` | 商家登录页 | 与小程序用户登录不同 |
+| 35 | 扫码用户 | GET | `/api/mall/merchant/scan/user/{code}` | 商家扫码 | Header: Authorization |
+| 36 | 赠送积分 | POST | `/api/mall/merchant/scan/points` | 商家扫码 | |
+| 37 | 核销优惠券 | POST | `/api/mall/merchant/scan/coupon/verify` | 商家核销 | |
+
+---
+
+# 第三部分：接口对照与通用说明
+
+## 管理端 vs 移动端路径对照（同业务）
+
+| 业务 | 管理端路径 | 移动端路径 |
+|------|------------|------------|
+| 商品分类树 | `/goodscategory/tree` | `/weixin/api/ma/goodscategory/tree` |
+| 商品分页 | `/goodsspu/page` | `/weixin/api/ma/goodsspu/page` |
+| 商品详情 | `/goodsspu/{id}` | `/weixin/api/ma/goodsspu/{id}` |
+| 购物车 | `/shoppingcart/*` | `/weixin/api/ma/shoppingcart/*` |
+| 订单 | `/orderinfo/*` | `/weixin/api/ma/orderinfo/*` |
+| 收货地址 | `/useraddress/*` | `/weixin/api/ma/useraddress/*` |
+| 抽奖配置 | `/mall/lottery/config` | `/app/lottery/config` |
+| 短信验证码 | `/common/sms/send` | `/app/member/send-sms-code` |
+| 验证码图片 | `/captchaImage` | 商家端共用 `/captchaImage` |
+
+移动端（小程序、Android、iOS）在部分能力上会多出：登录/会员、签到、积分红包、公告、优惠券、抽奖 draw/record、统一下单、确认收货、申请退款、物流查询、购物车 count、订单 countAll 等，需后端提供对应接口或与现有管理端接口对齐。
+
+---
+
+## 第三方服务配置（短信与快递查询）
+
+### 一、腾讯云短信（验证码）
+
+- **用途**：发送短信验证码（登录、注册、积分红包等）。
+- **实现**：`dingyangmall-framework` 中 `SmsService`，未配置或未启用时仅将验证码写入 Redis（模拟发送，不真实发短信）。
+- **配置**：在 `application.yml` 或环境变量中配置以下项（均以 `tencent.sms` 为前缀）：
+
+| 配置项 | 说明 | 环境变量示例 |
+|--------|------|--------------|
+| enabled | 是否启用腾讯云发送，false 时仅模拟 | TENCENT_SMS_ENABLED |
+| secret-id | 腾讯云 CAM SecretId | TENCENT_SMS_SECRET_ID |
+| secret-key | 腾讯云 CAM SecretKey | TENCENT_SMS_SECRET_KEY |
+| sms-sdk-app-id | 短信控制台「应用列表」中的 SdkAppId | TENCENT_SMS_SDK_APP_ID |
+| sign-name | 已审核通过的短信签名内容 | TENCENT_SMS_SIGN_NAME |
+| template-id | 验证码模板 ID（如：您的验证码为：{1}，5分钟内有效。） | TENCENT_SMS_TEMPLATE_ID |
+| region | 地域，默认 ap-guangzhou | - |
+
+- **相关接口**：管理端 `GET /common/sms/send?phone=xxx`；移动端 `GET /app/member/send-sms-code?phone=xxx`。
+
+### 二、快递100（Api100）物流查询
+
+- **用途**：订单物流详情接口的实时轨迹（移动端「物流信息」页）。
+- **实现**：`dingyangmall-mall` 中 `Kuaidi100QueryService`（实现类 `Kuaidi100QueryServiceImpl`），通过快递100实时查询接口拉取轨迹；未配置 key/customer 时仅返回本地订单物流信息，不调第三方。
+- **配置**：在 `application.yml` 的 `mall` 下或环境变量配置：
+
+| 配置项 | 说明 | 环境变量示例 |
+|--------|------|--------------|
+| kuaidi100-key | 快递100 授权 Key（签名用） | KUAIDI100_KEY |
+| kuaidi100-customer | 快递100 公司编号 Customer | KUAIDI100_CUSTOMER |
+
+- **获取方式**：在 [快递100 开放平台](https://api.kuaidi100.com) 注册并获取 Key、Customer。
+- **相关接口**：移动端 `GET /weixin/api/ma/orderinfo/logistics/{订单id}`，返回 `{ "logistics": 订单物流基本信息, "track": 实时轨迹(含 data 轨迹列表) }`。
+- **说明**：同一单号查询频率建议间隔 30 分钟以上，避免锁单。
+
+---
+
+## 通用说明
+
+### 请求与认证
+
+- **管理端**：除登录、注册、验证码、短信、首页、部分文件接口外，需在请求头携带 `Authorization: Bearer {token}`。
+- **移动端（小程序/Android/iOS）**：小程序请求带 `app-id`；用户登录后各端带统一登录态（如小程序 `third-session`、Android/iOS Token）。
+- **商家端**：请求带 `Authorization: Bearer {merchantToken}`。
+
+### 响应约定
+
+- 业务成功建议统一返回 **code: 200**，失败时前端会提示 `res.data.msg`。
+- **code: 60001** 时，前端会清 session 并重新拉取当前页（如登录态失效）。
+
+### 权限
+
+- 管理端表中“权限”列对应 `@PreAuthorize` 中的权限标识；未标注的接口可能仅需登录或为公开。
+- 分页接口一般支持 `pageNum`/`pageSize` 或 `current`/`size`，以实际实现为准。
+
+### 前端静态资源（仅小程序包内，不走后端；Android/iOS 使用原生或本地资源）
+
+| 路径 | 用途 |
+|------|------|
+| `static/tabbar/home.png` / `home-active.png` | 首页 Tab 未选/选中 |
+| `static/tabbar/category.png` / `category-active.png` | 分类 Tab |
+| `static/tabbar/user.png` / `user-active.png` | 我的 Tab |
+| `static/img/no_pic.png` | 商品/订单占位图 |
+| `static/img/5-1.png` ~ `5-4.png`、`7-1.png` 等 | 个人中心宫格图标 |
+| `static/img/shopping-cart.jpg` | 购物车空状态图 |
+
+图标建议：TabBar 81×81 px，单张 ≤ 40KB。
+
+---
+
+*文档合并自管理端 Controller 与移动端需求文档，若有 context-path 或 basePath 变更请同步更新。*

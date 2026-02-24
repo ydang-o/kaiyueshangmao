@@ -1,8 +1,6 @@
 
-.page.data-v-58e8e8cf { padding: 32rpx;
+.order-image.data-v-58e8e8cf { width: 80rpx; height: 80rpx;
 }
-.title.data-v-58e8e8cf { font-size: 36rpx; font-weight: 600; color: #333;
-}
-.tip.data-v-58e8e8cf { margin-top: 20rpx; color: #666; line-height: 1.8;
+.address-image.data-v-58e8e8cf { width: 80rpx; height: 80rpx; margin-right: 20rpx;
 }
 

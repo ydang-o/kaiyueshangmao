@@ -3,6 +3,7 @@ package com.dingyangmall.mall.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -55,6 +56,7 @@ public class TbIntegralRule extends Model<TbIntegralRule> {
     /**
      * 创建人
      */
+    @TableField(exist = false)
     private String createBy;
 
     /**
@@ -65,6 +67,7 @@ public class TbIntegralRule extends Model<TbIntegralRule> {
     /**
      * 更新人
      */
+    @TableField(exist = false)
     private String updateBy;
 
     /**

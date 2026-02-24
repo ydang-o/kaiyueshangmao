@@ -9570,191 +9570,7 @@ internalMixin(Vue);
 /* 27 */,
 /* 28 */,
 /* 29 */,
-/* 30 */,
-/* 31 */,
-/* 32 */
-/*!**********************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
-  \**********************************************************************************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return normalizeComponent; });
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-function normalizeComponent (
-  scriptExports,
-  render,
-  staticRenderFns,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier, /* server only */
-  shadowMode, /* vue-cli only */
-  components, // fixed by xxxxxx auto components
-  renderjs // fixed by xxxxxx renderjs
-) {
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // fixed by xxxxxx auto components
-  if (components) {
-    if (!options.components) {
-      options.components = {}
-    }
-    var hasOwn = Object.prototype.hasOwnProperty
-    for (var name in components) {
-      if (hasOwn.call(components, name) && !hasOwn.call(options.components, name)) {
-        options.components[name] = components[name]
-      }
-    }
-  }
-  // fixed by xxxxxx renderjs
-  if (renderjs) {
-    if(typeof renderjs.beforeCreate === 'function'){
-			renderjs.beforeCreate = [renderjs.beforeCreate]
-		}
-    (renderjs.beforeCreate || (renderjs.beforeCreate = [])).unshift(function() {
-      this[renderjs.__module] = this
-    });
-    (options.mixins || (options.mixins = [])).push(renderjs)
-  }
-
-  // render functions
-  if (render) {
-    options.render = render
-    options.staticRenderFns = staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = 'data-v-' + scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = shadowMode
-      ? function () { injectStyles.call(this, this.$root.$options.shadowRoot) }
-      : injectStyles
-  }
-
-  if (hook) {
-    if (options.functional) {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      var originalRender = options.render
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return originalRender(h, context)
-      }
-    } else {
-      // inject component registration as beforeCreate hook
-      var existing = options.beforeCreate
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    }
-  }
-
-  return {
-    exports: scriptExports,
-    options: options
-  }
-}
-
-
-/***/ }),
-/* 33 */,
-/* 34 */,
-/* 35 */,
-/* 36 */,
-/* 37 */,
-/* 38 */,
-/* 39 */,
-/* 40 */,
-/* 41 */,
-/* 42 */,
-/* 43 */,
-/* 44 */,
-/* 45 */,
-/* 46 */,
-/* 47 */,
-/* 48 */,
-/* 49 */,
-/* 50 */,
-/* 51 */,
-/* 52 */,
-/* 53 */,
-/* 54 */,
-/* 55 */,
-/* 56 */,
-/* 57 */,
-/* 58 */,
-/* 59 */,
-/* 60 */,
-/* 61 */,
-/* 62 */,
-/* 63 */,
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */,
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */,
-/* 78 */,
-/* 79 */,
-/* 80 */,
-/* 81 */,
-/* 82 */,
-/* 83 */,
-/* 84 */
+/* 30 */
 /*!***************************************************************************!*\
   !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/api.js ***!
   \***************************************************************************/
@@ -9765,9 +9581,16 @@ function normalizeComponent (
 /* WEBPACK VAR INJECTION */(function(wx) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
-var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
-var _env = _interopRequireDefault(__webpack_require__(/*! ../config/env */ 85));
-var _module$exports;
+var _env = _interopRequireDefault(__webpack_require__(/*! ../config/env */ 31));
+/**
+ * Copyright (C) 2018-2019
+ * All rights reserved, Designed By www.dingyangmall.com
+ * 注意：
+ * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
+ *
+ * 所有请求的根地址均来自 config/env.js 的 basePath（端口 7500），勿在别处写死端口或域名。
+ */
+
 var request = function request(url, method, data, showLoading) {
   var _url = _env.default.basePath + url;
   return new Promise(function (resolve, reject) {
@@ -9898,7 +9721,7 @@ var merchantRequest = function merchantRequest(url, method, data, showLoading) {
     });
   });
 };
-module.exports = (_module$exports = {
+module.exports = {
   request: request,
   merchantRequest: merchantRequest,
   login: function login(data) {
@@ -9942,6 +9765,10 @@ module.exports = (_module$exports = {
   goodsCategoryGet: function goodsCategoryGet(data) {
     //商品分类查询
     return request('/weixin/api/ma/goodscategory/tree', 'get', data, true);
+  },
+  // 首页公告列表（若后端有该接口则返回数组，无则前端不展示公告）
+  getNoticeList: function getNoticeList() {
+    return request('/weixin/api/ma/notice/list', 'get', null, false);
   },
   goodsPage: function goodsPage(data) {
     //商品列表
@@ -10049,28 +9876,11 @@ module.exports = (_module$exports = {
     //用户收货地址删除
     return request('/weixin/api/ma/useraddress/' + id, 'delete', null, false);
   }
-}, (0, _defineProperty2.default)(_module$exports, "sendPacket", function sendPacket(data) {
-  //发送积分红包
-  return request('/app/member/send-packet', 'post', data, true);
-}), (0, _defineProperty2.default)(_module$exports, "sendSmsCode", function sendSmsCode(phone) {
-  //发送验证码
-  return request('/app/member/send-sms-code?phone=' + phone, 'get', null, false);
-}), (0, _defineProperty2.default)(_module$exports, "merchantLogin", function merchantLogin(data) {
-  return request('/login', 'post', data, true); // Login uses standard request but path is /login, wait, request uses basePath. basePath is localhost:8080/weixin/api/ma? No, basePath is http://localhost:8080.
-  // Let's check env.js for basePath.
-}), (0, _defineProperty2.default)(_module$exports, "getCaptcha", function getCaptcha() {
-  return request('/captchaImage', 'get', null, false);
-}), (0, _defineProperty2.default)(_module$exports, "merchantScanUser", function merchantScanUser(code) {
-  return merchantRequest('/api/mall/merchant/scan/user/' + code, 'get', null, true);
-}), (0, _defineProperty2.default)(_module$exports, "merchantGivePoints", function merchantGivePoints(data) {
-  return merchantRequest('/api/mall/merchant/scan/points', 'post', data, true);
-}), (0, _defineProperty2.default)(_module$exports, "merchantVerifyCoupon", function merchantVerifyCoupon(data) {
-  return merchantRequest('/api/mall/merchant/scan/coupon/verify', 'post', data, true);
-}), _module$exports);
+};
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
-/* 85 */
+/* 31 */
 /*!****************************************************************************!*\
   !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/config/env.js ***!
   \****************************************************************************/
@@ -10089,9 +9899,11 @@ exports.default = void 0;
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
+ *
+ * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath，端口与后端一致（7500）。
  */
 var _default = {
-  //服务器地址，即后台服务的访问地址；本地开发填http://localhost:7500即可，正式服务器环境https://后台地址/prod-api；如果要用真机调试要把localhost换成局域网ip，手机和电脑要处于同一局域网中
+  // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
   basePath: 'http://localhost:7500',
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame
   //广告开关（true/false）
@@ -10102,6 +9914,565 @@ var _default = {
   adInsertScreenID: 'adunit-2de35a3c8ce17ce8',
   //激励式广告ID
   adIncentiveID: 'adunit-c4029aba1e16094b'
+};
+exports.default = _default;
+
+/***/ }),
+/* 32 */,
+/* 33 */,
+/* 34 */
+/*!**********************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js ***!
+  \**********************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return normalizeComponent; });
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+function normalizeComponent (
+  scriptExports,
+  render,
+  staticRenderFns,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier, /* server only */
+  shadowMode, /* vue-cli only */
+  components, // fixed by xxxxxx auto components
+  renderjs // fixed by xxxxxx renderjs
+) {
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // fixed by xxxxxx auto components
+  if (components) {
+    if (!options.components) {
+      options.components = {}
+    }
+    var hasOwn = Object.prototype.hasOwnProperty
+    for (var name in components) {
+      if (hasOwn.call(components, name) && !hasOwn.call(options.components, name)) {
+        options.components[name] = components[name]
+      }
+    }
+  }
+  // fixed by xxxxxx renderjs
+  if (renderjs) {
+    if(typeof renderjs.beforeCreate === 'function'){
+			renderjs.beforeCreate = [renderjs.beforeCreate]
+		}
+    (renderjs.beforeCreate || (renderjs.beforeCreate = [])).unshift(function() {
+      this[renderjs.__module] = this
+    });
+    (options.mixins || (options.mixins = [])).push(renderjs)
+  }
+
+  // render functions
+  if (render) {
+    options.render = render
+    options.staticRenderFns = staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = 'data-v-' + scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = shadowMode
+      ? function () { injectStyles.call(this, this.$root.$options.shadowRoot) }
+      : injectStyles
+  }
+
+  if (hook) {
+    if (options.functional) {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      var originalRender = options.render
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return originalRender(h, context)
+      }
+    } else {
+      // inject component registration as beforeCreate hook
+      var existing = options.beforeCreate
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    }
+  }
+
+  return {
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 35 */,
+/* 36 */,
+/* 37 */,
+/* 38 */,
+/* 39 */,
+/* 40 */,
+/* 41 */,
+/* 42 */,
+/* 43 */,
+/* 44 */,
+/* 45 */,
+/* 46 */,
+/* 47 */,
+/* 48 */,
+/* 49 */,
+/* 50 */,
+/* 51 */,
+/* 52 */,
+/* 53 */,
+/* 54 */,
+/* 55 */,
+/* 56 */,
+/* 57 */,
+/* 58 */,
+/* 59 */,
+/* 60 */,
+/* 61 */,
+/* 62 */,
+/* 63 */,
+/* 64 */,
+/* 65 */
+/*!****************************************************************************!*\
+  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/util.js ***!
+  \****************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/**
+ * Copyright (C) 2018-2019
+ * All rights reserved, Designed By www.dingyangmall.com
+ * 注意：
+ * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
+ */
+var validate = __webpack_require__(/*! ./validate.js */ 66);
+var formatTime = function formatTime(date) {
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+  var day = date.getDate();
+  var hour = date.getHours();
+  var minute = date.getMinutes();
+  var second = date.getSeconds();
+  return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':');
+};
+var formatNumber = function formatNumber(n) {
+  n = n.toString();
+  return n[1] ? n : '0' + n;
+};
+
+//空值过滤器
+var filterForm = function filterForm(form) {
+  var obj = {};
+  Object.keys(form).forEach(function (ele) {
+    if (!validate.validatenull(form[ele])) {
+      obj[ele] = form[ele];
+    }
+  });
+  return obj;
+};
+module.exports = {
+  formatTime: formatTime,
+  formatNumber: formatNumber,
+  filterForm: filterForm
+};
+
+/***/ }),
+/* 66 */
+/*!********************************************************************************!*\
+  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/validate.js ***!
+  \********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.cardid = cardid;
+exports.isEmail = isEmail;
+exports.isMobile = isMobile;
+exports.isPhone = isPhone;
+exports.isURL = isURL;
+exports.isvalidUsername = isvalidUsername;
+exports.isvalidatemobile = isvalidatemobile;
+exports.vaildatePc = void 0;
+exports.validatAlphabets = validatAlphabets;
+exports.validateEmail = validateEmail;
+exports.validateLowerCase = validateLowerCase;
+exports.validateURL = validateURL;
+exports.validateUpperCase = validateUpperCase;
+exports.validatename = validatename;
+exports.validatenull = validatenull;
+exports.validatenum = validatenum;
+exports.validatenumord = validatenumord;
+/**
+ * 邮箱
+ * @param {*} s
+ */
+function isEmail(s) {
+  return /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((.[a-zA-Z0-9_-]{2,3}){1,2})$/.test(s);
+}
+
+/**
+ * 手机号码
+ * @param {*} s
+ */
+function isMobile(s) {
+  return /^1[0-9]{10}$/.test(s);
+}
+
+/**
+ * 电话号码
+ * @param {*} s
+ */
+function isPhone(s) {
+  return /^([0-9]{3,4}-)?[0-9]{7,8}$/.test(s);
+}
+
+/**
+ * URL地址
+ * @param {*} s
+ */
+function isURL(s) {
+  return /^http[s]?:\/\/.*/.test(s);
+}
+function isvalidUsername(str) {
+  var valid_map = ['admin', 'editor'];
+  return valid_map.indexOf(str.trim()) >= 0;
+}
+
+/* 合法uri */
+function validateURL(textval) {
+  var urlregex = /^(https?|ftp):\/\/([a-zA-Z0-9.-]+(:[a-zA-Z0-9.&%$-]+)*@)*((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}|([a-zA-Z0-9-]+\.)*[a-zA-Z0-9-]+\.(com|edu|gov|int|mil|net|org|biz|arpa|info|name|pro|aero|coop|museum|[a-zA-Z]{2}))(:[0-9]+)*(\/($|[a-zA-Z0-9.,?'\\+&%$#=~_-]+))*$/;
+  return urlregex.test(textval);
+}
+
+/* 小写字母 */
+function validateLowerCase(str) {
+  var reg = /^[a-z]+$/;
+  return reg.test(str);
+}
+
+/* 大写字母 */
+function validateUpperCase(str) {
+  var reg = /^[A-Z]+$/;
+  return reg.test(str);
+}
+
+/* 大小写字母 */
+function validatAlphabets(str) {
+  var reg = /^[A-Za-z]+$/;
+  return reg.test(str);
+}
+
+/* 验证pad还是pc */
+var vaildatePc = function vaildatePc() {
+  var userAgentInfo = navigator.userAgent;
+  var Agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod'];
+  var flag = true;
+  for (var v = 0; v < Agents.length; v++) {
+    if (userAgentInfo.indexOf(Agents[v]) > 0) {
+      flag = false;
+      break;
+    }
+  }
+  return flag;
+};
+
+/**
+ * validate email
+ * @param email
+ * @returns {boolean}
+ */
+exports.vaildatePc = vaildatePc;
+function validateEmail(email) {
+  var re = /^(([^<>()\\[\]\\.,;:\s@"]+(\.[^<>()\\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+
+/**
+ * 判断身份证号码
+ */
+function cardid(code) {
+  var list = [];
+  var result = true;
+  var msg = '';
+  var city = {
+    11: '北京',
+    12: '天津',
+    13: '河北',
+    14: '山西',
+    15: '内蒙古',
+    21: '辽宁',
+    22: '吉林',
+    23: '黑龙江 ',
+    31: '上海',
+    32: '江苏',
+    33: '浙江',
+    34: '安徽',
+    35: '福建',
+    36: '江西',
+    37: '山东',
+    41: '河南',
+    42: '湖北 ',
+    43: '湖南',
+    44: '广东',
+    45: '广西',
+    46: '海南',
+    50: '重庆',
+    51: '四川',
+    52: '贵州',
+    53: '云南',
+    54: '西藏 ',
+    61: '陕西',
+    62: '甘肃',
+    63: '青海',
+    64: '宁夏',
+    65: '新疆',
+    71: '台湾',
+    81: '香港',
+    82: '澳门',
+    91: '国外 '
+  };
+  if (!validatenull(code)) {
+    if (code.length == 18) {
+      if (!code || !/(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(code)) {
+        msg = '证件号码格式错误';
+      } else if (!city[code.substr(0, 2)]) {
+        msg = '地址编码错误';
+      } else {
+        // 18位身份证需要验证最后一位校验位
+        code = code.split('');
+        // ∑(ai×Wi)(mod 11)
+        // 加权因子
+        var factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+        // 校验位
+        var parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2, 'x'];
+        var sum = 0;
+        var ai = 0;
+        var wi = 0;
+        for (var i = 0; i < 17; i++) {
+          ai = code[i];
+          wi = factor[i];
+          sum += ai * wi;
+        }
+        if (parity[sum % 11] != code[17]) {
+          msg = '证件号码校验位错误';
+        } else {
+          result = false;
+        }
+      }
+    } else {
+      msg = '证件号码长度不为18位';
+    }
+  } else {
+    msg = '证件号码不能为空';
+  }
+  list.push(result);
+  list.push(msg);
+  return list;
+}
+
+/**
+ * 判断手机号码是否正确
+ */
+function isvalidatemobile(phone) {
+  var list = [];
+  var result = true;
+  var msg = '';
+  var isPhone = /^0\d{2,3}-?\d{7,8}$/;
+  // 增加134 减少|1349[0-9]{7}，增加181,增加145，增加17[678]
+  if (!validatenull(phone)) {
+    if (phone.length == 11) {
+      if (isPhone.test(phone)) {
+        msg = '手机号码格式不正确';
+      } else {
+        result = false;
+      }
+    } else {
+      msg = '手机号码长度不为11位';
+    }
+  } else {
+    msg = '手机号码不能为空';
+  }
+  list.push(result);
+  list.push(msg);
+  return list;
+}
+
+/**
+ * 判断姓名是否正确
+ */
+function validatename(name) {
+  var regName = /^[\u4e00-\u9fa5]{2,4}$/;
+  if (!regName.test(name)) return false;
+  return true;
+}
+
+/**
+ * 判断是否为整数
+ */
+function validatenum(num, type) {
+  var regName = /[^\d.]/g;
+  if (type == 1) {
+    if (!regName.test(num)) return false;
+  } else if (type == 2) {
+    regName = /[^\d]/g;
+    if (!regName.test(num)) return false;
+  }
+  return true;
+}
+
+/**
+ * 判断是否为小数
+ */
+function validatenumord(num, type) {
+  var regName = /[^\d.]/g;
+  if (type == 1) {
+    if (!regName.test(num)) return false;
+  } else if (type == 2) {
+    regName = /[^\d.]/g;
+    if (!regName.test(num)) return false;
+  }
+  return true;
+}
+
+/**
+ * 判断是否为空
+ */
+function validatenull(val) {
+  if (typeof val === 'boolean') {
+    return false;
+  }
+  if (typeof val === 'number') {
+    return false;
+  }
+  if (val instanceof Array) {
+    if (val.length == 0) return true;
+  } else if (val instanceof Object) {
+    if (JSON.stringify(val) === '{}') return true;
+  } else {
+    if (val == 'null' || val == null || val == 'undefined' || val == undefined || val == '') return true;
+    return false;
+  }
+  return false;
+}
+module.exports = {
+  validatenull: validatenull
+};
+
+/***/ }),
+/* 67 */,
+/* 68 */,
+/* 69 */,
+/* 70 */,
+/* 71 */,
+/* 72 */,
+/* 73 */,
+/* 74 */,
+/* 75 */,
+/* 76 */,
+/* 77 */,
+/* 78 */,
+/* 79 */,
+/* 80 */,
+/* 81 */,
+/* 82 */,
+/* 83 */,
+/* 84 */,
+/* 85 */,
+/* 86 */,
+/* 87 */,
+/* 88 */,
+/* 89 */,
+/* 90 */,
+/* 91 */
+/*!**********************************************************************************!*\
+  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/numberUtil.js ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+exports.numberAddition = numberAddition;
+exports.numberFormat = numberFormat;
+exports.numberSubtract = numberSubtract;
+/**
+ * Copyright (C) 2018-2019
+ * 数字工具
+ */
+function numberFormat(value, num) {
+  return parseFloat(Number(value).toFixed(num));
+}
+function numberSubtract(value1, value2) {
+  var v = parseFloat(value1) - parseFloat(value2);
+  return parseFloat(v.toFixed(2));
+}
+function numberAddition(value1, value2) {
+  var v = parseFloat(value1) + parseFloat(value2);
+  return parseFloat(v.toFixed(2));
+}
+var _default = {
+  numberFormat: numberFormat,
+  numberSubtract: numberSubtract,
+  numberAddition: numberAddition
 };
 exports.default = _default;
 

@@ -1,0 +1,12 @@
+
+.margin-bottom-bar.data-v-0ad5ef8d { margin-bottom: 120rpx;
+}
+.mar-top-30.data-v-0ad5ef8d { margin-top: 30rpx;
+}
+.row-img.data-v-0ad5ef8d { width: 200rpx; height: 200rpx; border-radius: 10rpx;
+}
+.row-info.data-v-0ad5ef8d { flex: 1; margin-left: 20rpx;
+}
+.loc-info.data-v-0ad5ef8d { min-height: 40rpx;
+}
+
