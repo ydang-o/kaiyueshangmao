@@ -144,6 +144,7 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 65));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 //
 //
 //
@@ -192,12 +193,12 @@ var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 65));
 //
 var GoodsCardIndex = function GoodsCardIndex() {
   __webpack_require__.e(/*! require.ensure | components/goods-card-index/index */ "components/goods-card-index/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 190));
+    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 198));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var GoodsRow = function GoodsRow() {
   __webpack_require__.e(/*! require.ensure | components/goods-row/index */ "components/goods-row/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/goods-row/index.vue */ 197));
+    return resolve(__webpack_require__(/*! @/components/goods-row/index.vue */ 212));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -252,7 +253,10 @@ var _default = {
   methods: {
     goodsPage: function goodsPage() {
       var _this2 = this;
-      getApp().api.goodsPage(Object.assign({}, this.page, _util.default.filterForm(this.parameter))).then(function (res) {
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.goodsPage !== 'function') return;
+      api.goodsPage(Object.assign({}, this.page, _util.default.filterForm(this.parameter))).then(function (res) {
         var list = res.data && res.data.records || [];
         _this2.goodsList = [].concat((0, _toConsumableArray2.default)(_this2.goodsList), (0, _toConsumableArray2.default)(list));
         if (list.length < _this2.page.size) _this2.loadmore = false;

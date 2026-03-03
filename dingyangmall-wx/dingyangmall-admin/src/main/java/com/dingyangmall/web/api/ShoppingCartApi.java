@@ -27,7 +27,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/weixin/api/ma/shoppingcart")
+@RequestMapping(value = { "/weixin/api/ma/shoppingcart", "/api/ma/shoppingcart" })
 public class ShoppingCartApi {
 
     private final ShoppingCartService shoppingCartService;

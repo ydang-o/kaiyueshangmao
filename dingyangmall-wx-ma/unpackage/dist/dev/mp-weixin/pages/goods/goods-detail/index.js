@@ -102,14 +102,30 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
+  var l0 = _vm.goodsSpu
+    ? _vm.__map(_vm.goodsSpu.picUrls || [], function (pic, i) {
+        var $orig = _vm.__get_orig(pic)
+        var m0 = _vm.$imgUrl(pic)
+        return {
+          $orig: $orig,
+          m0: m0,
+        }
+      })
+    : null
   var g0 = _vm.goodsSpu
     ? (_vm.goodsSpu.picUrls && _vm.goodsSpu.picUrls.length) || 1
     : null
+  var m1 =
+    _vm.$imgUrl(
+      _vm.goodsSpu && _vm.goodsSpu.picUrls && _vm.goodsSpu.picUrls[0]
+    ) || "/static/img/no_pic.png"
   _vm.$mp.data = Object.assign(
     {},
     {
       $root: {
+        l0: l0,
         g0: g0,
+        m1: m1,
       },
     }
   )
@@ -148,10 +164,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 //
 //
 //
@@ -249,7 +267,7 @@ var _default = {
       currents: 1,
       cartNum: 1,
       shoppingCartCount: 0,
-      shareShow: ''
+      shareModalVisible: ''
     };
   },
   onLoad: function onLoad(options) {
@@ -266,14 +284,17 @@ var _default = {
     return {
       title: g ? g.name : '',
       path: 'pages/goods/goods-detail/index?id=' + (g ? g.id : this.id),
-      imageUrl: g && g.picUrls && g.picUrls[0] ? g.picUrls[0] : ''
+      imageUrl: g && g.picUrls && g.picUrls[0] ? this.$imgUrl(g.picUrls[0]) : ''
     };
   },
   methods: {
     goodsGet: function goodsGet(id) {
       var _this2 = this;
       if (!id) return;
-      getApp().api.goodsGet(id).then(function (res) {
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.goodsGet !== 'function') return;
+      api.goodsGet(id).then(function (res) {
         _this2.goodsSpu = res.data || null;
         _this2.currents = 1;
       });
@@ -283,17 +304,31 @@ var _default = {
     },
     shoppingCartCountFn: function shoppingCartCountFn() {
       var _this3 = this;
-      getApp().api.shoppingCartCount().then(function (res) {
-        _this3.shoppingCartCount = res.data;
-        getApp().globalData.shoppingCartCount = res.data + '';
-      });
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api;
+      if (api && typeof api.shoppingCartCount === 'function') {
+        api.shoppingCartCount().then(function (res) {
+          var count = res && res.data != null ? res.data : res && res.data !== undefined ? res.data : 0;
+          _this3.shoppingCartCount = count;
+          if (app && app.globalData) app.globalData.shoppingCartCount = count + '';
+        }).catch(function () {});
+      }
     },
     toDo: function toDo(type) {
       var _this4 = this;
       var goodsSpu = this.goodsSpu;
       if (!goodsSpu) return;
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api;
       if (type === 1) {
-        getApp().api.shoppingCartAdd({
+        if (!api || typeof api.shoppingCartAdd !== 'function') {
+          uni.showToast({
+            title: '功能暂不可用，请稍后重试',
+            icon: 'none'
+          });
+          return;
+        }
+        api.shoppingCartAdd({
           spuId: goodsSpu.id,
           quantity: this.cartNum,
           addPrice: goodsSpu.salesPrice,
@@ -304,6 +339,11 @@ var _default = {
             title: '添加成功'
           });
           _this4.shoppingCartCountFn();
+        }).catch(function () {
+          uni.showToast({
+            title: '加入购物车失败',
+            icon: 'none'
+          });
         });
       } else {
         if (goodsSpu.stock <= 0) {
@@ -329,10 +369,10 @@ var _default = {
       }
     },
     shareShow: function shareShow() {
-      this.shareShow = 'show';
+      this.shareModalVisible = 'show';
     },
     shareHide: function shareHide() {
-      this.shareShow = '';
+      this.shareModalVisible = '';
     }
   }
 };

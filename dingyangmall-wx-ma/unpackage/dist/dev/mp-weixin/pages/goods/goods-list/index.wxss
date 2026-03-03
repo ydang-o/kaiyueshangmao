@@ -3,6 +3,11 @@
 }
 .bar-fix.data-v-786dd3ca { margin-top: 80rpx; box-shadow: none;
 }
-.list-wrap.data-v-786dd3ca { margin-top: 200rpx;
+.list-wrap.data-v-786dd3ca { margin-top: 208rpx;
+}
+.search-form.data-v-786dd3ca { border-radius: 999rpx;
+}
+.cuIcon-triangleupfill.text-blue.data-v-786dd3ca,
+.cuIcon-triangledownfill.text-blue.data-v-786dd3ca { color: #ff0036 !important;
 }
 

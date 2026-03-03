@@ -1,6 +1,7 @@
 package com.dingyangmall.web.core.filter;
 
 import com.dingyangmall.common.utils.StringUtils;
+import com.dingyangmall.web.core.WxMaConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
@@ -12,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.Ordered;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -22,8 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
- * 对 /weixin/api/ma/* 的 60001/60002 等登录态错误响应做改写，不再只返回「登录超时，请重新登录」，
- * 而是返回带完整说明的报错信息，便于前端和排查。由 WxMaSecurityConfig 通过 FilterRegistrationBean 注册。
+ * Rewrites 60001/60002 login error responses for /weixin/api/ma/* with detailed message (token/path hint).
+ * Registered via WxMaSecurityConfig FilterRegistrationBean.
  */
 public class WxMaErrorRewriteFilter implements Filter {
 
@@ -59,7 +59,9 @@ public class WxMaErrorRewriteFilter implements Filter {
             int code = codeObj instanceof Number ? ((Number) codeObj).intValue() : -1;
             if (code == CODE_60001 || code == CODE_60002) {
                 String originalMsg = map.get("msg") != null ? String.valueOf(map.get("msg")) : "";
-                String detailMsg = buildDetailMsg(code, originalMsg, path);
+                // 统一走 token 模式：若下游返回含 session 的文案则替换为 token 相关提示，避免对用户展示 session 字样
+                String msgForUser = toTokenModeMessage(code, originalMsg);
+                String detailMsg = buildDetailMsg(code, msgForUser, path);
                 map.put("msg", detailMsg);
                 byte[] newBody = objectMapper.writeValueAsBytes(map);
                 if (!resp.isCommitted()) {
@@ -68,12 +70,12 @@ public class WxMaErrorRewriteFilter implements Filter {
                     resp.getOutputStream().write(newBody);
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug("[WxMa] 已改写 {} 响应: code={}, msg={}", path, code, detailMsg);
+                    log.debug("[WxMa] 60001/60002 response path={} code={} token present={}", path, code, StringUtils.isNotEmpty(req.getHeader(WxMaConstants.HEADER_TOKEN)));
                 }
                 return;
             }
         } catch (Exception e) {
-            log.trace("响应非 JSON 或改写失败: {}", e.getMessage());
+            log.trace("Response not JSON or rewrite failed: {}", e.getMessage());
         }
         if (!resp.isCommitted()) {
             resp.setContentLength(content.length);
@@ -81,15 +83,27 @@ public class WxMaErrorRewriteFilter implements Filter {
         }
     }
 
+    /** 将下游可能返回的 session 相关文案统一改为 token 模式，不对前端暴露 session 字样 */
+    private static String toTokenModeMessage(int code, String originalMsg) {
+        if (StringUtils.isEmpty(originalMsg)) {
+            return code == CODE_60002 ? "请携带登录令牌" : "登录已过期，请重新登录";
+        }
+        String lower = originalMsg.toLowerCase();
+        if (lower.contains("session") || originalMsg.contains("会话")) {
+            return code == CODE_60002 ? "请携带登录令牌（Header X-Wx-Token 或 body.token）" : "登录已过期，请重新登录";
+        }
+        return originalMsg;
+    }
+
     private static String buildDetailMsg(int code, String originalMsg, String path) {
-        String base = StringUtils.isNotEmpty(originalMsg) ? originalMsg : (code == CODE_60002 ? "session不能为空" : "登录超时");
+        String base = StringUtils.isNotEmpty(originalMsg) ? originalMsg : (code == CODE_60002 ? "请携带登录令牌" : "登录已过期，请重新登录");
         StringBuilder sb = new StringBuilder();
         sb.append(base);
-        sb.append(" | 接口: ").append(path);
+        sb.append(" | path: ").append(path);
         if (code == CODE_60001) {
-            sb.append(" | 可能原因: 1) 请求未带 Header third-session/openid 或 body._thirdSession；2) Redis 中无该会话或已过期；3) 下游校验未识别到 memberId");
+            sb.append(" | Check: 1) Header ").append(WxMaConstants.HEADER_TOKEN).append(" or body.").append(WxMaConstants.BODY_TOKEN_KEY).append("; 2) Token expired; 3) Re-login");
         } else if (code == CODE_60002) {
-            sb.append(" | 可能原因: 请求未携带 third-session 或 body._thirdSession");
+            sb.append(" | Check: Header ").append(WxMaConstants.HEADER_TOKEN).append(" or body.").append(WxMaConstants.BODY_TOKEN_KEY);
         }
         return sb.toString();
     }

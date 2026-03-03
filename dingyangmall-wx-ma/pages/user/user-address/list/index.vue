@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
+  <view class="page tm-page">
     <view class="cu-list menu-avatar">
       <view class="cu-item solid-top" v-for="(item, index) in userAddress" :key="index">
         <view class="cu-avatar round bg-red"><text class="avatar-text">{{ item.userName }}</text></view>
@@ -18,7 +18,7 @@
     </view>
     <view class="cu-load bg-gray" :class="loadmore ? 'loading' : ''"></view>
     <view class="cu-load bg-gray margin-top-xl" v-if="userAddress.length <= 0 && !loadmore"><text class="text-gray">暂无收货地址，请添加</text></view>
-    <button class="cu-btn block shadow-blur margin-sm" style="background-color: #2967ff; font-weight: 300; height: 88rpx; margin-top: 200rpx;" v-if="userAddress.length < 10" @tap="toAdd"><text class="text-white">添加新地址</text></button>
+    <button class="cu-btn block shadow-blur margin-sm tm-primary-btn add-btn" v-if="userAddress.length < 10" @tap="toAdd"><text class="text-white">添加新地址</text></button>
   </view>
 </template>
 
@@ -65,4 +65,5 @@ export default {
 <style scoped>
 .avatar-text { font-size: 28rpx; color: #fff; }
 .loc-info { min-height: 40rpx; }
+.add-btn { height: 88rpx; margin-top: 200rpx; }
 </style>

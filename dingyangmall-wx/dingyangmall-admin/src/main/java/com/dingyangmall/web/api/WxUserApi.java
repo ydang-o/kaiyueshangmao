@@ -2,9 +2,14 @@ package com.dingyangmall.web.api;
 
 import cn.binarywang.wx.miniapp.api.WxMaService;
 import cn.binarywang.wx.miniapp.bean.WxMaJscode2SessionResult;
+import cn.binarywang.wx.miniapp.bean.WxMaPhoneNumberInfo;
 import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.utils.StringUtils;
+import com.dingyangmall.common.utils.uuid.IdUtils;
+import com.dingyangmall.web.core.WxMaConstants;
+import com.dingyangmall.web.entity.WxMaUser;
+import com.dingyangmall.web.mapper.WxMaUserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,36 +20,32 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
  * 小程序用户登录与信息（README: /weixin/api/ma/wxuser）
- * <p>登录流程遵循微信官方文档：小程序端 wx.login 获取临时凭证 code（有效期 5 分钟、仅能使用一次），
- * 后端调用 auth.code2Session 换取 openid、unionid（若已绑定开放平台）、session_key；
- * 后端生成自定义登录态 thirdSession 存 Redis，session_key 仅存服务端、绝不下发至前端。</p>
+ * <p>登录遵循微信 code2Session，签发 token 存 Redis；后续请求均带 Header X-Wx-Token。</p>
  * <ul>
- *   <li>POST /login：code2Session，返回 thirdSession、userId，若已有昵称/头像则一并返回</li>
- *   <li>GET /info：获取当前用户信息（userId、昵称、头像），需 Header third-session</li>
- *   <li>POST ""：更新用户信息（支持加密数据解密，或明文 nickname/avatarUrl）</li>
+ *   <li>POST /login：code2Session，签发 token 返回；后续请求带 X-Wx-Token</li>
+ *   <li>GET /info：需 Header X-Wx-Token</li>
+ *   <li>POST ""：更新用户信息，需 Header X-Wx-Token</li>
  * </ul>
- *
- * @author dingyangmall
  */
 @RestController
-@RequestMapping("/weixin/api/ma/wxuser")
+@RequestMapping(value = { "/weixin/api/ma/wxuser", "/api/ma/wxuser" })
 public class WxUserApi {
 
     /** 仅用于文档：登录响应字段说明 */
     @Schema(description = "小程序登录响应")
     public static class WxLoginVO {
-        @Schema(description = "第三方会话标识，后续请求需放在 Header third-session") public String thirdSession;
-        @Schema(description = "用户ID(openid)") public String userId;
+        @Schema(description = "访问令牌，后续请求 Header 传 X-Wx-Token") public String token;
+        @Schema(description = "用户唯一标识(openid)") public String userId;
         @Schema(description = "昵称（若用户曾保存过则返回）") public String nickname;
         @Schema(description = "头像URL（若用户曾保存过则返回）") public String avatarUrl;
     }
@@ -58,16 +59,24 @@ public class WxUserApi {
     }
 
     private static final Logger log = LoggerFactory.getLogger(WxUserApi.class);
-    private static final String REDIS_KEY_PREFIX = "wx:third_session:";
+    /** Redis 键：openid 对应会话数据（登录/code 复用时使用） */
+    private static final String REDIS_OPENID_SESSION_PREFIX = "wx:openid_session:";
+    /** openid -> token 映射，用于 code 复用时返回已有 token */
+    private static final String REDIS_OPENID_TO_TOKEN_PREFIX = "wx:openid_to_token:";
     private static final String REDIS_USER_INFO_PREFIX = "wx:user:info:";
     /** 已使用的 code 防重（微信规定 code 只能使用一次，有效期约 5 分钟） */
     private static final String REDIS_CODE_USED_PREFIX = "wx:code_used:";
-    /** 同一 code 已创建过的 thirdSession（用于重复请求时幂等返回，符合「用户点击授权」可能触发的重试） */
-    private static final String REDIS_CODE_TO_SESSION_PREFIX = "wx:code_to_session:";
+    /** 同一 code 已创建过的 openid（幂等返回） */
+    private static final String REDIS_CODE_TO_OPENID_PREFIX = "wx:code_to_openid:";
     private static final long SESSION_EXPIRE_DAYS = 7;
     private static final long USER_INFO_EXPIRE_DAYS = 30;
     /** code 防重 key 保留时间（略大于微信 code 有效期 5 分钟） */
     private static final long CODE_USED_EXPIRE_MINUTES = 6;
+
+    /** 微信 openid 格式：以 o 开头、长度约 28 */
+    private static boolean isOpenidFormat(String s) {
+        return StringUtils.isNotEmpty(s) && s.length() >= 26 && s.length() <= 32 && s.startsWith("o");
+    }
 
     @Autowired(required = false)
     private WxMaService wxMaService;
@@ -75,24 +84,89 @@ public class WxUserApi {
     @Autowired
     private RedisTemplate<Object, Object> redisTemplate;
 
-    private static String getThirdSession(HttpServletRequest request) {
-        String v = request.getHeader("third-session");
-        if (StringUtils.isEmpty(v)) {
-            v = request.getHeader("Third-Session");
+    @Autowired(required = false)
+    private WxMaUserMapper wxMaUserMapper;
+
+    /** false 时登录不写 Redis，仅 DB（见 application.yml wx.ma.session-use-redis） */
+    @Value("${wx.ma.session-use-redis:true}")
+    private boolean sessionUseRedis;
+
+    /** 从请求头获取令牌：X-Wx-Token 或 Authorization: Bearer &lt;token&gt; */
+    private static String getTokenFromHeaders(HttpServletRequest request) {
+        String v = request.getHeader(WxMaConstants.HEADER_TOKEN);
+        if (StringUtils.isNotEmpty(v)) return v.trim();
+        String auth = request.getHeader("Authorization");
+        if (StringUtils.isNotEmpty(auth) && auth.startsWith(WxMaConstants.AUTHORIZATION_BEARER)) {
+            v = auth.substring(WxMaConstants.AUTHORIZATION_BEARER.length()).trim();
+            if (StringUtils.isNotEmpty(v)) return v;
         }
-        return v;
+        return null;
+    }
+
+    /** 从 body 获取 token（标准字段 token） */
+    private static String getTokenFromBody(Map<String, String> body) {
+        if (body == null) return null;
+        String v = body.get(WxMaConstants.BODY_TOKEN_KEY);
+        return StringUtils.isNotEmpty(v) ? v.trim() : null;
+    }
+
+    /** 统一解析 token（header 优先，body 兜底） */
+    private static String resolveToken(HttpServletRequest request, Map<String, String> body) {
+        String token = getTokenFromHeaders(request);
+        if (StringUtils.isEmpty(token)) token = getTokenFromBody(body);
+        return token;
+    }
+
+    private String getSessionRedisKey(String openid) {
+        if (!isOpenidFormat(openid)) return null;
+        return REDIS_OPENID_SESSION_PREFIX + openid;
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, String> getSessionData(String thirdSession) {
-        if (StringUtils.isEmpty(thirdSession)) {
-            return null;
+    private Map<String, String> getSessionData(String openid) {
+        if (!isOpenidFormat(openid)) return null;
+        if (!sessionUseRedis) {
+            if (wxMaUserMapper == null) return null;
+            WxMaUser db = wxMaUserMapper.selectByOpenid(openid);
+            if (db == null) return null;
+            Map<String, String> m = new HashMap<>();
+            m.put("openid", openid);
+            m.put("memberId", openid);
+            if (StringUtils.isNotEmpty(db.getNickname())) m.put("nickname", db.getNickname());
+            if (StringUtils.isNotEmpty(db.getAvatarUrl())) m.put("avatarUrl", db.getAvatarUrl());
+            return m;
         }
-        Object v = redisTemplate.opsForValue().get(REDIS_KEY_PREFIX + thirdSession);
+        String key = getSessionRedisKey(openid);
+        if (key == null) return null;
+        Object v = redisTemplate.opsForValue().get(key);
         return v instanceof Map ? (Map<String, String>) v : null;
     }
 
-    @Operation(summary = "小程序登录", description = "微信官方流程：wx.login 获取 code（有效期 5 分钟、仅能使用一次），本接口调用 code2Session 换取 openid/session_key，生成自定义登录态 thirdSession；session_key 仅存服务端，绝不下发。")
+    /** 按 token 从 Redis wx:token:{token} 获取会话数据 */
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getSessionDataByToken(String token) {
+        if (StringUtils.isEmpty(token)) return null;
+        if (!sessionUseRedis) return null;
+        String key = WxMaConstants.REDIS_TOKEN_PREFIX + token;
+        Object v = redisTemplate.opsForValue().get(key);
+        return v instanceof Map ? (Map<String, String>) v : null;
+    }
+
+    /** 构建登录成功响应体：返回 token 及 openid/userId 等，后续请求带 X-Wx-Token */
+    private Map<String, Object> buildLoginResponseMap(String openid, Map<String, String> sessionData, String token) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("userId", openid);
+        data.put("openid", openid);
+        if (sessionData != null) {
+            if (StringUtils.isNotEmpty(sessionData.get("unionid"))) data.put("unionid", sessionData.get("unionid"));
+            if (StringUtils.isNotEmpty(sessionData.get("nickname"))) data.put("nickname", sessionData.get("nickname"));
+            if (StringUtils.isNotEmpty(sessionData.get("avatarUrl"))) data.put("avatarUrl", sessionData.get("avatarUrl"));
+        }
+        return data;
+    }
+
+    @Operation(summary = "小程序登录", description = "微信官方流程：wx.login 获取 code，本接口调用 code2Session 换取 openid/session_key，签发 token 存 Redis；返回 token，后续请求 Header 带 X-Wx-Token。")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "成功", content = @Content(schema = @Schema(implementation = WxLoginVO.class)))
     })
@@ -110,29 +184,27 @@ public class WxUserApi {
             return AjaxResult.error("小程序未配置，请联系管理员");
         }
         String codeUsedKey = REDIS_CODE_USED_PREFIX + code;
-        String codeToSessionKey = REDIS_CODE_TO_SESSION_PREFIX + code;
-        if (Boolean.TRUE.equals(redisTemplate.hasKey(codeUsedKey))) {
-            Object existingSessionId = redisTemplate.opsForValue().get(codeToSessionKey);
-            if (existingSessionId instanceof String) {
-                String existingThird = (String) existingSessionId;
-                Map<String, String> existingData = getSessionData(existingThird);
+        String codeToOpenidKey = REDIS_CODE_TO_OPENID_PREFIX + code;
+        if (sessionUseRedis && Boolean.TRUE.equals(redisTemplate.hasKey(codeUsedKey))) {
+            Object existingOpenid = redisTemplate.opsForValue().get(codeToOpenidKey);
+            if (existingOpenid instanceof String) {
+                String openid = (String) existingOpenid;
+                Map<String, String> existingData = getSessionData(openid);
                 if (existingData != null) {
-                    AjaxResult ajax = AjaxResult.success();
-                    ajax.put("thirdSession", existingThird);
-                    ajax.put("userId", existingData.get("wxUserId") != null ? existingData.get("wxUserId") : existingData.get("openid"));
-                    if (StringUtils.isNotEmpty(existingData.get("nickname"))) {
-                        ajax.put("nickname", existingData.get("nickname"));
+                    String existingToken = (String) redisTemplate.opsForValue().get(REDIS_OPENID_TO_TOKEN_PREFIX + openid);
+                    if (StringUtils.isEmpty(existingToken)) {
+                        existingToken = IdUtils.simpleUUID();
+                        redisTemplate.opsForValue().set(WxMaConstants.REDIS_TOKEN_PREFIX + existingToken, existingData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                        redisTemplate.opsForValue().set(REDIS_OPENID_TO_TOKEN_PREFIX + openid, existingToken, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
                     }
-                    if (StringUtils.isNotEmpty(existingData.get("avatarUrl"))) {
-                        ajax.put("avatarUrl", existingData.get("avatarUrl"));
-                    }
-                    return ajax;
+                    return AjaxResult.success(buildLoginResponseMap(openid, existingData, existingToken));
                 }
             }
             log.warn("登录凭证已使用且无法复用会话，请用户重新点击登录");
             return AjaxResult.error("该登录凭证已使用，请重新点击「微信一键登录」获取新凭证");
         }
         try {
+            // 微信 code2Session 换取 openid、session_key，签发 token 存 Redis
             WxMaJscode2SessionResult session = wxMaService.getUserService().getSessionInfo(code);
             String openid = session.getOpenid();
             String sessionKey = session.getSessionKey();
@@ -140,48 +212,70 @@ public class WxUserApi {
                 return AjaxResult.error("微信登录失败，openid 为空");
             }
 
-            String thirdSession = UUID.randomUUID().toString().replace("-", "");
-            String redisKey = REDIS_KEY_PREFIX + thirdSession;
+            String redisKey = REDIS_OPENID_SESSION_PREFIX + openid;
             Map<String, String> sessionData = new HashMap<>();
             sessionData.put("openid", openid);
+            sessionData.put("memberId", openid);
             sessionData.put("sessionKey", sessionKey);
-            sessionData.put("wxUserId", openid);
             if (StringUtils.isNotEmpty(session.getUnionid())) {
                 sessionData.put("unionid", session.getUnionid());
             }
 
-            Object userInfoObj = redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid);
-            if (userInfoObj instanceof Map) {
+            // 持久化 DB（使用旧表 wx_user）
+            if (wxMaUserMapper != null) {
+                try {
+                    WxMaUser u = new WxMaUser();
+                    u.setId(IdUtils.simpleUUID());
+                    u.setOpenid(openid);
+                    u.setUnionid(session.getUnionid());
+                    wxMaUserMapper.upsert(u);
+                } catch (Exception e) {
+                    log.warn("wx_user 落库失败: {}", e.getMessage());
+                }
+            }
+
+            if (sessionUseRedis) {
+                Object userInfoObj = redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid);
+                if (userInfoObj instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, String> userInfo = (Map<String, String>) userInfoObj;
+                    String nickname = userInfo.get("nickname");
+                    String avatarUrl = userInfo.get("avatarUrl");
+                    if (StringUtils.isNotEmpty(nickname)) sessionData.put("nickname", nickname);
+                    if (StringUtils.isNotEmpty(avatarUrl)) sessionData.put("avatarUrl", avatarUrl);
+                }
+                redisTemplate.opsForValue().set(redisKey, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                String token = IdUtils.simpleUUID();
+                redisTemplate.opsForValue().set(WxMaConstants.REDIS_TOKEN_PREFIX + token, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(REDIS_OPENID_TO_TOKEN_PREFIX + openid, token, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(codeToOpenidKey, openid, CODE_USED_EXPIRE_MINUTES, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(codeUsedKey, "1", CODE_USED_EXPIRE_MINUTES, TimeUnit.MINUTES);
+                if (log.isInfoEnabled()) {
+                    log.info("[WxMa] 登录成功，已签发 token，Redis key={} expire={}天", WxMaConstants.REDIS_TOKEN_PREFIX + token, SESSION_EXPIRE_DAYS);
+                }
+            } else if (log.isInfoEnabled()) {
+                log.info("[WxMa] 登录成功，已关闭 Redis，仅写 DB openid={}", openid != null ? openid.substring(0, Math.min(12, openid.length())) + "..." : "");
+            }
+
+            // 优先从数据库取昵称/头像，其次 Redis（Redis 关闭时仅 DB）
+            if (wxMaUserMapper != null) {
+                WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+                if (dbUser != null) {
+                    if (StringUtils.isNotEmpty(dbUser.getNickname())) sessionData.put("nickname", dbUser.getNickname());
+                    if (StringUtils.isNotEmpty(dbUser.getAvatarUrl())) sessionData.put("avatarUrl", dbUser.getAvatarUrl());
+                }
+            }
+            if (sessionUseRedis && (!sessionData.containsKey("nickname") || !sessionData.containsKey("avatarUrl"))) {
                 @SuppressWarnings("unchecked")
-                Map<String, String> userInfo = (Map<String, String>) userInfoObj;
-                String nickname = userInfo.get("nickname");
-                String avatarUrl = userInfo.get("avatarUrl");
-                if (StringUtils.isNotEmpty(nickname)) {
-                    sessionData.put("nickname", nickname);
-                }
-                if (StringUtils.isNotEmpty(avatarUrl)) {
-                    sessionData.put("avatarUrl", avatarUrl);
+                Map<String, String> info = (Map<String, String>) redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid);
+                if (info != null) {
+                    if (!sessionData.containsKey("nickname") && StringUtils.isNotEmpty(info.get("nickname"))) sessionData.put("nickname", info.get("nickname"));
+                    if (!sessionData.containsKey("avatarUrl") && StringUtils.isNotEmpty(info.get("avatarUrl"))) sessionData.put("avatarUrl", info.get("avatarUrl"));
                 }
             }
-
-            redisTemplate.opsForValue().set(redisKey, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(codeToSessionKey, thirdSession, CODE_USED_EXPIRE_MINUTES, TimeUnit.MINUTES);
-            redisTemplate.opsForValue().set(codeUsedKey, "1", CODE_USED_EXPIRE_MINUTES, TimeUnit.MINUTES);
-
-            AjaxResult ajax = AjaxResult.success();
-            ajax.put("thirdSession", thirdSession);
-            ajax.put("userId", openid);
-            @SuppressWarnings("unchecked")
-            Map<String, String> info = (Map<String, String>) redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid);
-            if (info != null) {
-                if (StringUtils.isNotEmpty(info.get("nickname"))) {
-                    ajax.put("nickname", info.get("nickname"));
-                }
-                if (StringUtils.isNotEmpty(info.get("avatarUrl"))) {
-                    ajax.put("avatarUrl", info.get("avatarUrl"));
-                }
-            }
-            return ajax;
+            String token = sessionUseRedis ? (String) redisTemplate.opsForValue().get(REDIS_OPENID_TO_TOKEN_PREFIX + openid) : IdUtils.simpleUUID();
+            if (StringUtils.isEmpty(token)) token = IdUtils.simpleUUID();
+            return AjaxResult.success(buildLoginResponseMap(openid, sessionData, token));
         } catch (WxErrorException e) {
             log.warn("微信 code2Session 失败: errCode={}, errMsg={}", e.getError().getErrorCode(), e.getMessage());
             int errCode = e.getError().getErrorCode();
@@ -194,17 +288,19 @@ public class WxUserApi {
             if (errCode == 40029) {
                 return AjaxResult.error("登录凭证无效或已过期，请重新打开小程序并调用 wx.login 后重试");
             }
-            if (errCode == 40163) {
-                Object existingSessionId = redisTemplate.opsForValue().get(codeToSessionKey);
-                if (existingSessionId instanceof String) {
-                    Map<String, String> existingData = getSessionData((String) existingSessionId);
+            if (errCode == 40163 && sessionUseRedis) {
+                Object existingOpenid = redisTemplate.opsForValue().get(codeToOpenidKey);
+                if (existingOpenid instanceof String) {
+                    String openid = (String) existingOpenid;
+                    Map<String, String> existingData = getSessionData(openid);
                     if (existingData != null) {
-                        AjaxResult ajax = AjaxResult.success();
-                        ajax.put("thirdSession", existingSessionId);
-                        ajax.put("userId", existingData.get("wxUserId") != null ? existingData.get("wxUserId") : existingData.get("openid"));
-                        if (StringUtils.isNotEmpty(existingData.get("nickname"))) ajax.put("nickname", existingData.get("nickname"));
-                        if (StringUtils.isNotEmpty(existingData.get("avatarUrl"))) ajax.put("avatarUrl", existingData.get("avatarUrl"));
-                        return ajax;
+                        String existingToken = (String) redisTemplate.opsForValue().get(REDIS_OPENID_TO_TOKEN_PREFIX + openid);
+                        if (StringUtils.isEmpty(existingToken)) {
+                            existingToken = IdUtils.simpleUUID();
+                            redisTemplate.opsForValue().set(WxMaConstants.REDIS_TOKEN_PREFIX + existingToken, existingData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                            redisTemplate.opsForValue().set(REDIS_OPENID_TO_TOKEN_PREFIX + openid, existingToken, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                        }
+                        return AjaxResult.success(buildLoginResponseMap(openid, existingData, existingToken));
                     }
                 }
                 return AjaxResult.error("该登录凭证已被使用，请重新点击「微信一键登录」");
@@ -224,33 +320,46 @@ public class WxUserApi {
         }
     }
 
-    @Operation(summary = "获取当前用户信息", description = "返回 userId、昵称、头像；需在 Header 携带 third-session")
+    @Operation(summary = "获取当前用户信息", description = "返回 userId、昵称、头像；需在 Header 携带 X-Wx-Token")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "成功", content = @Content(schema = @Schema(implementation = WxUserInfoVO.class)))
     })
-    @GetMapping("/info")
-    public AjaxResult getUserInfo(HttpServletRequest request) {
-        String thirdSession = getThirdSession(request);
-        Map<String, String> sessionData = getSessionData(thirdSession);
-        if (sessionData == null) {
-            return AjaxResult.error("未登录或登录已过期");
+    /** 令牌校验失败时返回可区分原因的错误信息 */
+    private static String tokenErrorMsg(String token) {
+        if (StringUtils.isEmpty(token)) {
+            return "未登录或登录已过期（原因：请求未携带 Header " + WxMaConstants.HEADER_TOKEN + " 或 body.token）";
         }
-        String userId = sessionData.get("wxUserId");
-        if (StringUtils.isEmpty(userId)) {
-            userId = sessionData.get("openid");
-        }
-        AjaxResult ajax = AjaxResult.success();
-        ajax.put("userId", userId);
-        if (StringUtils.isNotEmpty(sessionData.get("nickname"))) {
-            ajax.put("nickname", sessionData.get("nickname"));
-        }
-        if (StringUtils.isNotEmpty(sessionData.get("avatarUrl"))) {
-            ajax.put("avatarUrl", sessionData.get("avatarUrl"));
-        }
-        return ajax;
+        return "未登录或登录已过期（原因：令牌无效或已过期，请重新登录）";
     }
 
-    @Operation(summary = "更新用户信息", description = "支持 encryptedData+iv 解密或明文 nickname/avatarUrl；需在 Header 携带 third-session")
+    @GetMapping("/info")
+    public AjaxResult getUserInfo(HttpServletRequest request) {
+        String token = resolveToken(request, null);
+        Map<String, String> sessionData = getSessionDataByToken(token);
+        if (sessionData == null) {
+            return AjaxResult.error(tokenErrorMsg(token));
+        }
+        String openid = sessionData.get("openid");
+        if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
+        Map<String, Object> info = new HashMap<>();
+        info.put("userId", openid);
+        info.put("openid", openid);
+        if (StringUtils.isNotEmpty(sessionData.get("nickname"))) info.put("nickname", sessionData.get("nickname"));
+        if (StringUtils.isNotEmpty(sessionData.get("avatarUrl"))) info.put("avatarUrl", sessionData.get("avatarUrl"));
+        String phone = sessionData.get("phoneNumber");
+        if (StringUtils.isEmpty(phone)) phone = sessionData.get("phone");
+        if (StringUtils.isEmpty(phone) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getPhone())) phone = dbUser.getPhone();
+        }
+        if (StringUtils.isNotEmpty(phone)) {
+            info.put("phoneNumber", phone);
+            info.put("phone", phone);
+        }
+        return AjaxResult.success(info);
+    }
+
+    @Operation(summary = "更新用户信息", description = "支持 encryptedData+iv 解密或明文 nickname/avatarUrl；需在 Header 携带 X-Wx-Token")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "成功", content = @Content(schema = @Schema(implementation = WxUserInfoVO.class)))
     })
@@ -259,12 +368,13 @@ public class WxUserApi {
         if (body == null || body.isEmpty()) {
             return AjaxResult.error("参数不能为空");
         }
-        String thirdSession = getThirdSession(request);
-        Map<String, String> sessionData = getSessionData(thirdSession);
+        String token = resolveToken(request, body);
+        Map<String, String> sessionData = getSessionDataByToken(token);
         if (sessionData == null) {
-            return AjaxResult.error("未登录或登录已过期");
+            return AjaxResult.error(tokenErrorMsg(token));
         }
         String openid = sessionData.get("openid");
+        if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
         String sessionKey = sessionData.get("sessionKey");
         String nickname = null;
         String avatarUrl = null;
@@ -285,7 +395,25 @@ public class WxUserApi {
         }
         if (nickname == null && avatarUrl == null) {
             nickname = body.get("nickname");
+            if (StringUtils.isEmpty(nickname)) nickname = body.get("nickName");
             avatarUrl = body.get("avatarUrl");
+        }
+        // 兼容 uni.getUserProfile 直接把 detail 传给后端：nickname/avatar 可能在 userInfo 内
+        Object ui = body.get("userInfo");
+        if ((StringUtils.isEmpty(nickname) || StringUtils.isEmpty(avatarUrl)) && ui instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> userInfoMap = (Map<String, Object>) ui;
+            if (StringUtils.isEmpty(nickname)) {
+                Object nn = userInfoMap.get("nickName");
+                if (nn == null) nn = userInfoMap.get("nickname");
+                if (nn != null) nickname = String.valueOf(nn);
+            }
+            if (StringUtils.isEmpty(avatarUrl)) {
+                Object av = userInfoMap.get("avatarUrl");
+                if (av == null) av = userInfoMap.get("headimgUrl");
+                if (av == null) av = userInfoMap.get("avatar");
+                if (av != null) avatarUrl = String.valueOf(av);
+            }
         }
         if (StringUtils.isEmpty(nickname) && StringUtils.isEmpty(avatarUrl)) {
             return AjaxResult.success();
@@ -297,11 +425,22 @@ public class WxUserApi {
         if (StringUtils.isNotEmpty(avatarUrl)) {
             sessionData.put("avatarUrl", avatarUrl);
         }
-        String redisKey = REDIS_KEY_PREFIX + thirdSession;
-        redisTemplate.opsForValue().set(redisKey, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+        sessionData.put("memberId", openid);
+        sessionData.put("openid", openid);
+        if (sessionUseRedis) {
+            String redisKey = getSessionRedisKey(openid);
+            if (redisKey != null) {
+                redisTemplate.opsForValue().set(redisKey, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+            }
+            if (StringUtils.isNotEmpty(token)) {
+                redisTemplate.opsForValue().set(WxMaConstants.REDIS_TOKEN_PREFIX + token, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+            }
+        }
 
         @SuppressWarnings("unchecked")
-        Map<String, String> userInfo = (Map<String, String>) redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid);
+        Map<String, String> userInfo = sessionUseRedis
+            ? (Map<String, String>) redisTemplate.opsForValue().get(REDIS_USER_INFO_PREFIX + openid)
+            : null;
         if (userInfo == null) {
             userInfo = new HashMap<>();
         } else {
@@ -313,18 +452,96 @@ public class WxUserApi {
         if (StringUtils.isNotEmpty(avatarUrl)) {
             userInfo.put("avatarUrl", avatarUrl);
         }
-        if (!userInfo.isEmpty()) {
+        if (sessionUseRedis && !userInfo.isEmpty()) {
             redisTemplate.opsForValue().set(REDIS_USER_INFO_PREFIX + openid, userInfo, USER_INFO_EXPIRE_DAYS, TimeUnit.DAYS);
         }
 
-        AjaxResult ajax = AjaxResult.success();
-        ajax.put("userId", openid);
+        // 持久化到数据库（使用旧表 wx_user，open_id 维度 upsert）
+        if (wxMaUserMapper != null) {
+            WxMaUser u = new WxMaUser();
+            u.setId(IdUtils.simpleUUID());
+            u.setOpenid(openid);
+            if (StringUtils.isNotEmpty(sessionData.get("unionid"))) u.setUnionid(sessionData.get("unionid"));
+            if (StringUtils.isNotEmpty(nickname)) u.setNickname(nickname);
+            if (StringUtils.isNotEmpty(avatarUrl)) u.setAvatarUrl(avatarUrl);
+            wxMaUserMapper.upsert(u);
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("userId", openid);
+        result.put("openid", openid);
         if (StringUtils.isNotEmpty(nickname)) {
-            ajax.put("nickname", nickname);
+            result.put("nickname", nickname);
         }
         if (StringUtils.isNotEmpty(avatarUrl)) {
-            ajax.put("avatarUrl", avatarUrl);
+            result.put("avatarUrl", avatarUrl);
         }
-        return ajax;
+        return AjaxResult.success(result);
+    }
+
+    @Operation(summary = "获取手机号", description = "前端 getPhoneNumber 回调中的 code 传到此接口，后端调微信 getuserphonenumber 解密；需登录态(Header X-Wx-Token)且小程序已开通手机号能力并企业认证。")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "成功，返回 phoneNumber、purePhoneNumber 等"),
+        @ApiResponse(responseCode = "400", description = "code 无效或未开通手机号能力")
+    })
+    @PostMapping("/phone")
+    public AjaxResult getPhoneNumber(HttpServletRequest request, @RequestBody Map<String, String> body) {
+        String code = body != null ? body.get("code") : null;
+        if (code != null) code = code.trim();
+        if (StringUtils.isEmpty(code)) {
+            return AjaxResult.error("缺少参数 code（需前端 getPhoneNumber 回调传入）");
+        }
+        String token = resolveToken(request, body);
+        Map<String, String> sessionData = getSessionDataByToken(token);
+        if (sessionData == null) {
+            return AjaxResult.error(tokenErrorMsg(token));
+        }
+        if (wxMaService == null) {
+            return AjaxResult.error("小程序未配置");
+        }
+        try {
+            WxMaPhoneNumberInfo phoneInfo = wxMaService.getUserService().getPhoneNumber(code);
+            if (phoneInfo == null) {
+                return AjaxResult.error("获取手机号失败");
+            }
+            String phoneNumber = phoneInfo.getPhoneNumber();
+            String purePhoneNumber = phoneInfo.getPurePhoneNumber();
+            if (StringUtils.isEmpty(phoneNumber)) phoneNumber = purePhoneNumber;
+            Map<String, Object> data = new HashMap<>();
+            data.put("phoneNumber", phoneNumber);
+            data.put("purePhoneNumber", purePhoneNumber);
+            data.put("countryCode", phoneInfo.getCountryCode());
+            String openid = sessionData.get("openid");
+            if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
+            if (StringUtils.isNotEmpty(openid) && StringUtils.isNotEmpty(phoneNumber)) {
+                sessionData.put("phoneNumber", phoneNumber);
+                sessionData.put("memberId", openid);
+                sessionData.put("openid", openid);
+                if (sessionUseRedis) {
+                    String redisKey = getSessionRedisKey(openid);
+                    if (redisKey != null) {
+                        redisTemplate.opsForValue().set(redisKey, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                    }
+                    if (StringUtils.isNotEmpty(token)) {
+                        redisTemplate.opsForValue().set(WxMaConstants.REDIS_TOKEN_PREFIX + token, sessionData, SESSION_EXPIRE_DAYS, TimeUnit.DAYS);
+                    }
+                }
+                if (wxMaUserMapper != null) {
+                    try {
+                        wxMaUserMapper.updatePhoneByOpenid(openid, phoneNumber);
+                    } catch (Exception ex) {
+                        log.warn("更新 wx_user 手机号失败: openid={}, {}", openid, ex.getMessage());
+                    }
+                }
+            }
+            return AjaxResult.success(data);
+        } catch (WxErrorException e) {
+            log.warn("获取手机号失败: errCode={}, errMsg={}", e.getError().getErrorCode(), e.getError().getErrorMsg());
+            String msg = e.getError().getErrorMsg();
+            if (msg != null && (msg.contains("phone") || msg.contains("权限") || msg.contains("能力"))) {
+                return AjaxResult.error("未开通手机号能力或未企业认证，请在微信公众平台开通");
+            }
+            return AjaxResult.error(msg != null ? msg : "获取手机号失败");
+        }
     }
 }

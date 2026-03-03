@@ -13,7 +13,7 @@ public final class WxMaConstants {
     /** Authorization 头 Bearer 前缀，兼容标准写法：Authorization: Bearer &lt;token&gt; */
     public static final String AUTHORIZATION_BEARER = "Bearer ";
 
-    /** Redis 令牌键前缀，完整键为 wx:token:&lt;token&gt;，值为会话 Map（openid、sessionKey、memberId 等） */
+    /** Redis 令牌键前缀 wx:token:&lt;token&gt;，值为 token 对应数据 Map（openid、memberId、微信 session_key 等） */
     public static final String REDIS_TOKEN_PREFIX = "wx:token:";
 
     /** Body 兜底字段名（POST 时若未带请求头，可从此字段取 token） */

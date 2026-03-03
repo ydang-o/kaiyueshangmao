@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="container">
+  <view class="container tm-page">
     <view class="header">
       <view class="title">幸运大抽奖</view>
       <view class="sub-title" v-if="config.costPoints">消耗 {{ config.costPoints }} 积分/次</view>
@@ -76,20 +76,20 @@ export default {
 </script>
 
 <style scoped>
-.container { padding: 40rpx; min-height: 100vh; background: #f3f4f7; }
+.container { padding: 40rpx; min-height: 100vh; }
 .header { text-align: center; padding: 40rpx 0; }
 .title { font-size: 44rpx; font-weight: bold; }
 .sub-title { margin-top: 20rpx; color: #666; }
 .points { margin-top: 20rpx; font-size: 32rpx; }
 .limit { margin-top: 10rpx; font-size: 28rpx; color: #999; }
 .wheel-area { text-align: center; padding: 40rpx 0; }
-.draw-btn { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: #fff; width: 400rpx; height: 88rpx; line-height: 88rpx; border-radius: 44rpx; font-size: 32rpx; }
+.draw-btn { background: linear-gradient(135deg, #ff2b56, #ff0036); color: #fff; width: 400rpx; height: 88rpx; line-height: 88rpx; border-radius: 44rpx; font-size: 32rpx; }
 .section-title { font-size: 32rpx; font-weight: bold; margin-bottom: 20rpx; }
 .prize-grid { display: flex; flex-wrap: wrap; }
 .prize-item { width: 33.33%; padding: 20rpx; text-align: center; }
 .prize-img { width: 120rpx; height: 120rpx; }
 .prize-name { font-size: 24rpx; margin-top: 10rpx; }
 .record-list { margin-top: 40rpx; }
-.record-item { background: #fff; padding: 24rpx; margin-bottom: 20rpx; border-radius: 10rpx; display: flex; justify-content: space-between; }
+.record-item { background: #fff; padding: 24rpx; margin-bottom: 20rpx; border-radius: 16rpx; display: flex; justify-content: space-between; box-shadow: 0 8rpx 24rpx rgba(15,23,42,.06); }
 .empty { text-align: center; color: #999; padding: 40rpx; }
 </style>

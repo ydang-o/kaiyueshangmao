@@ -66,7 +66,7 @@ spring:
       # 热部署开关
       enabled: true
   data:
-    # redis 配置
+    # redis 配置（系统配置缓存等依赖 Redis，未启动时应用无法启动；wx.ma.session-use-redis 仅控制小程序会话是否用 Redis）
     redis:
       # 地址
       host: localhost
@@ -118,19 +118,60 @@ pagehelper:
   supportMethodsArguments: true
   params: count=countSql
 
-# Springdoc配置
+# Springdoc + Knife4j 接口文档（访问 http://localhost:7500/doc.html 查看）
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-    tags-sorter: alpha
+  tags-sorter: alpha
+  # 必须为每个分组指定 packages-to-scan，否则分组下不会出现任何接口
+  packages-to-scan: com.dingyangmall
   group-configs:
     - group: 'default'
-      display-name: '测试模块'
+      display-name: '全部接口'
+      packages-to-scan: com.dingyangmall
       paths-to-match: '/**'
-      packages-to-scan: com.dingyangmall.web.controller.tool
+    - group: 'weixin'
+      display-name: '移动端-小程序'
+      packages-to-scan: com.dingyangmall
+      paths-to-match: '/weixin/**'
+    - group: 'app'
+      display-name: '移动端-App'
+      packages-to-scan: com.dingyangmall
+      paths-to-match: '/app/**'
+    - group: 'merchant'
+      display-name: '商家端'
+      packages-to-scan: com.dingyangmall
+      paths-to-match: '/api/mall/merchant/**'
+    - group: 'admin'
+      display-name: '管理端'
+      packages-to-scan: com.dingyangmall
+      paths-to-match:
+        - '/login'
+        - '/getInfo'
+        - '/getRouters'
+        - '/register'
+        - '/registerDistributor'
+        - '/captchaImage'
+        - '/system/**'
+        - '/monitor/**'
+        - '/common/**'
+        - '/profile/**'
+        - '/orderinfo/**'
+        - '/orderlogistics/**'
+        - '/goodsspu/**'
+        - '/goodscategory/**'
+        - '/shoppingcart/**'
+        - '/useraddress/**'
+        - '/mall/**'
+        - '/integralrule/**'
+        - '/ums/**'
+        - '/coupon/**'
+        - '/lottery/**'
+        - '/sms/**'
+        - '/server/**'
 
 # 防止XSS攻击
 xss:
@@ -149,11 +190,13 @@ wx:
         secret: xxxxxxxxxxxxxxxxxxxxxxxxxx
         token: xxxxxxxxxx
         aesKey: xxxxxxxxxxxxxxxxxxxx
-  # 小程序配置
+  # 小程序配置（与 docker/jar/application.yml 保持一致；IDE/mvn 运行用本文件，Docker 用 docker/jar 下）
   ma:
+    # 会话存储：true=登录后写入 Redis，后续请求从 Redis 校验；false=仅用 openid 注入（需前端带 third-session）
+    session-use-redis: true
     configs:
-      - appId: xxxxxxxxxxxxxxxx
-        secret: xxxxxxxxxxxxx
+      - appId: wx43adcb652c1b2b19
+        secret: 1025760f7aea70f78b1496f123d090cf
         # 微信支付商户号，请去微信支付平台申请
         mchId: 1588227511
         # 微信支付商户APIv2密钥，请去微信支付平台申请

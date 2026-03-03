@@ -174,7 +174,7 @@ var _default = {
     };
   },
   onLoad: function onLoad(options) {
-    this.orderItemId = options.orderItemId || '';
+    this.orderItemId = options && options.orderItemId || '';
     if (!this.orderItemId) {
       uni.showToast({
         title: '参数错误',
@@ -183,7 +183,9 @@ var _default = {
       setTimeout(function () {
         return uni.navigateBack();
       }, 1500);
+      return;
     }
+    getApp().initPage();
   },
   methods: {
     submit: function submit() {

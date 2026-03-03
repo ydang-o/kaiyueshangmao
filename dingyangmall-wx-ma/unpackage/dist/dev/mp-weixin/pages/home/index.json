@@ -2,6 +2,7 @@
   "navigationBarTitleText": "首页",
   "enablePullDownRefresh": true,
   "usingComponents": {
-    "goods-card-index": "/components/goods-card-index/index"
+    "goods-card-index": "/components/goods-card-index/index",
+    "login-banner": "/components/login-banner/index"
   }
 }

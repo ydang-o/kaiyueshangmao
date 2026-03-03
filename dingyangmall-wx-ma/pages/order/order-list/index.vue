@@ -2,10 +2,10 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
+  <view class="page tm-page">
     <scroll-view scroll-x class="bg-white nav fixed">
       <view class="flex text-center">
-        <view v-for="(item, index) in orderStatus" :key="index" class="cu-item flex-sub" :class="{ 'text-blue cur': index === tabCur }" @tap="tabSelect(index, item.key)">{{ item.value }}</view>
+        <view v-for="(item, index) in orderStatus" :key="index" class="cu-item flex-sub" :class="{ 'tm-tab-active cur': index === tabCur }" @tap="tabSelect(index, item.key)">{{ item.value }}</view>
       </view>
     </scroll-view>
     <view class="margin-top-bar">
@@ -18,12 +18,12 @@
             </view>
             <view class="cu-item padding-bottom" v-for="(item2, index2) in (item.listOrderItem || [])" :key="index2">
               <view class="content">
-                <image :src="item2.picUrl || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
+                <image :src="$imgUrl(item2.picUrl) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
                 <view class="desc row-info margin-top-sm">
                   <view class="text-black margin-top-sm overflow-2">{{ item2.spuName }}</view>
                   <view class="text-gray text-sm margin-top-sm overflow-2" v-if="item2.specInfo">{{ item2.specInfo }}</view>
                   <view class="flex justify-between">
-                    <view class="text-price text-bold text-xl text-blue margin-top-sm">{{ item2.paymentPrice }}</view>
+                    <view class="text-price text-bold text-xl tm-brand margin-top-sm">{{ item2.paymentPrice }}</view>
                     <view class="text-black text-sm margin-top-sm padding-lr-sm">x{{ item2.quantity }}</view>
                   </view>
                 </view>
@@ -122,6 +122,6 @@ export default {
 
 <style scoped>
 .margin-top-bar { margin-top: 80rpx; }
-.row-img { width: 200rpx; height: 200rpx; border-radius: 10rpx; }
+.row-img { width: 200rpx; height: 200rpx; border-radius: 14rpx; }
 .row-info { flex: 1; margin-left: 20rpx; }
 </style>

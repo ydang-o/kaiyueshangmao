@@ -15,11 +15,14 @@ var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/run
 __webpack_require__(/*! uni-pages */ 26);
 var _vue = _interopRequireDefault(__webpack_require__(/*! vue */ 25));
 var _App = _interopRequireDefault(__webpack_require__(/*! ./App.vue */ 27));
+var _imageUrl = __webpack_require__(/*! ./utils/imageUrl */ 264);
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 // @ts-ignore
 wx.__webpack_require_UNI_MP_PLUGIN__ = __webpack_require__;
+console.log('[如囍优选] main.js 已加载');
 _vue.default.config.productionTip = false;
+_vue.default.prototype.$imgUrl = _imageUrl.fullImageUrl;
 _App.default.mpType = 'app';
 var app = new _vue.default(_objectSpread({}, _App.default));
 createApp(app).$mount();
@@ -98,38 +101,70 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _api = _interopRequireDefault(__webpack_require__(/*! ./utils/api */ 30));
 var _env = _interopRequireDefault(__webpack_require__(/*! ./config/env */ 31));
-/**
- * Copyright (C) 2018-2019
- * All rights reserved, Designed By www.dingyangmall.com
- */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var _default = {
   onLaunch: function onLaunch() {
-    var app = getApp();
-    app.api = _api.default;
-    app.globalData = {
+    console.log('Hello World');
+    console.log('[如囍优选] App.onLaunch 已执行');
+    // 注意：onLaunch 时 getApp() 可能尚未可用，必须用 this 指向当前 App 实例
+    this.api = _api.default;
+    this.globalData = {
+      __api: _api.default,
+      wxToken: null,
       thirdSession: null,
       wxUser: null,
+      profileSkipped: false,
       config: _env.default,
       StatusBar: 0,
       Custom: null,
       CustomBar: 0,
       shoppingCartCount: '0'
     };
-    app.initPage = this.initPage;
-    app.doLogin = this.doLogin;
-    app.shoppingCartCount = this.shoppingCartCount;
-    app.getCurrentPageUrlWithArgs = this.getCurrentPageUrlWithArgs;
+    // 冷启动时从 storage 恢复令牌，后续请求带 X-Wx-Token
+    try {
+      var _u = typeof uni !== 'undefined' ? uni : wx;
+      if (_u.getStorageSync) {
+        var saved = _u.getStorageSync('wx_token');
+        if (saved && typeof saved === 'string' && saved.length > 0) {
+          this.globalData.wxToken = saved;
+          this.globalData.thirdSession = saved;
+          console.log('[App] 已从 storage 恢复 token');
+        }
+      }
+    } catch (e) {
+      console.warn('[App] 恢复 token 失败', e && e.message);
+    }
+    this.initPage = this.initPage.bind(this);
+    this.doLogin = this.doLogin.bind(this);
+    this.shoppingCartCount = this.shoppingCartCount.bind(this);
+    this.getCurrentPageUrlWithArgs = this.getCurrentPageUrlWithArgs.bind(this);
+
+    // 诊断：仅在有 token 时发起测试请求，不在启动时自动静默登录（避免未点「微信一键登录」就调登录接口、启动页不跳转）
+    var that = this;
+    setTimeout(function () {
+      if ((that.globalData.wxToken || that.globalData.thirdSession) && that.api && typeof that.api.goodsCategoryGet === 'function') {
+        console.log('[App] 诊断：发起测试请求', _env.default.basePath);
+        that.api.goodsCategoryGet().then(function () {
+          return console.log('[App] 诊断请求成功');
+        }).catch(function (e) {
+          return console.warn('[App] 诊断请求失败', e);
+        });
+      }
+    }, 300);
     this.updateManager();
     var u = typeof uni !== 'undefined' ? uni : wx;
     u.getSystemInfo({
       success: function success(e) {
-        app.globalData.StatusBar = e.statusBarHeight;
+        that.globalData.StatusBar = e.statusBarHeight;
         var custom = u.getMenuButtonBoundingClientRect && u.getMenuButtonBoundingClientRect();
         if (custom) {
-          app.globalData.Custom = custom;
-          app.globalData.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
+          that.globalData.Custom = custom;
+          that.globalData.CustomBar = custom.bottom + custom.top - e.statusBarHeight;
         }
       }
     });
@@ -153,60 +188,205 @@ var _default = {
     },
     initPage: function initPage() {
       var that = getApp();
+      var u = typeof uni !== 'undefined' ? uni : wx;
       return new Promise(function (resolve) {
-        if (!that.globalData.thirdSession) {
-          that.doLogin().then(function () {
-            return resolve('success');
-          });
-        } else {
-          var u = typeof uni !== 'undefined' ? uni : wx;
+        if (that.globalData.wxToken || that.globalData.thirdSession) {
           u.checkSession({
             success: function success() {
               return resolve('success');
             },
             fail: function fail() {
-              return that.doLogin().then(function () {
-                return resolve('success');
-              });
+              that.globalData.wxToken = null;
+              that.globalData.thirdSession = null;
+              that.globalData.wxUser = null;
+              try {
+                if (u.removeStorageSync) u.removeStorageSync('wx_token');
+                if (u.removeStorageSync) u.removeStorageSync('wx_third_session');
+              } catch (e) {}
+              resolve('success');
             }
           });
+          return;
         }
+        // 无 token 时不再自动静默登录，避免未点击「微信一键登录」就调登录接口；需用户主动点击登录
+        resolve('success');
       });
     },
-    doLogin: function doLogin() {
-      var u = typeof uni !== 'undefined' ? uni : wx;
+    _doSilentLogin: function _doSilentLogin() {
+      // 单例：多接口同时 60002 时共享同一登录请求，避免疯狂重试
       var that = getApp();
-      u.showLoading({
-        title: '登录中'
-      });
-      return new Promise(function (resolve) {
-        u.login({
+      if (that._silentLoginPromise) return that._silentLoginPromise;
+      var u = typeof uni !== 'undefined' ? uni : wx;
+      // 微信环境下必须用官方 wx.login 取 code，后端据此调 code2Session
+      var loginApi = typeof wx !== 'undefined' && wx.login ? wx : u;
+      that._silentLoginPromise = new Promise(function (resolve, reject) {
+        loginApi.login({
           success: function success(res) {
-            if (res.code) {
-              _api.default.login({
-                jsCode: res.code
-              }).then(function (resp) {
-                u.hideLoading();
-                var wxUser = resp.data;
-                that.globalData.thirdSession = wxUser.sessionKey;
-                that.globalData.wxUser = wxUser;
-                resolve('success');
-                that.shoppingCartCount();
-              });
+            if (!res.code) {
+              reject(new Error('no code'));
+              return;
             }
+            _api.default.login({
+              code: res.code,
+              jsCode: res.code
+            }).then(function (resp) {
+              var raw = resp && (0, _typeof2.default)(resp) === 'object' ? resp : {};
+              var data = raw.data && (0, _typeof2.default)(raw.data) === 'object' ? raw.data : raw;
+              if (data && data.data && (0, _typeof2.default)(data.data) === 'object' && (data.data.token != null || data.data.openid != null)) data = data.data;
+              var token = data && (data.token != null ? data.token : data.thirdSession || data.sessionKey) || (raw.token != null ? raw.token : null);
+              var openid = data && (data.openid != null ? data.openid : data.userId != null ? data.userId : '');
+              var userId = data && (data.userId != null ? data.userId : openid);
+              if (!token) {
+                reject(new Error('no token'));
+                return;
+              }
+              that.globalData.wxToken = token;
+              that.globalData.thirdSession = token;
+              try {
+                var _u2 = typeof uni !== 'undefined' ? uni : wx;
+                if (_u2.setStorageSync) {
+                  _u2.setStorageSync('wx_token', token);
+                  _u2.setStorageSync('wx_third_session', token);
+                }
+              } catch (e) {}
+              that.globalData.wxUser = _objectSpread({
+                sessionKey: token,
+                userId: userId || openid,
+                openid: openid || userId,
+                nickName: data && (data.nickname != null ? data.nickname : data.nickName) || '',
+                headimgUrl: data && (data.avatarUrl != null ? data.avatarUrl : data.headimgUrl || data.avatar) || ''
+              }, data || {});
+              that._silentLoginPromise = null;
+              that._loginFailedAt = 0;
+              resolve();
+            }).catch(function (err) {
+              console.warn('[静默登录] 失败', err);
+              that._silentLoginPromise = null;
+              that._loginFailedAt = Date.now();
+              reject(err);
+            });
+          },
+          fail: function fail() {
+            that._silentLoginPromise = null;
+            that._loginFailedAt = Date.now();
+            reject(new Error('wx.login fail'));
           }
         });
       });
+      return that._silentLoginPromise;
+    },
+    doLogin: function doLogin() {
+      var that = getApp();
+      // 单例：防止用户快速多次点击或多处同时调用导致重复请求
+      if (that._doLoginPromise) return that._doLoginPromise;
+      var u = typeof uni !== 'undefined' ? uni : wx;
+      u.showLoading({
+        title: '登录中'
+      });
+      // 微信小程序必须走官方 wx.login 获取 code，后端据此调微信 code2Session
+      var loginApi = typeof wx !== 'undefined' && wx.login ? wx : u;
+      that._doLoginPromise = new Promise(function (resolve) {
+        loginApi.login({
+          success: function success(res) {
+            if (res.code) {
+              _api.default.login({
+                code: res.code,
+                jsCode: res.code
+              }).then(function (resp) {
+                u.hideLoading();
+                var raw = resp && (0, _typeof2.default)(resp) === 'object' ? resp : {};
+                var data = raw.data && (0, _typeof2.default)(raw.data) === 'object' ? raw.data : raw;
+                if (data && data.data && (0, _typeof2.default)(data.data) === 'object' && (data.data.token != null || data.data.openid != null)) data = data.data;
+                if (!(data && (data.token != null || data.userId != null || data.openid != null))) data = raw;
+                var openid = data && (data.openid != null ? data.openid : data.userId != null ? data.userId : '');
+                var userId = data && (data.userId != null ? data.userId : openid);
+                var token = data && (data.token != null ? data.token : data.thirdSession || data.sessionKey) || (raw.token != null ? raw.token : null) || openid || userId;
+                if (!token) {
+                  console.warn('[Login] 响应中无 token', raw);
+                  that._doLoginPromise = null;
+                  resolve('fail');
+                  return;
+                }
+                console.log('[Login] 成功，已保存 token', {
+                  openid: openid ? openid.slice(0, 12) + '...' : '(空)',
+                  tokenPrefix: token ? token.slice(0, 12) + '...' : '(空)'
+                });
+                if (_env.default.apiDebug) console.log('[Login] 解析结果', {
+                  token: token.slice(0, 12) + '...',
+                  userId: userId,
+                  openid: openid,
+                  hasNickname: !!(data.nickname || data.nickName),
+                  hasAvatar: !!(data.avatarUrl || data.avatar)
+                });
+                that._loginFailedAt = 0;
+                that.globalData.wxToken = token;
+                that.globalData.thirdSession = token;
+                try {
+                  if (u.setStorageSync) {
+                    u.setStorageSync('wx_token', token);
+                    u.setStorageSync('wx_third_session', token);
+                  }
+                } catch (e) {}
+                that.globalData.wxUser = _objectSpread({
+                  sessionKey: token,
+                  userId: userId,
+                  openid: openid || userId,
+                  nickName: data.nickname != null ? data.nickname : data.nickName || '',
+                  headimgUrl: data.avatarUrl != null ? data.avatarUrl : data.headimgUrl || data.avatar || '',
+                  avatarUrl: data.avatarUrl,
+                  nickname: data.nickname,
+                  unionid: data.unionid
+                }, data);
+                that._doLoginPromise = null;
+                resolve('success');
+              }).catch(function (err) {
+                console.warn('[Login] 请求失败', err);
+                u.hideLoading();
+                that._doLoginPromise = null;
+                that._loginFailedAt = Date.now();
+                resolve('fail');
+              });
+            } else {
+              u.hideLoading();
+              that._doLoginPromise = null;
+              that._loginFailedAt = Date.now();
+              resolve('fail');
+            }
+          },
+          fail: function fail() {
+            u.hideLoading();
+            that._doLoginPromise = null;
+            that._loginFailedAt = Date.now();
+            resolve('fail');
+          }
+        });
+      });
+      return that._doLoginPromise;
     },
     shoppingCartCount: function shoppingCartCount() {
-      var that = getApp();
-      that.api.shoppingCartCount().then(function (res) {
-        that.globalData.shoppingCartCount = res.data + '';
+      var that = getApp() || this;
+      if (!that || !that.globalData) return;
+      var hasToken = !!(that.globalData.wxToken || that.globalData.thirdSession);
+      if (!hasToken) {
+        that.globalData.shoppingCartCount = '0';
         var u = typeof uni !== 'undefined' ? uni : wx;
-        u.setTabBarBadge({
+        if (u.setTabBarBadge) u.setTabBarBadge({
+          index: 2,
+          text: '0'
+        }).catch(function () {});
+        return;
+      }
+      var apiRef = that && that.api || that.globalData && that.globalData.__api || (typeof _api.default !== 'undefined' ? _api.default : null);
+      if (!apiRef || typeof apiRef.shoppingCartCount !== 'function') return;
+      apiRef.shoppingCartCount().then(function (res) {
+        if (that && that.globalData) that.globalData.shoppingCartCount = (res.data != null ? res.data : res) + '';
+        var u = typeof uni !== 'undefined' ? uni : wx;
+        if (that && that.globalData && u.setTabBarBadge) u.setTabBarBadge({
           index: 2,
           text: that.globalData.shoppingCartCount + ''
         });
+      }).catch(function () {
+        if (that && that.globalData) that.globalData.shoppingCartCount = '0';
       });
     },
     getCurrentPageUrlWithArgs: function getCurrentPageUrlWithArgs() {

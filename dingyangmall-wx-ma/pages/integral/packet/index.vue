@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="padding">
+  <view class="padding tm-page">
     <view class="bg-white padding radius shadow-lg">
       <view class="text-center margin-bottom-lg">
         <view class="text-xxl text-bold text-red">积分红包</view>
@@ -15,10 +15,10 @@
         <view class="cu-form-group">
           <view class="title">验证码</view>
           <input placeholder="短信验证码" type="number" maxlength="6" v-model="code" />
-          <button class="cu-btn bg-green shadow" @tap="sendSms" :disabled="smsDisabled">{{ smsText }}</button>
+          <button class="cu-btn tm-outline-btn shadow" @tap="sendSms" :disabled="smsDisabled">{{ smsText }}</button>
         </view>
         <view class="padding flex flex-direction margin-top-xl">
-          <button class="cu-btn bg-red margin-tb-sm lg" @tap="sendPacket" :loading="loading">确认发送</button>
+          <button class="cu-btn tm-primary-btn margin-tb-sm lg" @tap="sendPacket" :loading="loading">确认发送</button>
         </view>
       </view>
       <view class="text-gray text-sm padding-lr margin-top">
@@ -43,14 +43,20 @@ export default {
       smsText: '获取验证码',
       smsDisabled: false,
       timer: null,
-      userInfo: {}
+      userInfo: {},
+      _destroyed: false
     }
   },
   onLoad() {
     getApp().initPage().then(() => this.getUserInfo())
   },
+  onUnload() {
+    this._destroyed = true
+    if (this.timer) { clearInterval(this.timer); this.timer = null }
+  },
   beforeDestroy() {
-    if (this.timer) clearInterval(this.timer)
+    this._destroyed = true
+    if (this.timer) { clearInterval(this.timer); this.timer = null }
   },
   methods: {
     getUserInfo() {
@@ -69,9 +75,14 @@ export default {
       this.smsDisabled = true
       this.smsText = time + 's'
       this.timer = setInterval(() => {
-        time--
-        if (time <= 0) { clearInterval(this.timer); this.smsDisabled = false; this.smsText = '获取验证码' }
-        else this.smsText = time + 's'
+        try {
+          if (this._destroyed) { if (this.timer) clearInterval(this.timer); this.timer = null; return }
+          time--
+          if (time <= 0) { clearInterval(this.timer); this.timer = null; this.smsDisabled = false; this.smsText = '获取验证码'; return }
+          this.smsText = time + 's'
+        } catch (e) {
+          if (this.timer) { clearInterval(this.timer); this.timer = null }
+        }
       }, 1000)
     },
     sendPacket() {
@@ -92,5 +103,5 @@ export default {
 </script>
 
 <style scoped>
-.padding { padding: 30rpx; min-height: 100vh; background: #f3f4f7; }
+.padding { padding: 30rpx; min-height: 100vh; }
 </style>

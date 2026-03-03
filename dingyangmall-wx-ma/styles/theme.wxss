@@ -3,11 +3,14 @@
 page {
   background-color: #f7f8fa;
   color: #1f2329;
+  /* 确保页面可点击，不被误设 pointer-events 覆盖 */
+  pointer-events: auto;
 }
 
 .tm-page {
   min-height: 100vh;
   background: linear-gradient(180deg, #fafbff 0%, #f6f7fb 45%, #f7f8fa 100%);
+  pointer-events: auto;
 }
 
 .tm-text-primary {

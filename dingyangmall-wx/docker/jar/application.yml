@@ -145,15 +145,15 @@ wx:
   # 公众号配置
   mp:
     configs:
-      - appId: xxxxxxxx
-        secret: xxxxxxxxxxxxxxxxxxxxxxxxxx
+      - appId: wx43adcb652c1b2b19
+        secret: 1025760f7aea70f78b1496f123d090cf
         token: xxxxxxxxxx
         aesKey: xxxxxxxxxxxxxxxxxxxx
   # 小程序配置
   ma:
     configs:
-      - appId: xxxxxxxxxxxxxxxx
-        secret: xxxxxxxxxxxxx
+      - appId: wx43adcb652c1b2b19
+        secret: 1025760f7aea70f78b1496f123d090cf
         # 微信支付商户号，请去微信支付平台申请
         mchId: 1588227511
         # 微信支付商户APIv2密钥，请去微信支付平台申请

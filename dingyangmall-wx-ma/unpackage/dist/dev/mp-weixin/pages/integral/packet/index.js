@@ -185,7 +185,8 @@ var _default = {
       smsText: '获取验证码',
       smsDisabled: false,
       timer: null,
-      userInfo: {}
+      userInfo: {},
+      _destroyed: false
     };
   },
   onLoad: function onLoad() {
@@ -194,8 +195,19 @@ var _default = {
       return _this.getUserInfo();
     });
   },
+  onUnload: function onUnload() {
+    this._destroyed = true;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+  },
   beforeDestroy: function beforeDestroy() {
-    if (this.timer) clearInterval(this.timer);
+    this._destroyed = true;
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
   },
   methods: {
     getUserInfo: function getUserInfo() {
@@ -228,12 +240,27 @@ var _default = {
       this.smsDisabled = true;
       this.smsText = time + 's';
       this.timer = setInterval(function () {
-        time--;
-        if (time <= 0) {
-          clearInterval(_this4.timer);
-          _this4.smsDisabled = false;
-          _this4.smsText = '获取验证码';
-        } else _this4.smsText = time + 's';
+        try {
+          if (_this4._destroyed) {
+            if (_this4.timer) clearInterval(_this4.timer);
+            _this4.timer = null;
+            return;
+          }
+          time--;
+          if (time <= 0) {
+            clearInterval(_this4.timer);
+            _this4.timer = null;
+            _this4.smsDisabled = false;
+            _this4.smsText = '获取验证码';
+            return;
+          }
+          _this4.smsText = time + 's';
+        } catch (e) {
+          if (_this4.timer) {
+            clearInterval(_this4.timer);
+            _this4.timer = null;
+          }
+        }
       }, 1000);
     },
     sendPacket: function sendPacket() {

@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
+  <view class="page tm-page">
     <form @submit="userAddressSave">
       <view class="cu-form-group"><view class="title">姓名</view><input placeholder="请输入姓名" name="userName" v-model="userAddress.userName" /></view>
       <view class="cu-form-group"><view class="title">联系电话</view><input placeholder="请输入电话" name="telNum" v-model="userAddress.telNum" type="number" /></view>
@@ -14,9 +14,9 @@
       </view>
       <view class="cu-form-group"><view class="title">详细地址</view><input placeholder="请输入详细地址" name="detailInfo" v-model="userAddress.detailInfo" /></view>
       <view class="cu-form-group"><view class="title">设为默认地址</view><switch class="red sm" :checked="userAddress.isDefault == '1'" @change="isDefaultChange" /></view>
-      <button class="cu-btn block bg-green margin-sm" formType="submit">立即保存</button>
-      <button class="cu-btn block bg-red margin-sm" v-if="userAddress.id" @tap="userAddressDelete">删除</button>
-      <button class="cu-btn block bg-orange margin-sm cuIcon-weixin" @tap="getWxAddress">导入微信地址</button>
+      <button class="cu-btn block tm-primary-btn margin-sm" formType="submit">立即保存</button>
+      <button class="cu-btn block tm-secondary-btn margin-sm" v-if="userAddress.id" @tap="userAddressDelete">删除</button>
+      <button class="cu-btn block tm-outline-btn margin-sm cuIcon-weixin" @tap="getWxAddress">导入微信地址</button>
     </form>
   </view>
 </template>
@@ -28,6 +28,7 @@ export default {
     return { region: ['选择省', '选择市', '选择区'], userAddress: {} }
   },
   onLoad() {
+    getApp().initPage()
     uni.getStorage({
       key: 'param-userAddressForm',
       success: (res) => {

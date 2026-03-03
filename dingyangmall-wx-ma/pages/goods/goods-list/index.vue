@@ -2,9 +2,9 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
-    <view class="cu-bar search bg-white fixed">
-      <view class="search-form round">
+  <view class="page tm-page">
+    <view class="cu-bar search bg-white fixed tm-top-nav">
+      <view class="search-form round tm-search-bar">
         <text class="cuIcon-search"></text>
         <navigator class="response" hover-class="none" url="/pages/base/search/index">
           <input type="text" placeholder="请输入商品名" :value="parameter.name" disabled />
@@ -16,9 +16,9 @@
         </view>
       </view>
     </view>
-    <view class="cu-bar justify-center bg-white fixed bar-fix">
+    <view class="cu-bar justify-center bg-white fixed bar-fix tm-top-nav">
       <view class="grid response text-center align-start">
-        <view class="flex-sub padding-sm margin-xs radius text-blue text-bold">{{ title }}</view>
+        <view class="flex-sub padding-sm margin-xs radius tm-tab-active">{{ title }}</view>
         <view class="flex-sub padding-sm margin-xs radius" @tap="sortHandle('price')">
           价格
           <view class="margin-left-xs">
@@ -46,6 +46,7 @@
 
 <script>
 import util from '@/utils/util'
+import apiModule from '@/utils/api'
 import GoodsCardIndex from '@/components/goods-card-index/index.vue'
 import GoodsRow from '@/components/goods-row/index.vue'
 export default {
@@ -78,7 +79,10 @@ export default {
   },
   methods: {
     goodsPage() {
-      getApp().api.goodsPage(Object.assign({}, this.page, util.filterForm(this.parameter))).then(res => {
+      const app = getApp()
+      const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+      if (!api || typeof api.goodsPage !== 'function') return
+      api.goodsPage(Object.assign({}, this.page, util.filterForm(this.parameter))).then(res => {
         const list = (res.data && res.data.records) || []
         this.goodsList = [...this.goodsList, ...list]
         if (list.length < this.page.size) this.loadmore = false
@@ -116,5 +120,8 @@ export default {
 <style scoped>
 .page { padding-bottom: 40rpx; }
 .bar-fix { margin-top: 80rpx; box-shadow: none; }
-.list-wrap { margin-top: 200rpx; }
+.list-wrap { margin-top: 208rpx; }
+.search-form { border-radius: 999rpx; }
+.cuIcon-triangleupfill.text-blue,
+.cuIcon-triangledownfill.text-blue { color: #ff0036 !important; }
 </style>

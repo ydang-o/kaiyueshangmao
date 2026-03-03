@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page margin-bottom-bar">
+  <view class="page tm-page margin-bottom-bar">
     <view class="cu-list menu-avatar">
       <navigator v-if="orderSubParm.deliveryWay == '1'" class="cu-item" url="/pages/user/user-address/list/index?select=true">
         <view class="cu-avatar round cuIcon-location bg-black"></view>
@@ -22,7 +22,7 @@
       <view class="cu-item">
         <view class="cu-list menu">
           <view v-for="(item, i) in orderConfirmData" :key="i" class="flex align-center">
-            <image :src="item.picUrl || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
+            <image :src="$imgUrl(item.picUrl) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
             <view class="row-info margin-left">
               <view class="text-black margin-top-xl overflow-2">{{ item.spuName }}</view>
               <view class="text-gray text-sm margin-top-xs cu-tag round" v-if="item.specInfo">{{ item.specInfo }}</view>
@@ -49,7 +49,7 @@
           <text class="text-sm text-gray">共{{ orderConfirmData.length }}件，</text>
           <text class="text-sm text-gray">合计：</text>
           <text class="text-xl text-price text-blue text-bold">{{ paymentTotal }}</text>
-          <button class="cu-btn shadow-blur margin-left-sm submit-btn" @tap="orderSub" :loading="loading" :disabled="loading"><text class="text-white">提交订单</text></button>
+          <button class="cu-btn shadow-blur margin-left-sm submit-btn tm-primary-btn" @tap="orderSub" :loading="loading" :disabled="loading"><text class="text-white">提交订单</text></button>
         </view>
       </view>
     </view>
@@ -77,8 +77,10 @@ export default {
     }
   },
   onLoad() {
-    this.userAddressPage()
-    this.orderConfirmDo()
+    getApp().initPage().then(() => {
+      this.userAddressPage()
+      this.orderConfirmDo()
+    })
   },
   methods: {
     orderConfirmDo() {
@@ -125,8 +127,8 @@ export default {
 <style scoped>
 .margin-bottom-bar { margin-bottom: 120rpx; }
 .bar-rt { text-align: right; }
-.submit-btn { background-color: #2967ff; font-weight: 300; width: 220rpx; }
-.row-img { width: 200rpx; height: 200rpx; border-radius: 10rpx; }
+.submit-btn { width: 220rpx; }
+.row-img { width: 200rpx; height: 200rpx; border-radius: 14rpx; }
 .row-info { flex: 1; }
 .loc-info { min-height: 40rpx; }
 </style>

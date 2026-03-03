@@ -102,11 +102,20 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
+  var l0 = _vm.__map(_vm.orderConfirmData, function (item, i) {
+    var $orig = _vm.__get_orig(item)
+    var m0 = _vm.$imgUrl(item.picUrl) || "/static/img/no_pic.png"
+    return {
+      $orig: $orig,
+      m0: m0,
+    }
+  })
   var g0 = _vm.orderConfirmData.length
   _vm.$mp.data = Object.assign(
     {},
     {
       $root: {
+        l0: l0,
         g0: g0,
       },
     }
@@ -233,12 +242,15 @@ var _default = {
     }
   },
   onLoad: function onLoad() {
-    this.userAddressPage();
-    this.orderConfirmDo();
+    var _this = this;
+    getApp().initPage().then(function () {
+      _this.userAddressPage();
+      _this.orderConfirmDo();
+    });
   },
   methods: {
     orderConfirmDo: function orderConfirmDo() {
-      var _this = this;
+      var _this2 = this;
       uni.getStorage({
         key: 'param-orderConfirm',
         success: function success(res) {
@@ -251,15 +263,15 @@ var _default = {
             item.freightPrice = 0;
             freightPrice = (Number(freightPrice) + Number(item.freightPrice || 0)).toFixed(2);
           });
-          _this.orderConfirmData = orderConfirmData;
-          _this.salesPrice = salesPrice;
-          _this.freightPrice = freightPrice;
-          _this.paymentPrice = salesPrice;
+          _this2.orderConfirmData = orderConfirmData;
+          _this2.salesPrice = salesPrice;
+          _this2.freightPrice = freightPrice;
+          _this2.paymentPrice = salesPrice;
         }
       });
     },
     userAddressPage: function userAddressPage() {
-      var _this2 = this;
+      var _this3 = this;
       getApp().api.userAddressPage({
         searchCount: false,
         current: 1,
@@ -267,11 +279,11 @@ var _default = {
         isDefault: '1'
       }).then(function (res) {
         var records = res.data && res.data.records || [];
-        if (records.length > 0) _this2.userAddress = records[0];
+        if (records.length > 0) _this3.userAddress = records[0];
       });
     },
     orderSub: function orderSub() {
-      var _this3 = this;
+      var _this4 = this;
       if (this.orderSubParm.deliveryWay == '1' && !this.userAddress) {
         uni.showToast({
           title: '请选择收货地址',
@@ -290,7 +302,7 @@ var _default = {
           url: '/pages/order/order-detail/index?callPay=true&id=' + res.data.id
         });
       }).catch(function () {
-        _this3.loading = false;
+        _this4.loading = false;
       });
     }
   }

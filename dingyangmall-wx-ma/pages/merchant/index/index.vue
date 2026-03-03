@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page padding">
+  <view class="page tm-page padding">
     <view class="bg-white padding radius shadow-lg margin-bottom">
       <view class="text-xl text-bold margin-bottom">常用功能</view>
       <view class="grid col-2 text-center">
@@ -50,7 +50,7 @@
       </view>
     </view>
     <view class="padding flex flex-direction margin-top-xl">
-      <button class="cu-btn bg-grey lg" @tap="logout">退出登录</button>
+      <button class="cu-btn tm-secondary-btn lg" @tap="logout">退出登录</button>
     </view>
   </view>
 </template>

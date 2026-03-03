@@ -167,13 +167,16 @@ var _default = {
     };
   },
   onLoad: function onLoad(options) {
-    if (options.id) this.getLogistics(options.id);
+    var _this = this;
+    getApp().initPage().then(function () {
+      if (options && options.id) _this.getLogistics(options.id);
+    });
   },
   methods: {
     getLogistics: function getLogistics(id) {
-      var _this = this;
+      var _this2 = this;
       getApp().api.orderLogistics(id).then(function (res) {
-        _this.orderLogistics = res.data || {};
+        _this2.orderLogistics = res.data || {};
       });
     },
     copyNo: function copyNo() {

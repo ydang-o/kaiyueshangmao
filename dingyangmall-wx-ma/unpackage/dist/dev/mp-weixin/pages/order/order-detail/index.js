@@ -107,11 +107,22 @@ var render = function () {
       ["2", "3", "4"].indexOf(_vm.orderInfo.status) >= 0 &&
       _vm.orderInfo.orderLogistics
     : null
+  var l0 = _vm.orderInfo
+    ? _vm.__map(_vm.orderInfo.listOrderItem || [], function (item, i) {
+        var $orig = _vm.__get_orig(item)
+        var m0 = _vm.$imgUrl(item.picUrl) || "/static/img/no_pic.png"
+        return {
+          $orig: $orig,
+          m0: m0,
+        }
+      })
+    : null
   _vm.$mp.data = Object.assign(
     {},
     {
       $root: {
         g0: g0,
+        l0: l0,
       },
     }
   )
@@ -156,12 +167,12 @@ Object.defineProperty(exports, "__esModule", {
 exports.default = void 0;
 var CountDown = function CountDown() {
   __webpack_require__.e(/*! require.ensure | components/count-down/index */ "components/count-down/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/count-down/index.vue */ 218));
+    return resolve(__webpack_require__(/*! @/components/count-down/index.vue */ 233));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var OrderOperate = function OrderOperate() {
   __webpack_require__.e(/*! require.ensure | components/order-operate/index */ "components/order-operate/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 211));
+    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 226));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {

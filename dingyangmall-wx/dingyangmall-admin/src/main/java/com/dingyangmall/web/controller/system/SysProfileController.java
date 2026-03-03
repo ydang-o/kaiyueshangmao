@@ -125,7 +125,7 @@ public class SysProfileController extends BaseController
         if (!file.isEmpty())
         {
             LoginUser loginUser = getLoginUser();
-            com.dingyangmall.web.domain.SysUploadFile entity = sysUploadFileService.save(file);
+            com.dingyangmall.system.domain.SysUploadFile entity = sysUploadFileService.save(file);
             String avatar = Constants.RESOURCE_PREFIX + "/file/" + entity.getFileId();
             if (userService.updateUserAvatar(loginUser.getUsername(), avatar))
             {

@@ -110,8 +110,14 @@ public class SecurityConfig
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 注解标记允许匿名访问的url
             .authorizeHttpRequests((requests) -> {
+                // 公开接口（无需认证，最先匹配）
+                requests.requestMatchers("/api/public/**").permitAll();
+                // /api/ma/** 由 WxMaSecurityConfig 专用链处理（按 token 注入 memberId），此处放行避免主链 401
+                requests.requestMatchers("/api/ma/**").permitAll();
+                // 小程序接口放行（不校验 JWT，由 WxMaMemberFilter 按 X-Wx-Token 注入会员）
+                requests.requestMatchers("/weixin/api/ma/**").permitAll();
                 permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());
-                // 对于登录login 注册register 验证码captchaImage 允许匿名访问
+                // 登录、注册、验证码、门户等允许匿名
                 requests.requestMatchers("/login", "/register", "/captchaImage", "/weixin/portal/**", "/weixin/api/**", "/dingyangmall-wiki/**", "/app/member/login", "/app/member/register", "/app/member/send-sms-code").permitAll()
                     // 静态资源，可匿名访问
                     .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**.html", "/**.css", "/**.js", "/profile/**").permitAll()

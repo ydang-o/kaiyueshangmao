@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page margin-bottom-bar" v-if="orderInfo">
+  <view class="page tm-page margin-bottom-bar" v-if="orderInfo">
     <view class="bg-white padding">
       <view class="status-desc text-red margin-left text-bold text-center" :class="'cuIcon-' + statusIcon">{{ orderInfo.statusDesc }}</view>
       <view class="text-black margin-left text-center" v-if="orderInfo.isPay == '0' && !orderInfo.status">
@@ -35,7 +35,7 @@
           <view v-for="(item, i) in (orderInfo.listOrderItem || [])" :key="i">
             <navigator hover-class="none" :url="'/pages/goods/goods-detail/index?id=' + item.spuId" class="cu-item">
               <view class="flex align-center">
-                <image :src="item.picUrl || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
+                <image :src="$imgUrl(item.picUrl) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
                 <view class="desc row-info">
                   <view class="text-black margin-left margin-top-sm overflow-2">{{ item.spuName }}</view>
                   <view class="text-gray text-sm margin-top-sm overflow-2" v-if="item.specInfo">{{ item.specInfo }}</view>
@@ -51,7 +51,7 @@
           </view>
           <view class="cu-item margin-top-xs"><text class="text-gray font-weight">订单金额</text><view class="action"><text class="text-price">{{ orderInfo.salesPrice }}</text></view></view>
           <view class="cu-item margin-top-xs"><text class="text-gray font-weight">运费金额</text><view class="action">+ <text class="text-price">{{ orderInfo.freightPrice }}</text></view></view>
-          <view class="cu-item margin-top-xs"><text class="text-gray font-weight">支付金额</text><view class="action"><text class="text-price text-xl text-blue text-bold">{{ orderInfo.paymentPrice }}</text></view></view>
+          <view class="cu-item margin-top-xs"><text class="text-gray font-weight">支付金额</text><view class="action"><text class="text-price text-xl tm-brand text-bold">{{ orderInfo.paymentPrice }}</text></view></view>
         </view>
       </view>
     </view>
@@ -128,7 +128,7 @@ export default {
 <style scoped>
 .margin-bottom-bar { margin-bottom: 120rpx; }
 .mar-top-30 { margin-top: 30rpx; }
-.row-img { width: 200rpx; height: 200rpx; border-radius: 10rpx; }
+.row-img { width: 200rpx; height: 200rpx; border-radius: 14rpx; }
 .row-info { flex: 1; margin-left: 20rpx; }
 .loc-info { min-height: 40rpx; }
 </style>

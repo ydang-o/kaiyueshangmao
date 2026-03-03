@@ -9,6 +9,8 @@
 export default {
   // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
   basePath: 'http://localhost:7500',
+  // 接口联调日志开关（建议联调期开启，上线前可关闭）
+  apiDebug: true,
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame
   //广告开关（true/false）
   adEnable: true,

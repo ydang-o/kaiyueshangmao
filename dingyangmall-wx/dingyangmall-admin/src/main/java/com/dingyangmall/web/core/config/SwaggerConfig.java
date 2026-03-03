@@ -47,19 +47,15 @@ public class SwaggerConfig
     }
     
     /**
-     * 添加摘要信息
+     * 添加摘要信息（Knife4j 文档页展示）
      */
     public Info getApiInfo()
     {
         return new Info()
-            // 设置标题
-            .title("标题：若依管理系统_接口文档")
-            // 描述
-            .description("描述：用于管理集团旗下公司的人员信息,具体包括XXX,XXX模块...")
-            // 作者信息
+            .title("如囍严选接口文档")
+            .description("管理端、移动端（小程序/App）、商家端全部接口，可在左侧分组或「全部接口」中查看。")
             .contact(new Contact().name(ruoyiConfig.getName()))
-            // 版本
-            .version("版本号:" + ruoyiConfig.getVersion());
+            .version("v" + ruoyiConfig.getVersion());
     }
 }
 

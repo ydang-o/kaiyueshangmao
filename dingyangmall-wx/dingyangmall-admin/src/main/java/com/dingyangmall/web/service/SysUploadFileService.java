@@ -1,7 +1,7 @@
 package com.dingyangmall.web.service;
 
-import com.dingyangmall.web.domain.SysUploadFile;
-import com.dingyangmall.web.mapper.SysUploadFileMapper;
+import com.dingyangmall.system.domain.SysUploadFile;
+import com.dingyangmall.system.mapper.SysUploadFileMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Date;
 
 /**
- * 上传文件服务（文件存于 MySQL）
+ * 上传文件服务（文件存于 MySQL，使用 system 模块 Mapper）
  */
 @Service
 public class SysUploadFileService {

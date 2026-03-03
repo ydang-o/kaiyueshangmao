@@ -18,7 +18,8 @@
     { "path": "pages/merchant/index/index", "style": { "navigationBarTitleText": "商家" } },
     { "path": "pages/merchant/login/index", "style": { "navigationBarTitleText": "商家登录" } },
     { "path": "pages/lottery/index/index", "style": { "navigationBarTitleText": "积分抽奖" } },
-    { "path": "pages/integral/packet/index", "style": { "navigationBarTitleText": "积分红包" } }
+    { "path": "pages/integral/packet/index", "style": { "navigationBarTitleText": "积分红包" } },
+    { "path": "pages/debug/api-test/index", "style": { "navigationBarTitleText": "接口调试" } }
   ],
   "globalStyle": {
     "navigationBarTextStyle": "black",
@@ -27,9 +28,11 @@
     "backgroundColor": "#f3f4f7"
   },
   "tabBar": {
+    "custom": true,
     "backgroundColor": "#ffffff",
-    "color": "#484848",
-    "selectedColor": "#2967ff",
+    "color": "#9ca3af",
+    "selectedColor": "#ff0036",
+    "borderStyle": "black",
     "list": [
       { "pagePath": "pages/home/index", "text": "首页", "iconPath": "static/tabbar/home.png", "selectedIconPath": "static/tabbar/home-active.png" },
       { "pagePath": "pages/goods/goods-category/index", "text": "分类", "iconPath": "static/tabbar/category.png", "selectedIconPath": "static/tabbar/category-active.png" },

@@ -338,6 +338,30 @@
 
 ---
 
+## 移动端接口实现说明
+
+- **小程序登录**：`POST /weixin/api/ma/wxuser/login` 已实现，严格遵循微信官方服务端 API [小程序登录凭证校验 code2Session](https://developers.weixin.qq.com/miniprogram/dev/server/API/user-login/api_code2session.html)（接口路径 `GET https://api.weixin.qq.com/sns/jscode2session`）。**登录需用户主动点击「微信一键登录」授权，前端不会在进入页面时自动调 wx.login。**  
+  - 流程：用户点击按钮后，小程序调用 **wx.login** 获取临时凭证 **code**，后端用 code 调用官方 **code2Session** 换取 **openid**（用户唯一标识）、**session_key**（会话密钥）、**unionid**（若已绑定开放平台）。以官方返回的 **openid 作为唯一 session 与用户标识**，不再使用自建 token；会话存 Redis 键 `wx:openid_session:{openid}`。**session_key 仅存服务端，绝不下发。**  
+  - 入参：JSON 含 `code` 或 `jsCode`。返回 `thirdSession`（=openid）、`userId`（=openid）、`openid`；若该用户曾保存过昵称/头像则一并返回。  
+  - 配置：**必须**在 `application.yml` 的 `wx.ma.configs` 中配置真实的小程序 AppID 和 AppSecret。  
+  - **数据库**：登录与更新用户信息写入**旧表 `wx_user`**（字段映射：openid→open_id，昵称→nick_name，头像→headimg_url，app_type=1 表示小程序）。使用项目主 SQL（如 `sql/dingyangmall_ry_fixed.sql`）中的 `wx_user` 表即可，无需新建表。  
+  - 同一 code 重复请求（如用户双击、前端重试）：后端幂等处理，会返回该 code 已对应的 openid 及会话；仅当无法复用会话时才提示重新点击「微信一键登录」。  
+  - 错误码（与官方一致）：40029（code 无效）、40163（code 已被使用，后端会尽量复用已建会话）；40013/40125 为 appId/appSecret 配置错误。
+- **获取当前用户信息**：`GET /weixin/api/ma/wxuser/info`，Header 携带 `third-session` 或 `openid`（值为微信官方 openid），返回 `userId`、`openid`、`nickname`、`avatarUrl`（若有）。
+- **更新用户信息**：`POST /weixin/api/ma/wxuser`，Header 携带 `third-session` 或 `openid`（值为 openid）。支持两种方式：（1）body 传 `encryptedData`、`iv`（如 wx.getUserProfile 返回），后端用 sessionKey 解密得到昵称/头像并落库；（2）body 直接传明文 `nickname`、`avatarUrl`（如头像/昵称按钮返回）。昵称、头像会写入 Redis，下次登录或调 `/info` 时带出。
+- **获取手机号**：`POST /weixin/api/ma/wxuser/phone` 已实现。前端 button `open-type="getPhoneNumber"` 回调拿到 `code` 后，请求本接口（body 传 `code`，可选传 `_thirdSession` 兜底）；需登录态（Header 的 third-session/openid）。后端调用微信 getuserphonenumber 用 code 换取手机号，返回 `phoneNumber`、`purePhoneNumber`、`countryCode`，并将手机号写入当前会话。**前提**：小程序已企业认证且在公众平台接口设置中开通「手机号」能力（见下一条）。
+- **微信公众平台配置（头像、昵称、手机号）**：若小程序端无法正常获取头像、昵称或手机号，多半与**微信公众平台与能力配置**有关，需在 [微信公众平台](https://mp.weixin.qq.com) 登录你的小程序后逐项核对：  
+  - **登录与基础**：在 **开发 → 开发管理 → 开发设置** 中确认 **AppID、AppSecret** 与后端 `application.yml` 中 `wx.ma.configs` 一致；**服务器域名** 里 request 合法域名包含你的后端域名（如 `https://your-api.com`）。  
+  - **头像与昵称**：微信已收紧「直接拉取用户头像昵称」能力。当前推荐使用 [头像昵称填写能力](https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/userProfile.html)（按钮 `open-type="chooseAvatar"` + 输入框 `type="nickname"`），由用户主动选择头像、填写昵称。若仍使用 `wx.getUserProfile`，需在**用户点击按钮**时调用，且基础库 2.10.4+；部分版本会限制弹窗或不再返回头像/昵称，需改用「头像昵称填写」组件。  
+  - **手机号**：获取用户手机号需同时满足：**（1）小程序主体为组织（企业/政府等）且完成微信认证**（个人主体无法开通）；（2）在 **开发 → 开发管理 → 接口设置** 中开通 **「手机号」** 能力；（3）自 2023 年起手机号能力为付费接口（有免费额度，超出需在 **付费管理** 购买）；（4）前端通过 button `open-type="getPhoneNumber"` 获取 **code**，后端需调用微信 [getPhoneNumber](https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html) 接口（`POST https://api.weixin.qq.com/wxa/business/getuserphonenumber`）用 code 换取手机号。若后端尚未实现该接口，需在服务端用 code + access_token 调微信接口解密得到手机号后再落库或返回前端。  
+  - 总结：**拿不到头像/昵称** 时优先检查是否改用「头像昵称填写」组件、是否在按钮点击中调用；**拿不到手机号** 时优先检查是否已企业认证、是否在接口设置中开通手机号能力、后端是否实现 getPhoneNumber 解密接口。
+- **公告列表**：`GET /weixin/api/ma/notice/list` 已实现，返回状态为正常的公告，供首页轮播使用。
+- **购物车/订单等需登录态接口**：请求时 Header 携带 `third-session` 或 `openid`（值为微信官方 openid）。后端通过 `WxMaMemberFilter` 根据该 openid 从 Redis `wx:openid_session:{openid}` 校验会话并注入 memberId，供 `MemberUtils.getMemberId()` 使用。若仍返回 **60001「登录超时」**，请确认 **dingyangmall-framework** 中已将 `/weixin/api/ma/**` 配置为匿名路径（不校验 JWT）。
+- **60002「session不能为空」**：若未登录时访问 `/weixin/api/ma/goodscategory/tree`、商品列表等接口返回 60002，说明框架对所有 `/weixin/api/ma/*` 做了 session 校验。可选方案：（1）在 **dingyangmall-framework** 中将公开接口（如 `/weixin/api/ma/wxuser/login`、`/weixin/api/ma/goodscategory/**`、`/weixin/api/ma/goodsspu/**`、`/weixin/api/ma/notice/**`）配置为匿名/免 session；（2）或保持现状，小程序端已在启动时先静默登录再调需 session 的接口，用户需先完成一次登录后才能正常浏览分类与商品。
+- 其余移动端接口与现有 Controller/Api 一致，按上表路径调用即可。
+
+---
+
 # 第三部分：接口对照与通用说明
 
 ## 管理端 vs 移动端路径对照（同业务）
@@ -359,6 +383,28 @@
 ---
 
 ## 第三方服务配置（短信与快递查询）
+
+### 〇、微信接口连接超时（Connect to api.weixin.qq.com timed out）
+
+若日志出现 `WxRuntimeException: ConnectTimeoutException: Connect to api.weixin.qq.com:443 ... Connect timed out`，说明**本机访问微信接口服务器超时**，属于网络/环境问题，可依次排查：
+
+1. **网络是否可达**  
+   在部署后端的那台机器上执行：`ping api.weixin.qq.com` 或 `curl -I https://api.weixin.qq.com`，确认能连通。
+
+2. **DNS 是否正常**  
+   若解析出的 IP 异常（例如 `198.18.x.x` 等非微信常见网段），可更换 DNS（如 114.114.114.114、8.8.8.8）或在本机 hosts 中绑定：  
+   `api.weixin.qq.com` → 微信官方解析得到的 IP（以实际为准）。
+
+3. **是否需要代理**  
+   若服务器只能通过 HTTP/HTTPS 代理访问外网，需在 JVM 启动参数或环境中配置代理，例如：  
+   `-Dhttps.proxyHost=代理主机 -Dhttps.proxyPort=端口`，或使用可配置代理的 HTTP 客户端（若项目中有对 WxMa 的 HttpClient 自定义）。
+
+4. **防火墙/安全组**  
+   确认放行本机对 `api.weixin.qq.com:443` 的出站访问。
+
+后端已对“连接微信服务器超时”做友好提示：接口会返回「连接微信服务器超时，请检查服务器网络或配置代理后重试」，便于前端统一提示用户。
+
+---
 
 ### 一、腾讯云短信（验证码）
 
@@ -402,6 +448,10 @@
 - **管理端**：除登录、注册、验证码、短信、首页、部分文件接口外，需在请求头携带 `Authorization: Bearer {token}`。
 - **移动端（小程序/Android/iOS）**：小程序请求带 `app-id`；用户登录后各端带统一登录态（如小程序 `third-session`、Android/iOS Token）。
 - **商家端**：请求带 `Authorization: Bearer {merchantToken}`。
+
+**小程序登录态：必须放在请求头（Header）**  
+购物车、订单、用户信息等需登录的接口，要在 **请求头** 里加 `third-session`，不能放在 URL 参数或 Body 里。  
+用 Postman / Apifox / Knife4j 测接口时：在「请求头」里新增一行，名称为 `third-session` 或 `openid`，值为登录接口返回的 `data.thirdSession`（即微信官方 openid）。例如先调 `POST /weixin/api/ma/wxuser/login` 拿到 `thirdSession`（= openid），再在后续请求的 Headers 里加上 `third-session: 该值` 或 `openid: 该值`，否则会返回 60002「session不能为空」或 60001「登录超时」。
 
 ### 响应约定
 

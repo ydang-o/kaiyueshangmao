@@ -42,7 +42,7 @@ public class WxMaAutoConfiguration {
         config.setSecret(first.getSecret());
         WxMaServiceImpl service = new WxMaServiceImpl();
         service.setWxMaConfig(config);
-        log.info("WxMaService 已初始化，appId={}", first.getAppId());
+        log.info("WxMaService initialized, appId={}", first.getAppId());
         return service;
     }
 

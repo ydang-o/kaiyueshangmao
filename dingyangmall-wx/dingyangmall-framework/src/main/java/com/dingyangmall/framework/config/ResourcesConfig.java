@@ -29,9 +29,16 @@ public class ResourcesConfig implements WebMvcConfigurer
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
-        /** 本地文件上传路径 */
-        registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
-                .addResourceLocations("file:" + DingyangmallConfig.getProfile() + "/");
+        /** 本地文件上传路径：profile 为空或不合法时不注册，避免 /profile/xxx 请求 500 */
+        String profile = DingyangmallConfig.getProfile();
+        if (profile != null && !profile.trim().isEmpty()) {
+            String path = profile.trim().replace("\\", "/");
+            if (!path.endsWith("/")) {
+                path = path + "/";
+            }
+            registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
+                    .addResourceLocations("file:" + path);
+        }
 
         /** Knife4j 文档静态资源配置 */
         registry.addResourceHandler("doc.html")

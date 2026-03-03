@@ -9,5 +9,7 @@ public interface WxMaUserMapper {
     WxMaUser selectByOpenid(@Param("openid") String openid);
 
     int upsert(@Param("u") WxMaUser user);
+
+    int updatePhoneByOpenid(@Param("openid") String openid, @Param("phone") String phone);
 }
 

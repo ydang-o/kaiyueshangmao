@@ -19,6 +19,7 @@ import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.utils.StringUtils;
 import com.dingyangmall.common.utils.file.FileUtils;
 import com.dingyangmall.framework.config.ServerConfig;
+import com.dingyangmall.system.domain.SysUploadFile;
 import com.dingyangmall.web.service.SysUploadFileService;
 
 /**
@@ -80,7 +81,7 @@ public class CommonController
     {
         try
         {
-            com.dingyangmall.web.domain.SysUploadFile entity = sysUploadFileService.save(file);
+            SysUploadFile entity = sysUploadFileService.save(file);
             String fileName = Constants.RESOURCE_PREFIX + "/file/" + entity.getFileId();
             String url = serverConfig.getUrl() + fileName;
             AjaxResult ajax = AjaxResult.success();
@@ -110,7 +111,7 @@ public class CommonController
             List<String> originalFilenames = new ArrayList<String>();
             for (MultipartFile file : files)
             {
-                com.dingyangmall.web.domain.SysUploadFile entity = sysUploadFileService.save(file);
+                SysUploadFile entity = sysUploadFileService.save(file);
                 String fileName = Constants.RESOURCE_PREFIX + "/file/" + entity.getFileId();
                 String url = serverConfig.getUrl() + fileName;
                 urls.add(url);

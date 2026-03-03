@@ -2,10 +2,10 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
+  <view class="page tm-page">
     <scroll-view scroll-x class="bg-white nav">
       <view class="flex text-center">
-        <view v-for="(item, index) in tabList" :key="item.id" class="cu-item flex-sub" :class="{ 'text-red cur': index === TabCur }" @tap="tabSelect(index)">{{ item.name }}</view>
+        <view v-for="(item, index) in tabList" :key="item.id" class="cu-item flex-sub" :class="{ 'tm-tab-active cur': index === TabCur }" @tap="tabSelect(index)">{{ item.name }}</view>
       </view>
     </scroll-view>
     <view class="cu-card article no-card margin-top">
@@ -19,7 +19,7 @@
                 <view class="cu-tag line-gray" v-if="item.couponStatus == 2">已使用</view>
                 <view class="cu-tag line-gray" v-if="item.couponStatus == 3">已过期</view>
               </view>
-              <view class="margin-top-xs">券码：<text class="text-blue text-xxl text-bold" @tap="copyCode(item.couponCode)">{{ item.couponCode }}</text></view>
+              <view class="margin-top-xs">券码：<text class="tm-brand text-xxl text-bold" @tap="copyCode(item.couponCode)">{{ item.couponCode }}</text></view>
               <view class="margin-top-xs text-gray text-sm">有效期至：{{ item.validityEnd }}</view>
             </view>
           </view>

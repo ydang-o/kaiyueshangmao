@@ -18,7 +18,8 @@
     "pages/merchant/index/index",
     "pages/merchant/login/index",
     "pages/lottery/index/index",
-    "pages/integral/packet/index"
+    "pages/integral/packet/index",
+    "pages/debug/api-test/index"
   ],
   "subPackages": [],
   "window": {
@@ -28,9 +29,11 @@
     "backgroundColor": "#f3f4f7"
   },
   "tabBar": {
+    "custom": true,
     "backgroundColor": "#ffffff",
-    "color": "#484848",
-    "selectedColor": "#2967ff",
+    "color": "#9ca3af",
+    "selectedColor": "#ff0036",
+    "borderStyle": "black",
     "list": [
       {
         "pagePath": "pages/home/index",

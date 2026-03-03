@@ -32,10 +32,10 @@ public class WxMaTokenInterceptor implements HandlerInterceptor, Ordered {
     private final RedisTemplate<Object, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    /** 不要求登录的公开路径（仅做前缀匹配） */
+    /** 不要求登录的公开路径（商品首页/分类/公告等，不需 token） */
     private static final String[] ANONYMOUS_PATH_PREFIXES = {
         "/weixin/api/ma/goodsspu/page",
-        "/weixin/api/ma/goodscategory/tree",
+        "/weixin/api/ma/goodscategory",
         "/weixin/api/ma/notice/list"
     };
 

@@ -137,84 +137,82 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+var LoginBanner = function LoginBanner() {
+  __webpack_require__.e(/*! require.ensure | components/login-banner/index */ "components/login-banner/index").then((function () {
+    return resolve(__webpack_require__(/*! @/components/login-banner/index.vue */ 205));
+  }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
+};
 var _default = {
   name: 'UserCenterPage',
+  components: {
+    LoginBanner: LoginBanner
+  },
   data: function data() {
     var app = getApp();
+    var wxUser = app.globalData.wxUser || {};
     return {
       config: app.globalData.config || {},
-      wxUser: null,
-      userInfo: null
+      wxUser: app.globalData.wxUser || null,
+      userInfo: null,
+      isLoggedIn: !!app.globalData.thirdSession,
+      hasPhone: !!(wxUser.phoneNumber || wxUser.phone),
+      profileSkipped: !!app.globalData.profileSkipped,
+      displayNickname: (wxUser.nickName || wxUser.nickname || '').trim(),
+      displayAvatar: (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim(),
+      displayPhone: (wxUser.phoneNumber || wxUser.phone || '').trim(),
+      loginLoading: false
     };
+  },
+  computed: {
+    displayName: function displayName() {
+      var u = this.wxUser || this.userInfo;
+      return u && (u.nickName || u.nickname) || '';
+    },
+    displayUserId: function displayUserId() {
+      var u = this.wxUser || this.userInfo;
+      return u && (u.userId || u.openid || u.id) || '';
+    },
+    avatarStyle: function avatarStyle() {
+      var u = this.wxUser || this.userInfo;
+      var url = u && (u.headimgUrl || u.avatar || u.avatarUrl);
+      return url ? 'background-image:url(' + url + ')' : '';
+    },
+    avatarText: function avatarText() {
+      return this.avatarStyle ? '' : '我';
+    }
   },
   onShow: function onShow() {
     var app = getApp();
+    var pages = getCurrentPages();
+    var page = pages[pages.length - 1];
+    if (page && typeof page.getTabBar === 'function') {
+      var tabBar = page.getTabBar();
+      if (tabBar && tabBar.setData) tabBar.setData({
+        selected: 2
+      });
+    }
+    this.isLoggedIn = !!app.globalData.thirdSession;
+    this.wxUser = app.globalData.wxUser;
+    this.profileSkipped = !!app.globalData.profileSkipped;
+    var wxUser = app.globalData.wxUser || {};
+    this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+    this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+    this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+    this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
     uni.setTabBarBadge({
       index: 2,
       text: (app.globalData.shoppingCartCount || '') + ''
     });
-    this.wxUser = app.globalData.wxUser;
-    this.wxUserGet();
-    this.orderCountAll();
+    this.fetchUserDataOnceReady();
     if (this.config.adEnable && uni.createInterstitialAd) {
       try {
         var ad = uni.createInterstitialAd({
@@ -225,39 +223,174 @@ var _default = {
     }
   },
   methods: {
+    onProfileSkipOrConfirm: function onProfileSkipOrConfirm() {
+      var app = getApp();
+      if (app && app.globalData) app.globalData.profileSkipped = true;
+      this.profileSkipped = true;
+    },
+    onLoginSuccess: function onLoginSuccess() {
+      var app = getApp();
+      this.isLoggedIn = !!app.globalData.thirdSession;
+      this.wxUser = app.globalData.wxUser;
+      var wxUser = app.globalData.wxUser || {};
+      this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+      this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+      this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+      this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
+      if (typeof this.wxUserGet === 'function') this.wxUserGet();
+      if (typeof this.orderCountAll === 'function') this.orderCountAll();
+    },
+    /** 从接口返回中解析出展示用用户对象（兼容 data 包裹或平铺） */normalizeUserFromApi: function normalizeUserFromApi(res) {
+      var data = res && (res.data || res) || {};
+      return _objectSpread({
+        nickName: data.nickName || data.nickname || '',
+        headimgUrl: data.headimgUrl || data.avatar || data.avatarUrl || '',
+        userId: data.userId || data.id || data.openid || '',
+        openid: data.openid || data.userId || ''
+      }, data);
+    },
+    /** 将用户数据同步到页面与 globalData */syncUserToState: function syncUserToState(user) {
+      if (!user || !user.userId && !user.openid) return;
+      this.wxUser = this.wxUser ? Object.assign({}, this.wxUser, user) : _objectSpread({}, user);
+      var app = getApp();
+      if (app && app.globalData) {
+        app.globalData.wxUser = Object.assign(app.globalData.wxUser || {}, this.wxUser);
+      }
+    },
+    fetchUserDataOnceReady: function fetchUserDataOnceReady() {
+      var app = typeof getApp === 'function' ? getApp() : null;
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.wxUserGet !== 'function') return;
+      if (this.isLoggedIn) {
+        this.wxUserGet();
+        this.orderCountAll();
+      }
+    },
     settings: function settings() {
       uni.openSetting();
     },
-    getUserProfile: function getUserProfile() {
+    wxLogin: function wxLogin() {
       var _this = this;
-      uni.getUserProfile({
-        desc: '用于完善会员资料',
-        success: function success(detail) {
-          getApp().api.wxUserSave(detail).then(function (res) {
-            _this.wxUser = res.data;
-            getApp().globalData.wxUser = res.data;
+      uni.showModal({
+        title: '微信授权登录',
+        content: '为了更好的服务体验，将使用你的微信账号登录如囍优选。是否授权？',
+        cancelText: '取消',
+        confirmText: '授权登录',
+        confirmColor: '#ff0036',
+        success: function success(res) {
+          if (!res.confirm) return;
+          _this.loginLoading = true;
+          getApp().doLogin().then(function (result) {
+            _this.loginLoading = false;
+            if (result === 'fail') {
+              uni.showToast({
+                title: '登录失败，请重试',
+                icon: 'none'
+              });
+              return;
+            }
+            _this.isLoggedIn = !!getApp().globalData.thirdSession;
+            _this.wxUser = getApp().globalData.wxUser;
             _this.wxUserGet();
+            _this.orderCountAll();
+            uni.showToast({
+              title: '登录成功',
+              icon: 'success'
+            });
+            // 登录后请求会带 X-Wx-Token；用户可点击「更新昵称」再授权头像
           });
         }
       });
     },
-    wxUserGet: function wxUserGet() {
+    fetchUserProfileAuth: function fetchUserProfileAuth() {
       var _this2 = this;
-      getApp().api.wxUserGet().then(function (res) {
-        _this2.userInfo = res.data;
+      if (typeof uni.getUserProfile !== 'function') return;
+      uni.getUserProfile({
+        desc: '用于完善会员资料、展示昵称与头像',
+        success: function success(detail) {
+          var that = _this2;
+          var app = typeof getApp === 'function' ? getApp() : null;
+          var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+          var thirdSession = app && app.globalData && app.globalData.thirdSession;
+          var payload = _objectSpread(_objectSpread({}, detail), {}, {
+            _thirdSession: thirdSession || ''
+          });
+          setTimeout(function () {
+            if (!api || typeof api.wxUserSave !== 'function') return;
+            api.wxUserSave(payload).then(function (res) {
+              that.syncUserToState(that.normalizeUserFromApi(res));
+              that.wxUserGet();
+            }).catch(function () {});
+          }, 0);
+        },
+        fail: function fail() {}
+      });
+    },
+    getUserProfile: function getUserProfile() {
+      var _this3 = this;
+      uni.getUserProfile({
+        desc: '用于完善会员资料',
+        success: function success(detail) {
+          var that = _this3;
+          var app = typeof getApp === 'function' ? getApp() : null;
+          var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+          var thirdSession = app && app.globalData && app.globalData.thirdSession;
+          var payload = _objectSpread(_objectSpread({}, detail), {}, {
+            _thirdSession: thirdSession || ''
+          });
+          setTimeout(function () {
+            if (!api || typeof api.wxUserSave !== 'function') return;
+            api.wxUserSave(payload).then(function (res) {
+              that.syncUserToState(that.normalizeUserFromApi(res));
+              that.wxUserGet();
+            }).catch(function () {
+              uni.showToast({
+                title: '更新失败，请重试',
+                icon: 'none'
+              });
+            });
+          }, 0);
+        },
+        fail: function fail() {}
+      });
+    },
+    wxUserGet: function wxUserGet() {
+      var _this4 = this;
+      var app = typeof getApp === 'function' ? getApp() : null;
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.wxUserGet !== 'function') return;
+      api.wxUserGet().then(function (res) {
+        var data = res && (res.data || res) || {};
+        _this4.userInfo = data;
+        if (data && (data.userId != null || data.openid != null || data.nickname != null || data.nickName != null || data.avatarUrl != null || data.avatar != null || data.headimgUrl != null)) {
+          _this4.syncUserToState(_this4.normalizeUserFromApi(res));
+        }
+      }).catch(function (err) {
+        return console.error('[我的] wxUserGet 失败', err);
       });
     },
     orderCountAll: function orderCountAll() {
-      getApp().api.orderCountAll().then(function (res) {});
+      var app = typeof getApp === 'function' ? getApp() : null;
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.orderCountAll !== 'function') return;
+      api.orderCountAll().then(function () {}).catch(function () {});
     },
     signIn: function signIn() {
-      var _this3 = this;
-      getApp().api.memberSignIn().then(function (res) {
+      var _this5 = this;
+      var app = typeof getApp === 'function' ? getApp() : null;
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.memberSignIn !== 'function') return;
+      api.memberSignIn().then(function (res) {
         uni.showToast({
-          title: res.msg || '签到成功',
+          title: res && res.msg || '签到成功',
           icon: 'success'
         });
-        _this3.wxUserGet();
+        _this5.wxUserGet();
+      }).catch(function () {
+        uni.showToast({
+          title: '签到失败或今日已签到',
+          icon: 'none'
+        });
       });
     }
   }

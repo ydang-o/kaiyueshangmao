@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/weixin/api/ma/goodscategory")
+@RequestMapping(value = { "/weixin/api/ma/goodscategory", "/api/ma/goodscategory" })
 public class GoodsCategoryApi {
 
     private final GoodsCategoryService goodsCategoryService;

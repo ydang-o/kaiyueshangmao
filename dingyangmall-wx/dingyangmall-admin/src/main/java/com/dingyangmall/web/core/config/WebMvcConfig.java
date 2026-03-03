@@ -1,8 +1,10 @@
 package com.dingyangmall.web.core.config;
 
+import com.dingyangmall.web.core.interceptor.WxMaTokenInterceptor;
 import com.dingyangmall.web.core.resolver.SqlFilterArgumentResolver;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
+
 	/**
 	 * 增加请求参数解析器，对请求中的参数注入SQL
 	 * @param argumentResolvers
@@ -20,6 +23,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
 		argumentResolvers.add(new SqlFilterArgumentResolver());
+	}
+
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(wxMaTokenInterceptor)
+			.addPathPatterns("/weixin/api/ma/**")
+			.order(org.springframework.core.Ordered.HIGHEST_PRECEDENCE);
+	}
+
+	private final WxMaTokenInterceptor wxMaTokenInterceptor;
+
+	public WebMvcConfig(WxMaTokenInterceptor wxMaTokenInterceptor) {
+		this.wxMaTokenInterceptor = wxMaTokenInterceptor;
 	}
 }
 

@@ -12,7 +12,6 @@ import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.mall.entity.UserAddress;
 import com.dingyangmall.mall.service.UserAddressService;
 import com.dingyangmall.mall.utils.MemberUtils;
-import com.dingyangmall.weixin.utils.ThirdSessionHolder;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/weixin/api/ma/useraddress")
+@RequestMapping(value = { "/weixin/api/ma/useraddress", "/api/ma/useraddress" })
 public class UserAddressApi {
 
     private final UserAddressService userAddressService;
@@ -50,7 +49,7 @@ public class UserAddressApi {
     */
     @PostMapping
     public AjaxResult save(@RequestBody UserAddress userAddress){
-		userAddress.setUserId(ThirdSessionHolder.getWxUserId());
+		userAddress.setUserId(MemberUtils.getMemberId());
         return AjaxResult.success(userAddressService.saveOrUpdate(userAddress));
     }
 

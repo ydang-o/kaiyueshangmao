@@ -2,9 +2,9 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
-    <view class="cu-bar search bg-white">
-      <view class="search-form round">
+  <view class="page tm-page">
+    <view class="cu-bar search bg-white tm-top-nav">
+      <view class="search-form round tm-search-bar">
         <text class="cuIcon-search"></text>
         <input type="text" placeholder="请输入商品名" confirm-type="search" v-model="keyword" @confirm="searchHandle" focus />
       </view>
@@ -16,7 +16,7 @@
       </view>
       <view class="padding-sm flex flex-wrap bg-white">
         <view class="padding-xs" v-for="(item, i) in searchHistory" :key="i">
-          <view class="cu-tag round" @tap="searchHandle(item.name)">{{ item.name }}</view>
+          <view class="cu-tag round tm-outline-btn" @tap="searchHandle(item.name)">{{ item.name }}</view>
         </view>
       </view>
     </view>

@@ -1,6 +1,12 @@
 
-.row-img.data-v-3557433b { width: 200rpx; height: 200rpx; border-radius: 10rpx;
+.row-img.data-v-3557433b { width: 200rpx; height: 200rpx; border-radius: 14rpx;
 }
 .row-info.data-v-3557433b { flex: 1; margin-left: 20rpx;
+}
+.row-price.data-v-3557433b { color: #ff0036; font-size: 30rpx; font-weight: 700;
+}
+.row-price.data-v-3557433b::before { content: "¥"; font-size: 22rpx; margin-right: 4rpx;
+}
+.row-sale.data-v-3557433b { color: #6b7280; font-size: 22rpx;
 }
 

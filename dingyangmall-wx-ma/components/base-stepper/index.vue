@@ -51,5 +51,17 @@ export default {
 
 <style scoped>
 .st-num-bt { min-width: 60rpx; }
-.st-num { width: 80rpx; }
+.st-num {
+  width: 88rpx;
+  color: #111827;
+  background: #f3f4f6;
+  border-radius: 12rpx;
+}
+
+.st-num-bt {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #111827;
+  border-radius: 12rpx;
+}
 </style>

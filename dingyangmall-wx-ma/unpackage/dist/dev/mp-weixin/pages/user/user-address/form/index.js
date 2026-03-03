@@ -174,6 +174,7 @@ var _default = {
   },
   onLoad: function onLoad() {
     var _this = this;
+    getApp().initPage();
     uni.getStorage({
       key: 'param-userAddressForm',
       success: function success(res) {

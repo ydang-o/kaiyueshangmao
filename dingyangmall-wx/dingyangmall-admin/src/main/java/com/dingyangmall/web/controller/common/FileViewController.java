@@ -1,7 +1,7 @@
 package com.dingyangmall.web.controller.common;
 
 import com.dingyangmall.common.utils.StringUtils;
-import com.dingyangmall.web.domain.SysUploadFile;
+import com.dingyangmall.system.domain.SysUploadFile;
 import com.dingyangmall.web.service.SysUploadFileService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;

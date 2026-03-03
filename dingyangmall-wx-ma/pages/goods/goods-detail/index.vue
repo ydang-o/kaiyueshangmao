@@ -2,11 +2,11 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page product-bg">
+  <view class="page tm-page product-bg">
     <view v-if="goodsSpu" class="bg-white padding-top">
       <swiper class="screen-swiper square-dot screen" indicator-dots circular autoplay :interval="5000" :duration="500" @change="change">
         <swiper-item v-for="(pic, i) in (goodsSpu.picUrls || [])" :key="i">
-          <image class="screen-image" :src="pic" mode="aspectFill" />
+          <image class="screen-image" :src="$imgUrl(pic)" mode="aspectFill" />
         </swiper-item>
       </swiper>
       <view class="page-index cu-tag round">{{ currents }}/{{ (goodsSpu.picUrls && goodsSpu.picUrls.length) || 1 }}</view>
@@ -52,7 +52,7 @@
     </view>
     <view class="cu-load bg-gray to-down">已经到底啦...</view>
     <view class="cu-bar bg-white tabbar border shop foot">
-      <button open-type="contact" class="action bg-white" :send-message-title="(goodsSpu && goodsSpu.name) + '--咨询'" :send-message-img="(goodsSpu && goodsSpu.picUrls && goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" show-message-card :send-message-path="'/pages/goods/goods-detail/index?id=' + (goodsSpu && goodsSpu.id)">
+      <button open-type="contact" class="action bg-white" :send-message-title="(goodsSpu && goodsSpu.name) + '--咨询'" :send-message-img="$imgUrl(goodsSpu && goodsSpu.picUrls && goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" show-message-card :send-message-path="'/pages/goods/goods-detail/index?id=' + (goodsSpu && goodsSpu.id)">
         <view class="cuIcon-servicefill"></view> 客服
       </button>
       <navigator class="action" url="/pages/shopping-cart/index">
@@ -60,8 +60,8 @@
         购物车
       </navigator>
       <view class="btn-group">
-        <button class="cu-btn shadow-blur margin-left-sm shopping-cart" @tap="toDo(1)"><text class="text-white">加入购物车</text></button>
-        <button class="cu-btn shadow-blur buy-now" @tap="toDo(2)"><text class="text-white">立即购买</text></button>
+        <button class="cu-btn shadow-blur margin-left-sm shopping-cart tm-secondary-btn" @tap="toDo(1)"><text class="text-white">加入购物车</text></button>
+        <button class="cu-btn shadow-blur buy-now tm-primary-btn" @tap="toDo(2)"><text class="text-white">立即购买</text></button>
       </view>
     </view>
     <view class="cu-modal" :class="goodsSpu && goodsSpu.shelf === '0' ? 'show' : ''">
@@ -70,7 +70,7 @@
         <view class="padding-xl">抱歉，该商品已下架</view>
       </view>
     </view>
-    <view class="cu-modal bottom-modal" :class="shareShow">
+    <view class="cu-modal bottom-modal" :class="shareModalVisible">
       <view class="cu-dialog">
         <view class="cu-bar bg-white">
           <view class="action text-green"></view>
@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'GoodsDetailPage',
   data() {
@@ -96,7 +97,7 @@ export default {
       currents: 1,
       cartNum: 1,
       shoppingCartCount: 0,
-      shareShow: ''
+      shareModalVisible: ''
     }
   },
   onLoad(options) {
@@ -109,28 +110,42 @@ export default {
   },
   onShareAppMessage() {
     const g = this.goodsSpu
-    return { title: g ? g.name : '', path: 'pages/goods/goods-detail/index?id=' + (g ? g.id : this.id), imageUrl: g && g.picUrls && g.picUrls[0] ? g.picUrls[0] : '' }
+    return { title: g ? g.name : '', path: 'pages/goods/goods-detail/index?id=' + (g ? g.id : this.id), imageUrl: g && g.picUrls && g.picUrls[0] ? this.$imgUrl(g.picUrls[0]) : '' }
   },
   methods: {
     goodsGet(id) {
       if (!id) return
-      getApp().api.goodsGet(id).then(res => {
+      const app = getApp()
+      const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+      if (!api || typeof api.goodsGet !== 'function') return
+      api.goodsGet(id).then(res => {
         this.goodsSpu = res.data || null
         this.currents = 1
       })
     },
     change(e) { this.currents = (e.detail && e.detail.current) + 1 },
     shoppingCartCountFn() {
-      getApp().api.shoppingCartCount().then(res => {
-        this.shoppingCartCount = res.data
-        getApp().globalData.shoppingCartCount = res.data + ''
-      })
+      const app = getApp()
+      const api = (app && app.api) || (app && app.globalData && app.globalData.__api)
+      if (api && typeof api.shoppingCartCount === 'function') {
+        api.shoppingCartCount().then(res => {
+          const count = (res && res.data != null) ? res.data : (res && res.data !== undefined ? res.data : 0)
+          this.shoppingCartCount = count
+          if (app && app.globalData) app.globalData.shoppingCartCount = count + ''
+        }).catch(() => {})
+      }
     },
     toDo(type) {
       const goodsSpu = this.goodsSpu
       if (!goodsSpu) return
+      const app = getApp()
+      const api = (app && app.api) || (app && app.globalData && app.globalData.__api)
       if (type === 1) {
-        getApp().api.shoppingCartAdd({
+        if (!api || typeof api.shoppingCartAdd !== 'function') {
+          uni.showToast({ title: '功能暂不可用，请稍后重试', icon: 'none' })
+          return
+        }
+        api.shoppingCartAdd({
           spuId: goodsSpu.id,
           quantity: this.cartNum,
           addPrice: goodsSpu.salesPrice,
@@ -139,6 +154,8 @@ export default {
         }).then(() => {
           uni.showToast({ title: '添加成功' })
           this.shoppingCartCountFn()
+        }).catch(() => {
+          uni.showToast({ title: '加入购物车失败', icon: 'none' })
         })
       } else {
         if (goodsSpu.stock <= 0) {
@@ -152,8 +169,8 @@ export default {
         uni.navigateTo({ url: '/pages/order/order-confirm/index' })
       }
     },
-    shareShow() { this.shareShow = 'show' },
-    shareHide() { this.shareShow = '' }
+    shareShow() { this.shareModalVisible = 'show' },
+    shareHide() { this.shareModalVisible = '' }
   }
 }
 </script>
@@ -161,11 +178,11 @@ export default {
 <style scoped>
 .product-bg { width: 100%; position: relative; }
 .product-bg swiper { width: 100%; height: calc(100vw); position: relative; }
-.page-index { position: absolute; right: 30rpx; bottom: 30rpx; }
+.page-index { position: absolute; right: 30rpx; bottom: 30rpx; background: rgba(17, 24, 39, .55); color: #fff; }
 .to-down { margin-bottom: 100rpx; }
-.screen { width: 94% !important; border-radius: 20rpx; min-height: 900rpx; margin: auto; background-color: #ececec; }
+.screen { width: 94% !important; border-radius: 24rpx; min-height: 900rpx; margin: auto; background-color: #f2f3f5; box-shadow: 0 10rpx 34rpx rgba(15,23,42,.08); }
 .screen-image { padding-top: 80rpx; height: 780rpx !important; }
-.shopping-cart { background-color: #2d2d2f !important; font-weight: 300; width: 220rpx; }
-.buy-now { background-color: #2967ff !important; font-weight: 300; width: 220rpx; }
+.shopping-cart { width: 220rpx; }
+.buy-now { width: 220rpx; }
 .cu-bar.tabbar.shop .action { width: unset; }
 </style>

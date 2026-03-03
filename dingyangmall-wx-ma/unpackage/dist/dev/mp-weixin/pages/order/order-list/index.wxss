@@ -1,7 +1,7 @@
 
 .margin-top-bar.data-v-b375a04c { margin-top: 80rpx;
 }
-.row-img.data-v-b375a04c { width: 200rpx; height: 200rpx; border-radius: 10rpx;
+.row-img.data-v-b375a04c { width: 200rpx; height: 200rpx; border-radius: 14rpx;
 }
 .row-info.data-v-b375a04c { flex: 1; margin-left: 20rpx;
 }

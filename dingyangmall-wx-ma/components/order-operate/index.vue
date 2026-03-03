@@ -99,10 +99,10 @@ export default {
 </script>
 
 <style scoped>
-.service { background-color: #2967ff; }
-.cancel-order, .delete-order { background-color: #999; }
-.check-logistics { background-color: #ff976a; }
-.payment { background-color: #2967ff; }
-.confirm-goods { background-color: #19be6b; }
-.evaluation { background-color: #ff976a; }
+.service { background: linear-gradient(135deg, #ff2b56 0%, #ff0036 100%); }
+.cancel-order, .delete-order { background-color: #111827; }
+.check-logistics { background-color: #ff7a45; }
+.payment { background: linear-gradient(135deg, #ff2b56 0%, #ff0036 100%); }
+.confirm-goods { background-color: #16a34a; }
+.evaluation { background-color: #ff7a45; }
 </style>

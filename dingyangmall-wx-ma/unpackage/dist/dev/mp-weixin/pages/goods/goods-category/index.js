@@ -104,18 +104,22 @@ var render = function () {
   var _c = _vm._self._c || _h
   var l1 = _vm.__map(_vm.goodsCategory, function (item, index) {
     var $orig = _vm.__get_orig(item)
+    var m0 = item.picUrl ? _vm.$imgUrl(item.picUrl) : null
     var g0 = item.children && item.children.length
     var l0 = _vm.__map(item.children, function (item2, i2) {
       var $orig = _vm.__get_orig(item2)
-      var m0 = g0 ? encodeURIComponent(item2.name) : null
+      var m1 = g0 ? encodeURIComponent(item2.name) : null
+      var m2 = g0 ? _vm.$imgUrl(item2.picUrl) || "/static/img/no_pic.png" : null
       return {
         $orig: $orig,
-        m0: m0,
+        m1: m1,
+        m2: m2,
       }
     })
     var g1 = !item.children || !item.children.length
     return {
       $orig: $orig,
+      m0: m0,
       g0: g0,
       l0: l0,
       g1: g1,
@@ -164,58 +168,33 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
+var LoginBanner = function LoginBanner() {
+  __webpack_require__.e(/*! require.ensure | components/login-banner/index */ "components/login-banner/index").then((function () {
+    return resolve(__webpack_require__(/*! @/components/login-banner/index.vue */ 205));
+  }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
+};
 var _default = {
   name: 'GoodsCategoryPage',
+  components: {
+    LoginBanner: LoginBanner
+  },
   data: function data() {
     var app = getApp();
+    var wxUser = app.globalData.wxUser || {};
     return {
       config: app.globalData.config || {},
+      isLoggedIn: !!app.globalData.thirdSession,
+      hasPhone: !!(wxUser.phoneNumber || wxUser.phone),
+      profileSkipped: !!app.globalData.profileSkipped,
+      displayNickname: (wxUser.nickName || wxUser.nickname || '').trim(),
+      displayAvatar: (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim(),
+      displayPhone: (wxUser.phoneNumber || wxUser.phone || '').trim(),
       TabCur: 0,
       MainCur: 0,
       VerticalNavTop: 0,
@@ -225,27 +204,81 @@ var _default = {
   },
   onLoad: function onLoad() {
     var _this = this;
-    getApp().initPage().then(function () {
+    var app = getApp();
+    if (!app.initPage) {
+      this.goodsCategoryGet();
+      return;
+    }
+    app.initPage().then(function () {
+      return _this.goodsCategoryGet();
+    }).catch(function () {
       return _this.goodsCategoryGet();
     });
   },
   onShow: function onShow() {
     var app = getApp();
+    this.isLoggedIn = !!app.globalData.thirdSession;
+    this.profileSkipped = !!app.globalData.profileSkipped;
+    var wxUser = app.globalData.wxUser || {};
+    this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+    this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+    this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+    this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
+    var pages = getCurrentPages();
+    var page = pages[pages.length - 1];
+    if (page && typeof page.getTabBar === 'function') {
+      var tabBar = page.getTabBar();
+      if (tabBar && tabBar.setData) tabBar.setData({
+        selected: 1
+      });
+    }
     uni.setTabBarBadge({
       index: 2,
       text: (app.globalData.shoppingCartCount || '') + ''
     });
   },
   methods: {
+    onProfileSkipOrConfirm: function onProfileSkipOrConfirm() {
+      var app = getApp();
+      if (app && app.globalData) app.globalData.profileSkipped = true;
+      this.profileSkipped = true;
+    },
+    onLoginSuccess: function onLoginSuccess() {
+      var app = getApp();
+      this.isLoggedIn = !!app.globalData.thirdSession;
+      var wxUser = app.globalData.wxUser || {};
+      this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+      this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+      this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+      this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
+    },
     goodsCategoryGet: function goodsCategoryGet() {
       var _this2 = this;
-      getApp().api.goodsCategoryGet().then(function (res) {
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      var retryCount = this._categoryRetryCount || 0;
+      if (!api || typeof api.goodsCategoryGet !== 'function') {
+        if (retryCount >= 10) {
+          console.error('[Category] api 始终未就绪，已停止重试');
+          return;
+        }
+        this._categoryRetryCount = retryCount + 1;
+        if (retryCount === 0) console.warn('[Category] api 未就绪，将重试最多 10 次');
+        setTimeout(function () {
+          return _this2.goodsCategoryGet();
+        }, 200);
+        return;
+      }
+      this._categoryRetryCount = 0;
+      api.goodsCategoryGet().then(function (res) {
         _this2.goodsCategory = res.data && res.data || [];
         _this2.goodsCategory.forEach(function (item, i) {
           item.top = i * 50;
           item.bottom = (i + 1) * 50;
         });
         _this2.load = false;
+      }).catch(function (err) {
+        console.error('[Category] goodsCategoryGet 失败', err);
       });
     },
     tabSelect: function tabSelect(index) {

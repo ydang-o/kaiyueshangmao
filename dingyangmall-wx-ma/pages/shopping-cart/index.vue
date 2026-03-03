@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page">
+  <view class="page tm-page">
     <view class="cu-bar bg-white fixed" style="min-height: 80rpx;">
       <view class="grid col-3 response text-center text-gray">
         <view><text class="cuIcon-selection margin-right-xs"></text>100%正品保证</view>
@@ -12,7 +12,7 @@
     </view>
     <view class="cu-bar bg-white solid-bottom solid-top fixed bar-top">
       <view class="action">共{{ shoppingCartData.length }}件宝贝</view>
-      <view class="action"><button class="cu-btn line-gray sm" @tap="toggleOperation">{{ operation ? '管理' : '完成' }}</button></view>
+      <view class="action"><button class="cu-btn line-gray sm tm-pill" @tap="toggleOperation">{{ operation ? '管理' : '完成' }}</button></view>
     </view>
     <view class="content-wrap">
       <checkbox-group @change="checkboxChange">
@@ -22,14 +22,14 @@
               <checkbox class="blue round margin-left" :value="item.id" :disabled="(item.quantity > (item.goodsSpu && item.goodsSpu.stock) || !item.goodsSpu) && operation" :checked="item.checked" />
               <navigator hover-class="none" class="flex-sub" :url="'/pages/goods/goods-detail/index?id=' + item.spuId">
                 <view class="content">
-                  <image :src="(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
+                  <image :src="$imgUrl(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
                   <view class="desc row-info">
                     <view class="text-black margin-top-sm overflow-2">{{ item.goodsSpu && item.goodsSpu.name }}</view>
                     <view class="text-gray margin-top-sm text-right text-sm">库存{{ item.goodsSpu && item.goodsSpu.stock }}</view>
                     <view v-if="item.goodsSpu" class="flex">
                       <view class="flex-sub"><view class="text-price text-bold text-blue text-xl margin-top-sm">{{ item.goodsSpu.salesPrice }}</view></view>
                       <view class="flex-sub margin-top-sm" @tap.stop>
-                        <base-stepper :stNum="item.quantity" :min="1" :max="item.goodsSpu.stock" @numChange="(n) => cartNumChang(n, index)" />
+                        <base-stepper :stNum="item.quantity" :min="1" :max="item.goodsSpu.stock" @numChange="(n) => cartNumChange(n, index)" />
                       </view>
                     </view>
                     <view v-if="!item.goodsSpu" class="margin-top-sm text-red">请重新选择规格</view>
@@ -42,13 +42,13 @@
       </checkbox-group>
       <view v-if="shoppingCartDataInvalid.length > 0" class="cu-bar bg-white solid-bottom margin-top">
         <view class="action">失效宝贝{{ shoppingCartDataInvalid.length }}件</view>
-        <view class="action"><button class="cu-btn line-blue round" @tap="clearInvalid">清空失效宝贝</button></view>
+        <view class="action"><button class="cu-btn line-blue round tm-pill" @tap="clearInvalid">清空失效宝贝</button></view>
       </view>
-      <view class="cu-card article no-card" v-for="(item, index) in shoppingCartDataInvalid" :key="'inv'+index">
+      <view class="cu-card article no-card" v-for="(item, index) in shoppingCartDataInvalid" :key="index">
         <view class="cu-item">
           <navigator hover-class="none" :url="'/pages/goods/goods-detail/index?id=' + item.spuId">
             <view class="content">
-              <image :src="(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img" />
+              <image :src="$imgUrl(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img" />
               <view class="desc row-info">
                 <view class="text-black margin-top-sm overflow-2">{{ item.goodsSpu && item.goodsSpu.name }}</view>
                 <view class="text-sm margin-top-lg text-blue">已下架</view>
@@ -61,11 +61,11 @@
       <view v-if="shoppingCartData.length <= 0 && !loadmore" class="text-center margin-bottom">
         <view class="text-xsl margin-top without"><image class="margin-top-sm" src="/static/img/shopping-cart.jpg" mode="widthFix" /></view>
         购物车空空如也~
-        <navigator hover-class="none" url="/pages/goods/goods-list/index"><button class="cu-btn bg-black margin-top">去逛逛</button></navigator>
+        <navigator hover-class="none" url="/pages/goods/goods-list/index"><button class="cu-btn tm-secondary-btn margin-top">去逛逛</button></navigator>
       </view>
       <ad v-if="config.adEnable" :unit-id="config.adBannerID"></ad>
       <view class="cu-bar justify-center bg-white margin-top-sm">
-        <view class="action text-blue text-bold">为您推荐</view>
+      <view class="action tm-brand text-bold">为您推荐</view>
       </view>
       <goods-card-index :goodsList="goodsListRecom" />
     </view>
@@ -79,11 +79,11 @@
       <view class="action bar-rt" v-if="operation">
         <text class="text-xs text-bold">合计：</text>
         <text class="text-xl text-bold text-price text-blue margin-right-sm">{{ settlePrice }}</text>
-        <button class="cu-btn shadow-blur margin-left-sm settle-bt" :disabled="selectValue.length <= 0" @tap="orderConfirm">结算{{ selectValue.length > 0 ? '(' + selectValue.length + ')' : '' }}</button>
+        <button class="cu-btn shadow-blur margin-left-sm settle-bt tm-primary-btn" :disabled="selectValue.length <= 0" @tap="orderConfirm">结算{{ selectValue.length > 0 ? '(' + selectValue.length + ')' : '' }}</button>
       </view>
       <view class="action bar-rt" v-else>
-        <button class="cu-btn shadow-blur collection" :disabled="selectValue.length <= 0" @tap="userCollectAdd">移入收藏夹</button>
-        <button class="cu-btn shadow-blur margin-left-sm delete" :disabled="selectValue.length <= 0" @tap="shoppingCartDel">删除</button>
+        <button class="cu-btn shadow-blur collection tm-secondary-btn" :disabled="selectValue.length <= 0" @tap="userCollectAdd">移入收藏夹</button>
+        <button class="cu-btn shadow-blur margin-left-sm delete tm-primary-btn" :disabled="selectValue.length <= 0" @tap="shoppingCartDel">删除</button>
       </view>
     </view>
   </view>
@@ -142,7 +142,7 @@ export default {
         this.goodsListRecom = (res.data && res.data.records) || []
       })
     },
-    cartNumChang(n, index) {
+    cartNumChange(n, index) {
       this.shoppingCartData[index].quantity = n
       getApp().api.shoppingCartEdit({ id: this.shoppingCartData[index].id, quantity: n })
       this.countSelect()
@@ -176,7 +176,9 @@ export default {
       })
       this.settlePrice = total.toFixed(2)
     },
-    userCollectAdd() {},
+    userCollectAdd() {
+      uni.showToast({ title: '收藏功能敬请期待', icon: 'none' })
+    },
     shoppingCartDel() {
       if (this.selectValue.length <= 0) return
       uni.showModal({ content: '确认将这' + this.selectValue.length + '个宝贝删除', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
@@ -209,10 +211,10 @@ export default {
 .bar-top { margin-top: 80rpx; box-shadow: none; }
 .content-wrap { margin-top: 160rpx; margin-bottom: 100rpx; padding-top: 40rpx; padding-bottom: 50px; }
 .bar-rt { width: 480rpx !important; text-align: right !important; margin-right: 10rpx !important; }
-.settle-bt { background-color: #2967ff !important; font-weight: 300; width: 220rpx; }
-.row-img { width: 30% !important; border-radius: 10rpx; }
+.settle-bt { width: 220rpx; }
+.row-img { width: 30% !important; border-radius: 14rpx; }
 .row-info { display: block !important; width: 60%; }
 .without image { padding-top: 50rpx; width: 360rpx; height: 305rpx; }
-.collection { background-color: #2d2d2f !important; font-weight: 300; width: 220rpx; }
-.delete { background-color: #2967ff !important; font-weight: 300; width: 220rpx; }
+.collection { width: 220rpx; }
+.delete { width: 220rpx; }
 </style>

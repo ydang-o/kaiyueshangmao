@@ -3,10 +3,13 @@ package com.dingyangmall.web.entity;
 import java.util.Date;
 
 public class WxMaUser {
+    /** 主键，对应 wx_user.id；插入新记录时需设置 */
+    private String id;
     private String openid;
     private String unionid;
     private String nickname;
     private String avatarUrl;
+    private String phone;
     private Date createTime;
     private Date updateTime;
 
@@ -42,6 +45,14 @@ public class WxMaUser {
         this.avatarUrl = avatarUrl;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public Date getCreateTime() {
         return createTime;
     }
@@ -56,6 +67,14 @@ public class WxMaUser {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
 

@@ -3,7 +3,7 @@
   申请退款
 -->
 <template>
-  <view class="page padding">
+  <view class="page tm-page padding">
     <view class="bg-white padding radius">
       <view class="cu-form-group">
         <view class="title">订单项</view>
@@ -14,7 +14,7 @@
         <textarea v-model="reason" placeholder="请输入退款原因" maxlength="200" />
       </view>
       <view class="padding flex flex-direction margin-top-xl">
-        <button class="cu-btn bg-red lg" @tap="submit" :loading="loading">提交申请</button>
+        <button class="cu-btn tm-primary-btn lg" @tap="submit" :loading="loading">提交申请</button>
       </view>
       <view class="text-gray text-sm margin-top">提交后将由商家审核，请耐心等待。</view>
     </view>
@@ -28,11 +28,13 @@ export default {
     return { orderItemId: '', reason: '', loading: false }
   },
   onLoad(options) {
-    this.orderItemId = options.orderItemId || ''
+    this.orderItemId = (options && options.orderItemId) || ''
     if (!this.orderItemId) {
       uni.showToast({ title: '参数错误', icon: 'none' })
       setTimeout(() => uni.navigateBack(), 1500)
+      return
     }
+    getApp().initPage()
   },
   methods: {
     submit() {

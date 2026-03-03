@@ -101,19 +101,21 @@
 		<include refid="goodsSpuSql2"/>
 		FROM goods_spu goods_spu
 		<where>
-			<if test="query.shelf != null">
+			<if test="query.shelf != null and query.shelf != ''">
 				AND goods_spu.`shelf` = #{query.shelf}
 			</if>
-			<if test="query.categorySecond != null">
+			<if test="query.categorySecond != null and query.categorySecond != ''">
 				AND goods_spu.`category_second` = #{query.categorySecond}
 			</if>
-			<if test="query.name != null">
+			<if test="query.name != null and query.name != ''">
 				AND goods_spu.`name` LIKE CONCAT('%',#{query.name},'%')
 			</if>
-			<if test="query.spuCode != null">
+			<if test="query.spuCode != null and query.spuCode != ''">
 				AND goods_spu.`spu_code` = #{query.spuCode}
 			</if>
+			AND (goods_spu.`del_flag` = '0' OR goods_spu.`del_flag` IS NULL)
 		</where>
+		ORDER BY goods_spu.`sort` ASC, goods_spu.`create_time` DESC
 	</select>
 
 	<select id="selectById1" resultMap="goodsSpuMap1">

@@ -103,17 +103,24 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   var g0 = _vm.swiperData.length
-  var g1 = _vm.navList.length
-  var g2 = _vm.noticeList.length
-  var g3 = _vm.goodsListHot.length
+  var l0 = g0
+    ? _vm.__map(_vm.swiperData, function (item, i) {
+        var $orig = _vm.__get_orig(item)
+        var m0 = _vm.$imgUrl(item.img)
+        return {
+          $orig: $orig,
+          m0: m0,
+        }
+      })
+    : null
+  var g1 = _vm.noticeList.length
   _vm.$mp.data = Object.assign(
     {},
     {
       $root: {
         g0: g0,
+        l0: l0,
         g1: g1,
-        g2: g2,
-        g3: g3,
       },
     }
   )
@@ -150,27 +157,39 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {
+/* WEBPACK VAR INJECTION */(function(uni, wx) {
 
 var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
+var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
 var GoodsCardIndex = function GoodsCardIndex() {
   __webpack_require__.e(/*! require.ensure | components/goods-card-index/index */ "components/goods-card-index/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 190));
+    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 198));
+  }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
+};
+var LoginBanner = function LoginBanner() {
+  __webpack_require__.e(/*! require.ensure | components/login-banner/index */ "components/login-banner/index").then((function () {
+    return resolve(__webpack_require__(/*! @/components/login-banner/index.vue */ 205));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
   name: 'HomePage',
   components: {
-    GoodsCardIndex: GoodsCardIndex
+    GoodsCardIndex: GoodsCardIndex,
+    LoginBanner: LoginBanner
   },
   data: function data() {
     var app = getApp();
+    var wxUser = app.globalData.wxUser || {};
     return {
       config: app.globalData.config || {},
       page: {
@@ -180,21 +199,64 @@ var _default = {
       },
       loadmore: true,
       goodsList: [],
-      goodsListHot: [],
       swiperData: [],
       navList: [],
       noticeList: [],
-      promoList: []
+      promoList: [],
+      isLoggedIn: !!app.globalData.thirdSession,
+      hasPhone: !!(wxUser.phoneNumber || wxUser.phone),
+      profileSkipped: !!app.globalData.profileSkipped,
+      displayNickname: (wxUser.nickName || wxUser.nickname || '').trim(),
+      displayAvatar: (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim(),
+      displayPhone: (wxUser.phoneNumber || wxUser.phone || '').trim(),
+      loginLoading: false
     };
   },
   onLoad: function onLoad() {
     var _this = this;
-    getApp().initPage().then(function () {
-      return _this.loadData();
-    });
+    console.log('Hello World');
+    var app = getApp();
+    var loadDataScheduled = false;
+    var tryLoad = function tryLoad() {
+      if (loadDataScheduled) return;
+      loadDataScheduled = true;
+      if (typeof _this.loadData === 'function') _this.loadData();
+    };
+    // 商品分页走 /api/ma，未登录也可请求，首页始终拉取商品列表
+    var runLoad = function runLoad() {
+      tryLoad();
+    };
+    if (!app.initPage) {
+      console.warn('[Home] initPage 未挂载，延迟 500ms 再拉取');
+      setTimeout(runLoad, 500);
+      setTimeout(function () {
+        if (!loadDataScheduled) runLoad();
+      }, 2500);
+    } else {
+      app.initPage().then(runLoad).catch(function () {
+        setTimeout(function () {
+          app.initPage().then(runLoad).catch(runLoad);
+        }, 300);
+      });
+    }
   },
   onShow: function onShow() {
     var app = getApp();
+    this.isLoggedIn = !!app.globalData.thirdSession;
+    this.profileSkipped = !!app.globalData.profileSkipped;
+    var wxUser = app.globalData.wxUser || {};
+    this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+    this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+    this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+    this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
+    var pages = getCurrentPages();
+    var page = pages[pages.length - 1];
+    if (page && typeof page.getTabBar === 'function') {
+      var tabBar = page.getTabBar();
+      if (tabBar && tabBar.setData) tabBar.setData({
+        selected: 0
+      });
+    }
     uni.setTabBarBadge({
       index: 2,
       text: (app.globalData.shoppingCartCount || '') + ''
@@ -220,56 +282,165 @@ var _default = {
   },
   methods: {
     change: function change() {},
+    onProfileSkipOrConfirm: function onProfileSkipOrConfirm() {
+      var app = getApp();
+      if (app && app.globalData) app.globalData.profileSkipped = true;
+      this.profileSkipped = true;
+    },
+    onLoginSuccess: function onLoginSuccess() {
+      var app = getApp();
+      this.isLoggedIn = !!(app.globalData.wxToken || app.globalData.thirdSession);
+      var wxUser = app.globalData.wxUser || {};
+      this.hasPhone = !!(wxUser.phoneNumber || wxUser.phone);
+      this.displayNickname = (wxUser.nickName || wxUser.nickname || '').trim();
+      this.displayAvatar = (wxUser.headimgUrl || wxUser.avatarUrl || wxUser.avatar || '').trim();
+      this.displayPhone = (wxUser.phoneNumber || wxUser.phone || '').trim();
+      if (this.isLoggedIn && typeof this.loadData === 'function') this.loadData();
+    },
+    wxLogin: function wxLogin() {
+      var _this2 = this;
+      uni.showModal({
+        title: '微信授权登录',
+        content: '为了更好的服务体验，将使用你的微信账号登录如囍优选。是否授权？',
+        cancelText: '取消',
+        confirmText: '授权登录',
+        confirmColor: '#ff0036',
+        success: function success(res) {
+          if (!res.confirm) return;
+          _this2.loginLoading = true;
+          getApp().doLogin().then(function (result) {
+            _this2.loginLoading = false;
+            _this2.isLoggedIn = !!getApp().globalData.thirdSession;
+            if (result === 'fail') {
+              uni.showToast({
+                title: '登录失败，请重试',
+                icon: 'none'
+              });
+              return;
+            }
+            uni.showToast({
+              title: '登录成功',
+              icon: 'success'
+            });
+            _this2.fetchUserProfileAuth();
+          });
+        }
+      });
+    },
+    fetchUserProfileAuth: function fetchUserProfileAuth() {
+      if (typeof uni.getUserProfile !== 'function') return;
+      uni.getUserProfile({
+        desc: '用于完善会员资料、展示昵称与头像',
+        success: function success(detail) {
+          getApp().api.wxUserSave(detail).then(function (res) {
+            var data = res.data || res;
+            var user = _objectSpread({
+              headimgUrl: data.headimgUrl || data.avatar,
+              nickName: data.nickName || data.nickname,
+              userId: data.userId || data.id || data.openid
+            }, data);
+            getApp().globalData.wxUser = Object.assign(getApp().globalData.wxUser || {}, user);
+          }).catch(function () {});
+        },
+        fail: function fail() {}
+      });
+    },
     goGoodsDetail: function goGoodsDetail(id) {
       if (id) uni.navigateTo({
         url: '/pages/goods/goods-detail/index?id=' + id
       });
     },
     loadData: function loadData() {
-      var _this2 = this;
-      var app = getApp();
-      Promise.all([app.api.goodsPage({
-        searchCount: false,
-        current: 1,
-        size: 5,
-        descs: 'create_time'
-      }), app.api.goodsPage({
-        searchCount: false,
-        current: 1,
-        size: 5,
-        descs: 'sale_num'
-      }), app.api.goodsPage(this.page), app.api.goodsCategoryGet(), app.api.goodsPage({
+      var _this3 = this;
+      var app = typeof getApp === 'function' ? getApp() : {};
+      // 发请求前再次从 storage 同步 token，避免 GET 请求未带 X-Wx-Token
+      if (app && app.globalData && !app.globalData.wxToken && !app.globalData.thirdSession) {
+        try {
+          var u = typeof uni !== 'undefined' ? uni : wx;
+          if (u && u.getStorageSync) {
+            var saved = u.getStorageSync('wx_token') || u.getStorageSync('wx_third_session');
+            if (saved && typeof saved === 'string' && saved.length > 0) {
+              app.globalData.wxToken = saved;
+              app.globalData.thirdSession = saved;
+              console.log('[Home] loadData 前已从 storage 恢复 token');
+            }
+          }
+        } catch (e) {}
+      }
+      var api = app && app.api || app.globalData && app.globalData.__api || _api.default;
+      var retryCount = this._loadDataRetryCount || 0;
+      if (!api || typeof api.getHomePage !== 'function' && typeof api.goodsPage !== 'function') {
+        if (retryCount >= 10) {
+          console.error('[Home] api 始终未就绪，请确认用 HBuilderX「运行到微信开发者工具」并打开 unpackage/dist/dev/mp-weixin');
+          return;
+        }
+        this._loadDataRetryCount = retryCount + 1;
+        if (retryCount === 0) console.warn('[Home] api 未就绪，将重试最多 10 次');
+        setTimeout(function () {
+          return _this3.loadData();
+        }, 200);
+        return;
+      }
+      this._loadDataRetryCount = 0;
+      console.log('[Home] loadData 开始请求');
+      // 优先使用首页聚合接口（与各大购物平台一致，一次请求拿全首页数据）
+      if (typeof api.getHomePage === 'function') {
+        api.getHomePage().then(function (res) {
+          var data = res && res.data || res || {};
+          var bannerList = data.bannerList || [];
+          var categoryTree = data.categoryTree || [];
+          var noticeList = data.noticeList || [];
+          var goodsList = data.goodsList || [];
+          var promoList = data.promoList || [];
+          _this3.buildSwiper(bannerList);
+          _this3.buildNavList(categoryTree);
+          _this3.noticeList = Array.isArray(noticeList) ? noticeList : [];
+          _this3.goodsList = [].concat((0, _toConsumableArray2.default)(_this3.goodsList), (0, _toConsumableArray2.default)(Array.isArray(goodsList) ? goodsList : []));
+          _this3.promoList = Array.isArray(promoList) ? promoList : [];
+          _this3.loadmore = _this3.goodsList.length >= (_this3.page.size || 10);
+          console.log('[Home] 首页聚合成功', '轮播:', bannerList.length, '分类:', categoryTree.length, '商品:', _this3.goodsList.length, '推荐:', _this3.promoList.length);
+        }).catch(function (err) {
+          console.warn('[Home] 首页聚合接口失败，回退到分接口', err);
+          _this3._loadDataFallback(api);
+        });
+        return;
+      }
+      this._loadDataFallback(api);
+    },
+    _loadDataFallback: function _loadDataFallback(api) {
+      var _this4 = this;
+      Promise.all([api.goodsPage(this.page), api.goodsPage({
         searchCount: false,
         current: 1,
         size: 6
-      }), app.api.goodsPage({
-        searchCount: false,
-        current: 1,
-        size: 2
       })]).then(function (_ref) {
-        var _ref2 = (0, _slicedToArray2.default)(_ref, 6),
-          resNew = _ref2[0],
-          resHot = _ref2[1],
-          resPage = _ref2[2],
-          resCategory = _ref2[3],
-          resBanner = _ref2[4],
-          resPromo = _ref2[5];
-        _this2.goodsListHot = resHot.data && resHot.data.records || [];
-        _this2.goodsList = [].concat((0, _toConsumableArray2.default)(_this2.goodsList), (0, _toConsumableArray2.default)(resPage.data && resPage.data.records || []));
-        if (!resPage.data.records || resPage.data.records.length < _this2.page.size) _this2.loadmore = false;
-        _this2.buildNavList(resCategory.data || resCategory);
-        _this2.buildSwiper(resBanner.data && resBanner.data.records || []);
-        _this2.promoList = resPromo.data && resPromo.data.records || [];
-        _this2.loadNotice();
-      }).catch(function () {});
+        var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
+          resPage = _ref2[0],
+          resBanner = _ref2[1];
+        var pageRecords = _this4._getRecords(resPage);
+        if (!pageRecords.length && resPage) {
+          try {
+            console.warn('[Home] 商品分页返回空，请检查后端数据或响应格式。原始响应:', JSON.stringify(resPage).slice(0, 500));
+          } catch (e) {}
+        }
+        _this4.goodsList = [].concat((0, _toConsumableArray2.default)(_this4.goodsList), (0, _toConsumableArray2.default)(pageRecords));
+        if (!pageRecords.length || pageRecords.length < _this4.page.size) _this4.loadmore = false;
+        _this4.buildSwiper(_this4._getRecords(resBanner));
+        _this4.loadNotice();
+        console.log('[Home] loadData 成功', '列表:', _this4.goodsList.length, '首页条数:', pageRecords.length);
+      }).catch(function (err) {
+        console.error('[Home] loadData 请求失败', err);
+        _this4.loadmore = false;
+      });
     },
     loadNotice: function loadNotice() {
-      var _this3 = this;
-      var app = getApp();
-      if (typeof app.api.getNoticeList !== 'function') return;
-      app.api.getNoticeList().then(function (res) {
+      var _this5 = this;
+      var app = typeof getApp === 'function' ? getApp() : null;
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.getNoticeList !== 'function') return;
+      api.getNoticeList().then(function (res) {
         var raw = res && res.data || [];
-        if (Array.isArray(raw)) _this3.noticeList = raw;else if (raw && raw.content && Array.isArray(raw.content)) _this3.noticeList = raw.content;else if (raw && raw.records && Array.isArray(raw.records)) _this3.noticeList = raw.records.map(function (r) {
+        if (Array.isArray(raw)) _this5.noticeList = raw;else if (raw && raw.content && Array.isArray(raw.content)) _this5.noticeList = raw.content;else if (raw && raw.records && Array.isArray(raw.records)) _this5.noticeList = raw.records.map(function (r) {
           return r.content || r.title || r.name;
         });
       }).catch(function () {});
@@ -308,18 +479,58 @@ var _default = {
       });
     },
     goodsPage: function goodsPage() {
-      var _this4 = this;
-      getApp().api.goodsPage(this.page).then(function (res) {
-        var list = res.data && res.data.records || [];
-        _this4.goodsList = [].concat((0, _toConsumableArray2.default)(_this4.goodsList), (0, _toConsumableArray2.default)(list));
-        if (list.length < _this4.page.size) _this4.loadmore = false;
+      var _this6 = this;
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.goodsPage !== 'function') return;
+      api.goodsPage(this.page).then(function (res) {
+        var list = _this6._getRecords(res);
+        _this6.goodsList = [].concat((0, _toConsumableArray2.default)(_this6.goodsList), (0, _toConsumableArray2.default)(list));
+        if (list.length < _this6.page.size) _this6.loadmore = false;
       }).catch(function () {});
+    },
+    _getRecords: function _getRecords(r) {
+      if (!r) return [];
+      if (Array.isArray(r)) return r;
+      if (r.records && Array.isArray(r.records)) return r.records;
+      if (r.data && Array.isArray(r.data)) return r.data;
+      if (r.data && r.data.records && Array.isArray(r.data.records)) return r.data.records;
+      if (r.data && r.data.list && Array.isArray(r.data.list)) return r.data.list;
+      if (r.data && r.data.rows && Array.isArray(r.data.rows)) return r.data.rows;
+      if (r.data && r.data.content && Array.isArray(r.data.content)) return r.data.content;
+      if (r.data && (0, _typeof2.default)(r.data) === 'object' && r.data.data && Array.isArray(r.data.data)) return r.data.data;
+      if (r.list && Array.isArray(r.list)) return r.list;
+      if (r.rows && Array.isArray(r.rows)) return r.rows;
+      if (r.content && Array.isArray(r.content)) return r.content;
+      if (r.result && Array.isArray(r.result)) return r.result;
+      return [];
+    },
+    signIn: function signIn() {
+      var app = getApp();
+      var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+      if (!api || typeof api.memberSignIn !== 'function') {
+        uni.showToast({
+          title: '功能暂不可用',
+          icon: 'none'
+        });
+        return;
+      }
+      api.memberSignIn().then(function (res) {
+        uni.showToast({
+          title: res && res.msg || '签到成功',
+          icon: 'success'
+        });
+      }).catch(function () {
+        uni.showToast({
+          title: '签到失败或今日已签到',
+          icon: 'none'
+        });
+      });
     },
     refresh: function refresh() {
       this.loadmore = true;
       this.page.current = 1;
       this.goodsList = [];
-      this.goodsListHot = [];
       this.swiperData = [];
       this.navList = [];
       this.promoList = [];
@@ -328,7 +539,7 @@ var _default = {
   }
 };
 exports.default = _default;
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"]))
 
 /***/ }),
 

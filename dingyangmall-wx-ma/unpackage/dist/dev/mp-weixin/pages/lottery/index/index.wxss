@@ -1,5 +1,5 @@
 
-.container.data-v-a8e01db4 { padding: 40rpx; min-height: 100vh; background: #f3f4f7;
+.container.data-v-a8e01db4 { padding: 40rpx; min-height: 100vh;
 }
 .header.data-v-a8e01db4 { text-align: center; padding: 40rpx 0;
 }
@@ -13,7 +13,7 @@
 }
 .wheel-area.data-v-a8e01db4 { text-align: center; padding: 40rpx 0;
 }
-.draw-btn.data-v-a8e01db4 { background: linear-gradient(135deg, #ff6b6b, #ee5a5a); color: #fff; width: 400rpx; height: 88rpx; line-height: 88rpx; border-radius: 44rpx; font-size: 32rpx;
+.draw-btn.data-v-a8e01db4 { background: linear-gradient(135deg, #ff2b56, #ff0036); color: #fff; width: 400rpx; height: 88rpx; line-height: 88rpx; border-radius: 44rpx; font-size: 32rpx;
 }
 .section-title.data-v-a8e01db4 { font-size: 32rpx; font-weight: bold; margin-bottom: 20rpx;
 }
@@ -27,7 +27,7 @@
 }
 .record-list.data-v-a8e01db4 { margin-top: 40rpx;
 }
-.record-item.data-v-a8e01db4 { background: #fff; padding: 24rpx; margin-bottom: 20rpx; border-radius: 10rpx; display: flex; justify-content: space-between;
+.record-item.data-v-a8e01db4 { background: #fff; padding: 24rpx; margin-bottom: 20rpx; border-radius: 16rpx; display: flex; justify-content: space-between; box-shadow: 0 8rpx 24rpx rgba(15,23,42,.06);
 }
 .empty.data-v-a8e01db4 { text-align: center; color: #999; padding: 40rpx;
 }

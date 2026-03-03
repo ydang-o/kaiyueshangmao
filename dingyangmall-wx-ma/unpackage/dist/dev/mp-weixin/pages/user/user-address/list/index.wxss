@@ -3,4 +3,6 @@
 }
 .loc-info.data-v-b41f5bda { min-height: 40rpx;
 }
+.add-btn.data-v-b41f5bda { height: 88rpx; margin-top: 200rpx;
+}
 

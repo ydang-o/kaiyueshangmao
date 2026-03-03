@@ -2,7 +2,7 @@
   Copyright (C) 2018-2019 www.dingyangmall.com
 -->
 <template>
-  <view class="page padding-xl">
+  <view class="page tm-page padding-xl">
     <view class="text-center margin-bottom-xl">
       <view class="text-xxl text-bold text-black">商家登录</view>
     </view>
@@ -15,7 +15,7 @@
         <image :src="captchaImg" class="captcha-img" mode="aspectFit" @tap="getCaptcha" />
       </view>
       <view class="padding flex flex-direction margin-top-xl">
-        <button class="cu-btn bg-blue margin-tb-sm lg" @tap="login" :loading="loading">登录</button>
+        <button class="cu-btn tm-primary-btn margin-tb-sm lg" @tap="login" :loading="loading">登录</button>
       </view>
     </view>
   </view>

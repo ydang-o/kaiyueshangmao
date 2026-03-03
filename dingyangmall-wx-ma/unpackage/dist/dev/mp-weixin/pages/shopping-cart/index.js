@@ -103,8 +103,30 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   var g0 = _vm.shoppingCartData.length
+  var l0 = _vm.__map(_vm.shoppingCartData, function (item, index) {
+    var $orig = _vm.__get_orig(item)
+    var m0 =
+      _vm.$imgUrl(
+        item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]
+      ) || "/static/img/no_pic.png"
+    return {
+      $orig: $orig,
+      m0: m0,
+    }
+  })
   var g1 = _vm.shoppingCartDataInvalid.length
   var g2 = g1 > 0 ? _vm.shoppingCartDataInvalid.length : null
+  var l1 = _vm.__map(_vm.shoppingCartDataInvalid, function (item, index) {
+    var $orig = _vm.__get_orig(item)
+    var m1 =
+      _vm.$imgUrl(
+        item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]
+      ) || "/static/img/no_pic.png"
+    return {
+      $orig: $orig,
+      m1: m1,
+    }
+  })
   var g3 = _vm.shoppingCartData.length <= 0 && !_vm.loadmore
   var g4 = _vm.operation ? _vm.selectValue.length : null
   var g5 = _vm.operation ? _vm.selectValue.length : null
@@ -121,7 +143,7 @@ var render = function () {
         _temp2 = _temp.eventParams || _temp["event-params"],
         index = _temp2.index
       var _temp, _temp2
-      return _vm.cartNumChang(n, index)
+      return _vm.cartNumChange(n, index)
     }
   }
   _vm.$mp.data = Object.assign(
@@ -129,8 +151,10 @@ var render = function () {
     {
       $root: {
         g0: g0,
+        l0: l0,
         g1: g1,
         g2: g2,
+        l1: l1,
         g3: g3,
         g4: g4,
         g5: g5,
@@ -274,12 +298,12 @@ var _numberUtil = _interopRequireDefault(__webpack_require__(/*! @/utils/numberU
 //
 var BaseStepper = function BaseStepper() {
   __webpack_require__.e(/*! require.ensure | components/base-stepper/index */ "components/base-stepper/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/base-stepper/index.vue */ 204));
+    return resolve(__webpack_require__(/*! @/components/base-stepper/index.vue */ 219));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var GoodsCardIndex = function GoodsCardIndex() {
   __webpack_require__.e(/*! require.ensure | components/goods-card-index/index */ "components/goods-card-index/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 190));
+    return resolve(__webpack_require__(/*! @/components/goods-card-index/index.vue */ 198));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -361,7 +385,7 @@ var _default = {
         _this4.goodsListRecom = res.data && res.data.records || [];
       });
     },
-    cartNumChang: function cartNumChang(n, index) {
+    cartNumChange: function cartNumChange(n, index) {
       this.shoppingCartData[index].quantity = n;
       getApp().api.shoppingCartEdit({
         id: this.shoppingCartData[index].id,
@@ -410,7 +434,12 @@ var _default = {
       });
       this.settlePrice = total.toFixed(2);
     },
-    userCollectAdd: function userCollectAdd() {},
+    userCollectAdd: function userCollectAdd() {
+      uni.showToast({
+        title: '收藏功能敬请期待',
+        icon: 'none'
+      });
+    },
     shoppingCartDel: function shoppingCartDel() {
       var _this8 = this;
       if (this.selectValue.length <= 0) return;

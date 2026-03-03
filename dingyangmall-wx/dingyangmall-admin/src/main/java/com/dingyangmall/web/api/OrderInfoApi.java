@@ -27,11 +27,11 @@ import com.dingyangmall.mall.entity.OrderLogistics;
 import com.dingyangmall.mall.enums.OrderInfoEnum;
 import com.dingyangmall.mall.service.Kuaidi100QueryService;
 import com.dingyangmall.mall.service.OrderInfoService;
+import com.dingyangmall.mall.utils.MemberUtils;
 import com.dingyangmall.weixin.config.WxPayConfiguration;
 import com.dingyangmall.weixin.constant.MyReturnCode;
 import com.dingyangmall.weixin.entity.WxUser;
 import com.dingyangmall.weixin.utils.LocalDateTimeUtils;
-import com.dingyangmall.weixin.utils.ThirdSessionHolder;
 import com.dingyangmall.weixin.utils.WxMaUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -52,7 +52,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/weixin/api/ma/orderinfo")
+@RequestMapping(value = { "/weixin/api/ma/orderinfo", "/api/ma/orderinfo" })
 public class OrderInfoApi {
 
     private final OrderInfoService orderInfoService;
@@ -68,7 +68,7 @@ public class OrderInfoApi {
 	*/
     @GetMapping("/page")
     public AjaxResult getOrderInfoPage(Page page, OrderInfo orderInfo) {
-		orderInfo.setUserId(ThirdSessionHolder.getWxUserId());
+		orderInfo.setUserId(MemberUtils.getMemberId());
         return AjaxResult.success(orderInfoService.page2(page,orderInfo));
     }
 
@@ -89,7 +89,7 @@ public class OrderInfoApi {
     */
     @PostMapping
     public AjaxResult save(@RequestBody PlaceOrderDTO placeOrderDTO){
-		placeOrderDTO.setUserId(ThirdSessionHolder.getWxUserId());
+		placeOrderDTO.setUserId(MemberUtils.getMemberId());
 		placeOrderDTO.setPaymentWay(MallConstants.PAYMENT_WAY_2);
 		OrderInfo orderInfo = orderInfoService.orderSub(placeOrderDTO);
 		if(orderInfo == null){
@@ -159,11 +159,14 @@ public class OrderInfoApi {
 	 */
 	@PostMapping("/unifiedOrder")
 	public AjaxResult unifiedOrder(HttpServletRequest request, @RequestBody OrderInfo orderInfo) throws WxPayException {
-		//检验用户session登录
+		String memberId = MemberUtils.getMemberId();
+		if (memberId == null || memberId.isEmpty()) {
+			return AjaxResult.error(MyReturnCode.ERR_70001.getCode(), "请先登录");
+		}
 		WxUser wxUser = new WxUser();
-		wxUser.setId(ThirdSessionHolder.getThirdSession().getWxUserId());
-		wxUser.setSessionKey(ThirdSessionHolder.getThirdSession().getSessionKey());
-		wxUser.setOpenId(ThirdSessionHolder.getThirdSession().getOpenId());
+		wxUser.setId(memberId);
+		wxUser.setSessionKey("");
+		wxUser.setOpenId(memberId);
 		orderInfo = orderInfoService.getById(orderInfo.getId());
 		if(orderInfo == null){
 			return AjaxResult.error(MyReturnCode.ERR_70005.getCode(), MyReturnCode.ERR_70005.getMsg());
@@ -262,7 +265,7 @@ public class OrderInfoApi {
 	 */
 	@GetMapping("/countAll")
 	public AjaxResult count(OrderInfo orderInfo){
-		orderInfo.setUserId(ThirdSessionHolder.getWxUserId());
+		orderInfo.setUserId(MemberUtils.getMemberId());
 		Map<String, Long> countAll = new HashMap<>();
 		countAll.put(OrderInfoEnum.STATUS_0.getValue(),orderInfoService.count(Wrappers.query(orderInfo).lambda()
 				.isNull(OrderInfo::getStatus)
@@ -326,7 +329,7 @@ public class OrderInfoApi {
         if(orderInfo == null){
             return AjaxResult.error("订单不存在");
         }
-        if(!orderInfo.getUserId().equals(ThirdSessionHolder.getWxUserId())){
+        if(!orderInfo.getUserId().equals(MemberUtils.getMemberId())){
              return AjaxResult.error("无权操作");
         }
         OrderLogistics logistics = orderLogisticsService.getById(orderInfo.getLogisticsId());
