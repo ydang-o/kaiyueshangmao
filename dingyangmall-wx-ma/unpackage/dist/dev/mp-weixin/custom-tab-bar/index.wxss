@@ -1,0 +1,56 @@
+/* 构建后从 common 引入主样式（含 ColorUI 图标），开发时若报错可忽略 */
+@import "../common/main.wxss";
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100rpx;
+  max-height: 100rpx;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.06);
+  z-index: 9999;
+  box-sizing: border-box;
+  /* 仅底部一条栏可点，不遮挡页面内容 */
+  pointer-events: none;
+}
+
+.tab-bar .tab-item {
+  pointer-events: auto;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12rpx 0;
+}
+
+.tab-item .icon {
+  font-size: 44rpx;
+  margin-bottom: 4rpx;
+  color: #9ca3af;
+  transition: color 0.2s;
+}
+
+.tab-item .text {
+  font-size: 20rpx;
+  color: #9ca3af;
+  transition: color 0.2s;
+}
+
+.tab-item.active .icon,
+.tab-item.active .text {
+  color: #ff0036;
+}
+
+.tab-item.active .text {
+  font-weight: 600;
+}

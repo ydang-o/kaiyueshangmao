@@ -1,0 +1,12 @@
+.login-banner.data-v-d69631e4 {
+  margin: 20rpx;
+  padding: 24rpx 32rpx;
+}
+.login-banner-inner.data-v-d69631e4 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.login-banner-text.data-v-d69631e4 {
+  font-size: 28rpx;
+}
