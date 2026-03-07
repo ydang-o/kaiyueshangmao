@@ -25,9 +25,9 @@
 </template>
 
 <script>
-  import {getPage, getObj, addObj, putObj, delObj} from '@/api/mall/integralRule'
-  import {tableOption} from '@/const/crud/mall/integralRule'
-  import {mapGetters} from 'vuex'
+  import { getPage, getObj, addObj, putObj, delObj } from '@/api/mall/integralRule'
+  import { tableOption } from '@/const/crud/mall/integralRule'
+  import useUserStore from '@/store/modules/user'
 
   export default {
     name: 'integralRule',
@@ -44,13 +44,18 @@
       }
     },
     computed: {
-      ...mapGetters(['permissions']),
       permissionList() {
+        const permissions = useUserStore().permissions || []
+        const has = (key) => {
+          if (permissions.length === 0 || permissions.includes('*:*:*')) return true // 如果没有权限数据或为超级管理，直接放行
+          return permissions.includes(key)
+        }
         return {
-          addBtn: this.permissions['mall:integralrule:add'] ? true : false,
-          delBtn: this.permissions['mall:integralrule:del'] ? true : false,
-          editBtn: this.permissions['mall:integralrule:edit'] ? true : false
-        };
+          addBtn: has('mall:integralrule:add'),
+          delBtn: has('mall:integralrule:del'),
+          editBtn: has('mall:integralrule:edit'),
+          viewBtn: has('mall:integralrule:get')
+        }
       }
     },
     methods: {
@@ -58,12 +63,17 @@
         this.tableLoading = true
         getPage(Object.assign({
           current: page.currentPage,
-          size: page.pageSize
+          size: page.pageSize,
+          pageNum: page.currentPage, // 增加对 pageNum 的支持
+          pageSize: page.pageSize     // 增加对 pageSize 的支持
         }, params)).then(response => {
-          this.tableData = response.data.data.records
-          this.page.total = response.data.data.total
+          const res = response && response.data != null ? response.data : response
+          const data = res && res.data != null ? res.data : res
+          this.tableData = (data && data.records) ? data.records : []
+          this.page.total = (data && data.total != null) ? data.total : 0
           this.tableLoading = false
         }).catch(() => {
+          this.tableData = []
           this.tableLoading = false
         })
       },

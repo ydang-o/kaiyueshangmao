@@ -323,27 +323,56 @@ module.exports = {
   memberInfo: () => {
     return request('/api/ma/wxuser/info', 'get', null, false)
   },
-  couponMy: (status) => {//我的优惠券
-    return request('/app/coupon/my', 'get', {status: status}, false)
+  couponMy: (status) => {
+    return request('/app/coupon/my', 'get', { status: status }, false)
   },
-  lotteryConfig: () => {//抽奖配置
-    return request('/app/lottery/config', 'get', null, false)
+  /** 我的代金券/商品券（小程序，走 /api/ma/coupon 与 X-Wx-Token，支持 openid 解析） */
+  couponMyMa: (status) => {
+    return request('/api/ma/coupon/my', 'get', status != null ? { status } : {}, false)
   },
-  lotteryDraw: () => {//抽奖
-    return request('/app/lottery/draw', 'post', null, true)
+  /** 抽奖配置：优先走 /api/ma 与 X-Wx-Token 同源认证，避免 /app/lottery 的 401 */
+  lotteryConfig: () => {
+    return request('/api/ma/lottery/config', 'get', null, false)
   },
-  lotteryRecord: (data) => {//抽奖记录
-    return request('/app/lottery/record', 'get', data, false)
+  /** 参与抽奖 */
+  lotteryDraw: () => {
+    return request('/api/ma/lottery/draw', 'post', null, true)
   },
-  memberSignIn: () => {//每日签到
+  /** 中奖记录分页，参数：pageNum, pageSize */
+  lotteryRecord: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    return request('/api/ma/lottery/record', 'get', p, false)
+  },
+  /** 备用：/app/lottery 链（C 端 H5 用 Bearer 时可用） */
+  lotteryConfigApp: () => request('/app/lottery/config', 'get', null, false),
+  lotteryDrawApp: () => request('/app/lottery/draw', 'post', null, true),
+  lotteryRecordApp: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    return request('/app/lottery/record', 'get', p, false)
+  },
+  /** 每日签到：优先走 /api/ma 与其它小程序接口同源认证（X-Wx-Token），避免 /app/member/sign-in 的 401；后端需在该路径下实现签到或转发到 member 逻辑 */
+  memberSignIn: () => {
+    return request('/api/ma/wxuser/sign-in', 'post', null, true)
+  },
+  /** 备用：C 端 /app 链签到（需 Bearer 或 memberId，小程序易 401） */
+  memberSignInApp: () => {
     return request('/app/member/sign-in', 'post', null, true)
   },
   wxUserSave: (data) => {
     return request('/api/ma/wxuser', 'post', data, true)
   },
   // 手机号授权：走 /api/ma 链避免 60002，getPhoneNumber 回调的 code 传此接口
+  // 手机号授权：走 /api/ma 链避免 60002，getPhoneNumber 回调的 code 传此接口
   bindPhoneNumber: (data) => {
     return request('/api/ma/wxuser/phone', 'post', data, true)
+  },
+  /** 获取会员码（用于出示给商家扫码）；需已绑定手机号，无则自动创建 ums_member 并生成会员码 */
+  getMemberCode: () => {
+    return request('/api/ma/wxuser/member-code', 'get', null, false)
   },
   /** 上传头像等图片：传入 chooseAvatar 返回的临时路径，返回 Promise<url>；若无上传接口则走 wx.uploadFile 到 /weixin/api/ma/upload */
   uploadFile: (filePath) => {
@@ -401,8 +430,12 @@ module.exports = {
   goodsGet: (id) => {
     return request('/api/ma/goodsspu/' + id, 'get', null, false)
   },
+  /** 购物车分页：兼容 current/size 与 pageNum/pageSize */
   shoppingCartPage: (data) => {
-    return request('/api/ma/shoppingcart/page', 'get', data, false)
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    return request('/api/ma/shoppingcart/page', 'get', p, false)
   },
   shoppingCartAdd: (data) => {
     return request('/api/ma/shoppingcart', 'post', data, true)
@@ -410,8 +443,10 @@ module.exports = {
   shoppingCartEdit: (data) => {
     return request('/api/ma/shoppingcart', 'put', data, true)
   },
+  /** 删除购物车：data 可为 id 数组或 { ids: [] }，统一按 { ids } 发送 */
   shoppingCartDel: (data) => {
-    return request('/api/ma/shoppingcart/del', 'post', data, false)
+    const body = Array.isArray(data) ? { ids: data } : (data && typeof data === 'object' && data.ids != null ? data : { ids: [data] })
+    return request('/api/ma/shoppingcart/del', 'post', body, false)
   },
   // 购物车数量：走 /api/ma 链，仅按 token 注入 memberId，避免 weixin 依赖 60002
   shoppingCartCount: (data) => {
@@ -442,8 +477,12 @@ module.exports = {
   sendSmsCode: (phone) => {//发送短信验证码
     return request('/app/member/send-sms-code', 'get', { phone: phone }, true)
   },
+  /** 订单分页：兼容 current/size 与 pageNum/pageSize，README 路径 /weixin/api/ma/orderinfo/page */
   orderPage: (data) => {
-    return request('/api/ma/orderinfo/page', 'get', data, false)
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    return request('/api/ma/orderinfo/page', 'get', p, false)
   },
   orderGet: (id) => {
     return request('/api/ma/orderinfo/' + id, 'get', null, false)
@@ -469,13 +508,29 @@ module.exports = {
   unifiedOrder: (data) => {
     return request('/api/ma/orderinfo/unifiedOrder', 'post', data, true)
   },
+  /** 收货地址分页：兼容 current/size 与 pageNum/pageSize，README 路径 /weixin/api/ma/useraddress/page */
   userAddressPage: (data) => {
-    return request('/api/ma/useraddress/page', 'get', data, false)
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    return request('/api/ma/useraddress/page', 'get', p, false)
   },
   userAddressSave: (data) => {
     return request('/api/ma/useraddress', 'post', data, true)
   },
   userAddressDel: (id) => {
     return request('/api/ma/useraddress/' + id, 'delete', null, false)
+  },
+  /** C 端找回密码：phone、code、newPassword，后端需提供 POST /app/member/reset-password */
+  resetPassword: (data) => {
+    return request('/app/member/reset-password', 'post', data, true)
+  },
+  /** C 端修改密码：oldPassword、newPassword，后端需提供 PUT /app/member/update-pwd 或 /api/ma/wxuser/password */
+  updatePwd: (data) => {
+    return request('/app/member/update-pwd', 'put', data, true)
+  },
+  /** 客服配置：供「联系客服」展示电话/微信，后端可读 sys_config 提供 GET /api/public/ma/config/service */
+  getServiceConfig: () => {
+    return request('/api/public/ma/config/service', 'get', null, false)
   }
 }

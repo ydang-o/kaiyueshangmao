@@ -19,8 +19,8 @@
       </view>
     </view>
   </view>
-  <!-- 已登录未完善：居中弹窗，适配当前 UI 主题 -->
-  <view v-else-if="showProfileModal" class="profile-modal-mask" @tap.stop="">
+  <!-- 已登录未完善 或 主动打开更新头像昵称：居中弹窗 -->
+  <view v-else-if="showProfileModal" class="profile-modal-mask" @tap="closeProfileModal">
     <view class="profile-modal-card tm-card" @tap.stop="">
       <view class="profile-modal-title tm-section-title">完善个人资料</view>
       <view class="profile-modal-field">
@@ -90,7 +90,9 @@ export default {
       phoneLoading: false,
       profileLoading: false,
       localAvatar: '',
-      localNickname: ''
+      localNickname: '',
+      /** 为 true 时强制显示完善资料弹窗（如从「我的」页点击头像打开） */
+      forceShowProfileModal: false
     }
   },
   watch: {
@@ -99,10 +101,18 @@ export default {
   },
   computed: {
     showProfileModal() {
-      return this.isLoggedIn && !this.hasPhone && !this.profileSkipped && !this.suppressProfileModal
+      return this.forceShowProfileModal || (this.isLoggedIn && !this.hasPhone && !this.profileSkipped && !this.suppressProfileModal)
     }
   },
   methods: {
+    /** 由父组件调用，打开更新头像/昵称弹窗（如「我的」页点击头像） */
+    openProfileModal() {
+      if (!this.isLoggedIn) return
+      this.forceShowProfileModal = true
+    },
+    closeProfileModal() {
+      this.forceShowProfileModal = false
+    },
     onWxLogin() {
       const app = getApp()
       const u = typeof uni !== 'undefined' ? uni : wx
@@ -172,6 +182,7 @@ export default {
       } else this.$emit('login-success')
     },
     onConfirm() {
+      this.closeProfileModal()
       this.$emit('confirm')
     },
     onGetPhoneNumber(e) {
@@ -216,12 +227,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-/* 紧挨 tabbar 上方固定，避免被页面内容遮挡；tabbar 高度约 100rpx */
+/* 紧挨 tabbar 上方固定，避免被页面内容遮挡；tabbar 高度约 130rpx */
 .login-banner-wrap {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 100rpx;
+  bottom: 130rpx;
   z-index: 9998;
   padding: 0 20rpx 16rpx;
   pointer-events: auto;

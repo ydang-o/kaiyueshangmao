@@ -83,6 +83,7 @@
 <script>
 import CountDown from '@/components/count-down/index.vue'
 import OrderOperate from '@/components/order-operate/index.vue'
+import apiModule from '@/utils/api'
 export default {
   name: 'OrderDetailPage',
   components: { CountDown, OrderOperate },
@@ -104,17 +105,31 @@ export default {
     if (options.callPay) this.callPay = true
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     orderGet(id) {
-      getApp().api.orderGet(id).then(res => {
-        if (!res.data) { uni.redirectTo({ url: '/pages/order/order-list/index' }); return }
-        this.orderInfo = res.data
+      const api = this.getApi()
+      if (!api || typeof api.orderGet !== 'function') return
+      api.orderGet(id).then(res => {
+        const detail = (res && res.data != null) ? res.data : res
+        if (!detail) {
+          uni.redirectTo({ url: '/pages/order/order-list/index' })
+          return
+        }
+        this.orderInfo = detail
         setTimeout(() => { this.callPay = false }, 4000)
+      }).catch(() => {
+        uni.redirectTo({ url: '/pages/order/order-list/index' })
       })
     },
     copyData(data) { uni.setClipboardData({ data }) },
     refunds(orderItemId) {
+      const api = this.getApi()
+      if (!api || typeof api.orderRefunds !== 'function') return
       uni.showModal({ content: '确认申请退款吗？', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
-        if (res.confirm) getApp().api.orderRefunds({ id: orderItemId }).then(() => this.orderGet(this.id))
+        if (res.confirm) api.orderRefunds({ id: orderItemId }).then(() => this.orderGet(this.id)).catch(() => {})
       }})
     },
     orderCancel() { this.orderGet(this.id) },

@@ -42,4 +42,14 @@ public interface TbCouponInfoService extends IService<TbCouponInfo> {
      * @return 生成的商品券
      */
     TbCouponInfo createCoupon(Long userId, String goodsId);
+
+    /**
+     * 发放代金券：向指定用户发放若干张商品券
+     * @param userId 用户ID（ums_member.id）
+     * @param goodsId 商品ID（商品券类型 goods_type=2）
+     * @param count 发放数量
+     * @param validityDays 有效天数
+     * @return 已发放的券列表
+     */
+    java.util.List<TbCouponInfo> distributeCoupon(Long userId, String goodsId, int count, int validityDays);
 }

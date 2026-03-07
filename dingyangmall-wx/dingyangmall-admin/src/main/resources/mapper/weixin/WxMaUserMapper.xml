@@ -21,6 +21,46 @@
         LIMIT 1
     </select>
 
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT id, open_id, union_id, nick_name, headimg_url, phone, create_time, update_time
+        FROM wx_user
+        WHERE id = #{id} AND (del_flag = '0' OR del_flag IS NULL)
+        LIMIT 1
+    </select>
+
+    <select id="selectByPhone" resultMap="BaseResultMap">
+        SELECT id, open_id, union_id, nick_name, headimg_url, phone, create_time, update_time
+        FROM wx_user
+        WHERE phone = #{phone} AND (del_flag = '0' OR del_flag IS NULL)
+        ORDER BY update_time DESC
+        LIMIT 1
+    </select>
+
+    <sql id="pageWhere">
+        <where>
+            (del_flag = '0' OR del_flag IS NULL)
+            <if test="phone != null and phone != ''">
+                AND phone LIKE CONCAT('%', #{phone}, '%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                AND nick_name LIKE CONCAT('%', #{nickname}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT id, open_id, union_id, nick_name, headimg_url, phone, create_time, update_time
+        FROM wx_user
+        <include refid="pageWhere"/>
+        ORDER BY update_time DESC, create_time DESC
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM wx_user
+        <include refid="pageWhere"/>
+    </select>
+
     <insert id="upsert">
         INSERT INTO wx_user (id, open_id, union_id, nick_name, headimg_url, app_type, del_flag)
         VALUES (#{u.id}, #{u.openid}, #{u.unionid}, #{u.nickname}, #{u.avatarUrl}, '1', '0')

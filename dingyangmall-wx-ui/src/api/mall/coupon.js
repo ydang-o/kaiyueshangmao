@@ -37,3 +37,21 @@ export function putObj(obj) {
     data: obj
   })
 }
+
+// 核销统计汇总：总核销量、今日核销，可选 verifyDealerId 按商家
+export function getStatistics(params) {
+  return request({
+    url: '/mall/coupon/statistics',
+    method: 'get',
+    params: params || {}
+  })
+}
+
+/** 发放商品券 */
+export function distributeCoupon(data) {
+  return request({
+    url: '/mall/coupon/distribute',
+    method: 'post',
+    data: data
+  })
+}

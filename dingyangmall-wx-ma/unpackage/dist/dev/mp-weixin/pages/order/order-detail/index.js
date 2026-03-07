@@ -34,7 +34,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.vue?vue&type=script&lang=js& */ 106);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _index_vue_vue_type_style_index_0_id_0ad5ef8d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.vue?vue&type=style&index=0&id=0ad5ef8d&scoped=true&lang=css& */ 108);
-/* harmony import */ var _software_hbuilderx_HBuilderX_4_87_2025121004_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../../software/hbuilderx/HBuilderX.4.87.2025121004/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 34);
+/* harmony import */ var _software_hbuilderx_HBuilderX_4_87_2025121004_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../../software/hbuilderx/HBuilderX.4.87.2025121004/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 36);
 
 var renderjs
 
@@ -161,18 +161,20 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 var CountDown = function CountDown() {
   __webpack_require__.e(/*! require.ensure | components/count-down/index */ "components/count-down/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/count-down/index.vue */ 233));
+    return resolve(__webpack_require__(/*! @/components/count-down/index.vue */ 234));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var OrderOperate = function OrderOperate() {
   __webpack_require__.e(/*! require.ensure | components/order-operate/index */ "components/order-operate/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 226));
+    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 227));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -213,19 +215,30 @@ var _default = {
     if (options.callPay) this.callPay = true;
   },
   methods: {
+    getApi: function getApi() {
+      var app = getApp();
+      return app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+    },
     orderGet: function orderGet(id) {
       var _this2 = this;
-      getApp().api.orderGet(id).then(function (res) {
-        if (!res.data) {
+      var api = this.getApi();
+      if (!api || typeof api.orderGet !== 'function') return;
+      api.orderGet(id).then(function (res) {
+        var detail = res && res.data != null ? res.data : res;
+        if (!detail) {
           uni.redirectTo({
             url: '/pages/order/order-list/index'
           });
           return;
         }
-        _this2.orderInfo = res.data;
+        _this2.orderInfo = detail;
         setTimeout(function () {
           _this2.callPay = false;
         }, 4000);
+      }).catch(function () {
+        uni.redirectTo({
+          url: '/pages/order/order-list/index'
+        });
       });
     },
     copyData: function copyData(data) {
@@ -235,16 +248,18 @@ var _default = {
     },
     refunds: function refunds(orderItemId) {
       var _this3 = this;
+      var api = this.getApi();
+      if (!api || typeof api.orderRefunds !== 'function') return;
       uni.showModal({
         content: '确认申请退款吗？',
         cancelText: '我再想想',
         confirmColor: '#ff0000',
         success: function success(res) {
-          if (res.confirm) getApp().api.orderRefunds({
+          if (res.confirm) api.orderRefunds({
             id: orderItemId
           }).then(function () {
             return _this3.orderGet(_this3.id);
-          });
+          }).catch(function () {});
         }
       });
     },

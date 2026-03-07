@@ -55,6 +55,7 @@
 <script>
 import LoginBanner from '@/components/login-banner/index.vue'
 import apiModule from '@/utils/api'
+import util from '@/utils/util'
 export default {
   name: 'GoodsCategoryPage',
   components: { LoginBanner },
@@ -99,7 +100,7 @@ export default {
       const tabBar = page.getTabBar()
       if (tabBar && tabBar.setData) tabBar.setData({ selected: 1 })
     }
-    uni.setTabBarBadge({ index: 2, text: (app.globalData.shoppingCartCount || '') + '' })
+    util.updateCartBadge(app.globalData.shoppingCartCount || 0)
   },
   methods: {
     onProfileSkipOrConfirm() {

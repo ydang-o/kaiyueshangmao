@@ -7,6 +7,11 @@ import cn.binarywang.wx.miniapp.bean.WxMaUserInfo;
 import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.utils.StringUtils;
 import com.dingyangmall.common.utils.uuid.IdUtils;
+import com.dingyangmall.mall.entity.TbCouponInfo;
+import com.dingyangmall.mall.entity.UmsMember;
+import com.dingyangmall.mall.service.TbCouponInfoService;
+import com.dingyangmall.mall.service.TbIntegralRuleService;
+import com.dingyangmall.mall.service.UmsMemberService;
 import com.dingyangmall.web.core.WxMaConstants;
 import com.dingyangmall.web.entity.WxMaUser;
 import com.dingyangmall.web.mapper.WxMaUserMapper;
@@ -24,6 +29,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -86,6 +94,15 @@ public class WxUserApi {
 
     @Autowired(required = false)
     private WxMaUserMapper wxMaUserMapper;
+
+    @Autowired(required = false)
+    private UmsMemberService umsMemberService;
+
+    @Autowired(required = false)
+    private TbCouponInfoService tbCouponInfoService;
+
+    @Autowired(required = false)
+    private TbIntegralRuleService tbIntegralRuleService;
 
     /** false 时登录不写 Redis，仅 DB（见 application.yml wx.ma.session-use-redis） */
     @Value("${wx.ma.session-use-redis:true}")
@@ -542,6 +559,146 @@ public class WxUserApi {
                 return AjaxResult.error("未开通手机号能力或未企业认证，请在微信公众平台开通");
             }
             return AjaxResult.error(msg != null ? msg : "获取手机号失败");
+        }
+    }
+
+    /**
+     * 获取或生成当前用户的会员码（用于出示给商家扫码）。
+     * 需先绑定手机号；若 ums_member 中无该手机号则自动创建并生成会员码。
+     * 商家端扫会员码或输入会员码可识别用户并赠送积分等。
+     */
+    @Operation(summary = "获取会员码", description = "需登录且已绑定手机号；返回会员码及简要信息，用于出示给商家扫码")
+    @GetMapping("/member-code")
+    public AjaxResult getMemberCode(HttpServletRequest request) {
+        String token = resolveToken(request, null);
+        Map<String, String> sessionData = getSessionDataByToken(token);
+        if (sessionData == null) {
+            return AjaxResult.error(tokenErrorMsg(token));
+        }
+        String openid = sessionData.get("openid");
+        if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
+        String phone = sessionData.get("phoneNumber");
+        if (StringUtils.isEmpty(phone)) phone = sessionData.get("phone");
+        if (StringUtils.isEmpty(phone) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getPhone())) {
+                phone = dbUser.getPhone();
+            }
+        }
+        if (StringUtils.isEmpty(phone)) {
+            return AjaxResult.error("请先绑定手机号后再使用会员码");
+        }
+        String nickname = sessionData.get("nickname");
+        if (StringUtils.isEmpty(nickname) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getNickname())) {
+                nickname = dbUser.getNickname();
+            }
+        }
+        String avatarUrl = sessionData.get("avatarUrl");
+        if (StringUtils.isEmpty(avatarUrl) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getAvatarUrl())) {
+                avatarUrl = dbUser.getAvatarUrl();
+            }
+        }
+        if (umsMemberService == null) {
+            return AjaxResult.error("会员服务未配置");
+        }
+        UmsMember member = umsMemberService.getByPhone(phone);
+        if (member == null) {
+            member = new UmsMember();
+            member.setPhone(phone);
+            member.setNickname(StringUtils.isNotEmpty(nickname) ? nickname : ("用户" + phone.substring(Math.max(0, phone.length() - 4))));
+            member.setAvatar(avatarUrl);
+            member.setPoints(0);
+            member.setBalance(BigDecimal.ZERO);
+            member.setLevel(0);
+            member.setDelFlag("0");
+            member.setCreateTime(LocalDateTime.now());
+            member.setUpdateTime(LocalDateTime.now());
+            umsMemberService.save(member);
+        }
+        if (member == null || member.getMemberCode() == null) {
+            return AjaxResult.error("无法生成会员码");
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("memberCode", member.getMemberCode());
+        data.put("nickname", member.getNickname());
+        data.put("points", member.getPoints() != null ? member.getPoints() : 0);
+        data.put("level", member.getLevel() != null ? member.getLevel() : 0);
+        return AjaxResult.success(data);
+    }
+
+    /**
+     * 我的商品券（小程序用 token 解析出会员后查询 tb_coupon_info）
+     * @param status 可选，1-未使用 2-已使用 3-已过期，不传返回全部
+     */
+    @Operation(summary = "我的商品券", description = "需登录且已绑定手机号；返回当前用户的商品券列表")
+    @GetMapping("/coupons")
+    public AjaxResult getMyCoupons(HttpServletRequest request, @RequestParam(required = false) Integer status) {
+        String token = resolveToken(request, null);
+        Map<String, String> sessionData = getSessionDataByToken(token);
+        if (sessionData == null) {
+            return AjaxResult.error(tokenErrorMsg(token));
+        }
+        String openid = sessionData.get("openid");
+        if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
+        String phone = sessionData.get("phoneNumber");
+        if (StringUtils.isEmpty(phone)) phone = sessionData.get("phone");
+        if (StringUtils.isEmpty(phone) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getPhone())) phone = dbUser.getPhone();
+        }
+        if (StringUtils.isEmpty(phone)) {
+            return AjaxResult.success(java.util.Collections.emptyList());
+        }
+        if (umsMemberService == null || tbCouponInfoService == null) {
+            return AjaxResult.success(java.util.Collections.emptyList());
+        }
+        UmsMember member = umsMemberService.getByPhone(phone);
+        if (member == null) {
+            return AjaxResult.success(java.util.Collections.emptyList());
+        }
+        List<TbCouponInfo> list = tbCouponInfoService.getUserCoupons(member.getId(), status);
+        return AjaxResult.success(list);
+    }
+
+    /**
+     * 每日签到领积分（小程序用 token 解析出会员后调用签到逻辑）
+     * 需先绑定手机号；openid → wx_user.phone → ums_member
+     */
+    @Operation(summary = "每日签到", description = "需登录且已绑定手机号；每日首次签到可获得积分")
+    @PostMapping("/sign-in")
+    public AjaxResult signIn(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+        String token = resolveToken(request, body);
+        Map<String, String> sessionData = getSessionDataByToken(token);
+        if (sessionData == null) {
+            return AjaxResult.error(tokenErrorMsg(token));
+        }
+        String openid = sessionData.get("openid");
+        if (StringUtils.isEmpty(openid)) openid = sessionData.get("memberId");
+        String phone = sessionData.get("phoneNumber");
+        if (StringUtils.isEmpty(phone)) phone = sessionData.get("phone");
+        if (StringUtils.isEmpty(phone) && wxMaUserMapper != null) {
+            WxMaUser dbUser = wxMaUserMapper.selectByOpenid(openid);
+            if (dbUser != null && StringUtils.isNotEmpty(dbUser.getPhone())) phone = dbUser.getPhone();
+        }
+        if (StringUtils.isEmpty(phone)) {
+            return AjaxResult.error("请先绑定手机号后再签到");
+        }
+        if (umsMemberService == null || tbIntegralRuleService == null) {
+            return AjaxResult.error("签到功能暂未开放");
+        }
+        UmsMember member = umsMemberService.getByPhone(phone);
+        if (member == null) {
+            return AjaxResult.error("请先绑定手机号后再签到");
+        }
+        boolean success = tbIntegralRuleService.distributeSignInPoints(member.getId());
+        if (success) {
+            return AjaxResult.success("签到成功");
+        } else {
+            return AjaxResult.error("今日已签到，明天再来吧");
         }
     }
 }

@@ -14,6 +14,7 @@ import com.dingyangmall.mall.service.UmsMemberService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
@@ -59,6 +60,57 @@ public class SysDashboardController {
                 .ge(TbCouponInfo::getUpdateTime, startOfDay)
                 .le(TbCouponInfo::getUpdateTime, endOfDay)));
 
+        return AjaxResult.success(data);
+    }
+
+    /** 积分统计：总发放、各一级经销商持有量（此处按会员积分汇总）、流水条数 */
+    @GetMapping("/statistics/integral")
+    public AjaxResult statisticsIntegral() {
+        Map<String, Object> data = new HashMap<>();
+        long flowCount = tbIntegralFlowService.count();
+        long totalIssue = tbIntegralFlowService.list(Wrappers.<TbIntegralFlow>lambdaQuery().gt(TbIntegralFlow::getIntegralNum, 0))
+                .stream().mapToLong(TbIntegralFlow::getIntegralNum).sum();
+        data.put("totalIssued", totalIssue);
+        data.put("flowCount", flowCount);
+        data.put("memberTotalPoints", umsMemberService.list().stream().mapToInt(m -> m.getPoints() != null ? m.getPoints() : 0).sum());
+        return AjaxResult.success(data);
+    }
+
+    /** 订单统计：订单数、按状态统计 */
+    @GetMapping("/statistics/order")
+    public AjaxResult statisticsOrder() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalOrders", orderInfoService.count());
+        data.put("pendingShip", orderInfoService.count(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getStatus, "1")));
+        data.put("shipped", orderInfoService.count(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getStatus, "2")));
+        data.put("completed", orderInfoService.count(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getStatus, "3")));
+        return AjaxResult.success(data);
+    }
+
+    /** 核销统计：总核销数、今日核销 */
+    @GetMapping("/statistics/coupon")
+    public AjaxResult statisticsCoupon(@RequestParam(required = false) Long verifyDealerId) {
+        Map<String, Object> data = new HashMap<>();
+        long totalVerified = tbCouponInfoService.count(Wrappers.<TbCouponInfo>lambdaQuery().eq(TbCouponInfo::getCouponStatus, 2));
+        data.put("totalVerified", totalVerified);
+        LocalDateTime start = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime end = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        long today = tbCouponInfoService.count(Wrappers.<TbCouponInfo>lambdaQuery()
+                .eq(TbCouponInfo::getCouponStatus, 2).ge(TbCouponInfo::getVerifyTime, start).le(TbCouponInfo::getVerifyTime, end));
+        data.put("todayVerified", today);
+        if (verifyDealerId != null) {
+            long byDealer = tbCouponInfoService.count(Wrappers.<TbCouponInfo>lambdaQuery()
+                    .eq(TbCouponInfo::getCouponStatus, 2).eq(TbCouponInfo::getVerifyDealerId, verifyDealerId));
+            data.put("byDealer", byDealer);
+        }
+        return AjaxResult.success(data);
+    }
+
+    /** 用户统计：总用户数、会员数 */
+    @GetMapping("/statistics/user")
+    public AjaxResult statisticsUser() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("totalMembers", umsMemberService.count());
         return AjaxResult.success(data);
     }
 }

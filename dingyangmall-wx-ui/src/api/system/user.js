@@ -1,33 +1,59 @@
 /**
- * 用户/经销商相关接口（已移除 system/user 后端，此为兼容存根）
- * 如需经销商管理，请使用 api/mall/member 或对接对应后端
+ * 系统用户/一级经销商管理（后端补充后生效）
+ * 路径与文档一致：POST/PUT /system/user，GET /system/user/list，GET/DELETE /system/user/{userId}
  */
 import request from '@/utils/request'
 
 export function listUser(query) {
-  return Promise.resolve({ rows: [], total: 0 })
+  return request({
+    url: '/system/user/list',
+    method: 'get',
+    params: query || {}
+  })
 }
 
 export function getUser(userId) {
-  return Promise.resolve({ data: {} })
+  return request({
+    url: '/system/user/' + userId,
+    method: 'get'
+  })
 }
 
 export function addUser(data) {
-  return Promise.resolve({ msg: '接口已移除' })
+  return request({
+    url: '/system/user',
+    method: 'post',
+    data
+  })
 }
 
 export function updateUser(data) {
-  return Promise.resolve({ msg: '接口已移除' })
+  return request({
+    url: '/system/user',
+    method: 'put',
+    data
+  })
 }
 
 export function delUser(userId) {
-  return Promise.resolve({ msg: '接口已移除' })
+  return request({
+    url: '/system/user/' + userId,
+    method: 'delete'
+  })
 }
 
 export function changeUserStatus(userId, status) {
-  return Promise.resolve({ msg: '接口已移除' })
+  return request({
+    url: '/system/user/changeStatus',
+    method: 'put',
+    data: { userId, status }
+  })
 }
 
 export function resetUserPwd(userId, password) {
-  return Promise.resolve({ msg: '接口已移除' })
+  return request({
+    url: '/system/user/resetPwd',
+    method: 'put',
+    data: { userId, password }
+  })
 }

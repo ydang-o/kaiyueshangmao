@@ -5,7 +5,7 @@
 }
 .page-index.data-v-15355106 { position: absolute; right: 30rpx; bottom: 30rpx; background: rgba(17, 24, 39, .55); color: #fff;
 }
-.to-down.data-v-15355106 { margin-bottom: 100rpx;
+.to-down.data-v-15355106 { margin-bottom: 130rpx;
 }
 .screen.data-v-15355106 { width: 94% !important; border-radius: 24rpx; min-height: 900rpx; margin: auto; background-color: #f2f3f5; box-shadow: 0 10rpx 34rpx rgba(15,23,42,.08);
 }

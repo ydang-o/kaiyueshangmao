@@ -50,6 +50,7 @@ public class TbIntegralRuleServiceImpl extends ServiceImpl<TbIntegralRuleMapper,
             flow.setRemark("注册赠送积分");
             flow.setOperTime(LocalDateTime.now());
             flow.setCreateTime(LocalDateTime.now());
+            flow.setCreateBy(String.valueOf(userId));
             integralFlowService.save(flow);
         }
     }
@@ -76,6 +77,7 @@ public class TbIntegralRuleServiceImpl extends ServiceImpl<TbIntegralRuleMapper,
             flow.setRemark("推荐注册赠送积分");
             flow.setOperTime(LocalDateTime.now());
             flow.setCreateTime(LocalDateTime.now());
+            flow.setCreateBy(String.valueOf(inviterId));
             integralFlowService.save(flow);
         }
     }
@@ -113,6 +115,7 @@ public class TbIntegralRuleServiceImpl extends ServiceImpl<TbIntegralRuleMapper,
             flow.setRemark("每日签到赠送积分");
             flow.setOperTime(LocalDateTime.now());
             flow.setCreateTime(LocalDateTime.now());
+            flow.setCreateBy(String.valueOf(userId));
             integralFlowService.save(flow);
             return true;
         }

@@ -4,6 +4,7 @@
  * All rights reserved, Designed By www.dingyangmall.com
  */
 import api from './utils/api'
+import util from './utils/util'
 import __config from './config/env'
 
 export default {
@@ -251,19 +252,16 @@ export default {
       if (!that || !that.globalData) return
       const hasToken = !!(that.globalData.wxToken || that.globalData.thirdSession)
       if (!hasToken) {
-        that.globalData.shoppingCartCount = '0'
-        const u = typeof uni !== 'undefined' ? uni : wx
-        if (u.setTabBarBadge) u.setTabBarBadge({ index: 2, text: '0' }).catch(() => {})
+        if (util && util.updateCartBadge) util.updateCartBadge(0)
         return
       }
       const apiRef = (that && that.api) || (that.globalData && that.globalData.__api) || (typeof api !== 'undefined' ? api : null)
       if (!apiRef || typeof apiRef.shoppingCartCount !== 'function') return
       apiRef.shoppingCartCount().then(res => {
-        if (that && that.globalData) that.globalData.shoppingCartCount = (res.data != null ? res.data : res) + ''
-        const u = typeof uni !== 'undefined' ? uni : wx
-        if (that && that.globalData && u.setTabBarBadge) u.setTabBarBadge({ index: 2, text: that.globalData.shoppingCartCount + '' })
+        const count = (res.data != null ? res.data : res)
+        if (util && util.updateCartBadge) util.updateCartBadge(count)
       }).catch(() => {
-        if (that && that.globalData) that.globalData.shoppingCartCount = '0'
+        if (util && util.updateCartBadge) util.updateCartBadge(0)
       })
     },
     getCurrentPageUrlWithArgs() {

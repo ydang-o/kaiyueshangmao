@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'OrderRefundsFormPage',
   data() {
@@ -37,8 +38,17 @@ export default {
     getApp().initPage()
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     submit() {
       if (!this.orderItemId) return
+      const api = this.getApi()
+      if (!api || typeof api.orderRefunds !== 'function') {
+        uni.showToast({ title: '接口不可用', icon: 'none' })
+        return
+      }
       uni.showModal({
         content: '确认申请退款吗？',
         cancelText: '取消',
@@ -46,7 +56,7 @@ export default {
         success: (res) => {
           if (res.confirm) {
             this.loading = true
-            getApp().api.orderRefunds({ id: this.orderItemId }).then(() => {
+            api.orderRefunds({ id: this.orderItemId, reason: this.reason }).then(() => {
               this.loading = false
               uni.showToast({ title: '已提交' })
               setTimeout(() => uni.navigateBack(), 1500)

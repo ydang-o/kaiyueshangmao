@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   - Copyright (C) 2024
   - All rights reserved, Designed By www.dingyangmall.com
 -->
@@ -175,7 +175,19 @@
               width="120"
             >
               <template v-slot="scope">
-                <img :src="scope.row.picUrl" width="100" height="100" />
+                <el-image
+                  v-if="scope.row.picUrl"
+                  :src="formatImageUrl(scope.row.picUrl)"
+                  :preview-src-list="[formatImageUrl(scope.row.picUrl)]"
+                  fit="cover"
+                  style="width: 100px; height: 100px; border-radius: 4px"
+                  preview-teleported
+                >
+                  <template #error>
+                    <div class="image-slot">加载失败</div>
+                  </template>
+                </el-image>
+                <span v-else>无图片</span>
               </template>
             </el-table-column>
             <el-table-column align="center" prop="spuName" label="商品名">
@@ -233,7 +245,7 @@
               <template v-slot="scope">
                 <el-avatar
                   icon="el-icon-user-solid"
-                  :src="scope.row.headimgUrl"
+                  :src="formatImageUrl(scope.row.headimgUrl)"
                 ></el-avatar>
                 <div>{{ scope.row.nickName }}</div>
               </template>
@@ -298,7 +310,19 @@
             "
           >
             <el-col :span="4" style="display: flex; align-items: center">
-              <el-image :src="item.picUrl" style="width: 60px; height: 60px" />
+              <el-image
+                v-if="item.picUrl"
+                :src="formatImageUrl(item.picUrl)"
+                :preview-src-list="[formatImageUrl(item.picUrl)]"
+                fit="cover"
+                style="width: 60px; height: 60px; border-radius: 4px"
+                preview-teleported
+              >
+                <template #error>
+                  <div class="image-slot">加载失败</div>
+                </template>
+              </el-image>
+              <span v-else class="text-gray-400">无图</span>
             </el-col>
             <el-col :span="12" style="text-align: left">
               <div class="spu-name">{{ item.spuName }}</div>
@@ -404,10 +428,27 @@ import {
   orderCancel,
   takeGoods,
   doOrderRefunds,
+  shipOrder,
 } from "@/api/mall/orderinfo";
 import { tableOption } from "@/const/crud/mall/orderinfo";
 const crud = ref(null);
 const { proxy } = getCurrentInstance();
+
+// 图片路径格式化（自动拼接 baseApi，兼容相对路径、绝对路径、数字 ID 等）
+const baseApi = import.meta.env.VITE_APP_BASE_API || ''
+const formatImageUrl = (url) => {
+  if (!url) return ''
+  if (/^https?:\/\//i.test(url) || url.startsWith('blob:')) return url
+  // 处理纯数字 ID
+  if (/^\d+$/.test(url)) {
+    const path = '/profile/file/' + url
+    return baseApi ? baseApi + path : path
+  }
+  // 处理相对路径
+  let path = url.startsWith('/') ? url : '/' + url
+  if (baseApi && baseApi !== '/' && path.startsWith(baseApi)) return path
+  return baseApi + path
+}
 
 const data = reactive({
   form: {},
@@ -629,11 +670,11 @@ function showDialogLogistics(row, index, done) {
 }
 
 function delivery(form, done) {
-  let row = data.logisticsForm.row;
-  (row.status = "2"),
-    (row.logistics = form.logistics),
-    (row.logisticsNo = form.logisticsNo);
-  putObj(row)
+  const row = data.logisticsForm.row;
+  shipOrder(row.id, {
+    logistics: form.logistics,
+    logisticsNo: form.logisticsNo
+  })
     .then(() => {
       proxy.$message({
         showClose: true,
@@ -776,6 +817,16 @@ function refreshChange(page) {
   margin-top: 10px;
   font-size: 12px;
   color: #7b7b7b;
+}
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: #909399;
+  font-size: 12px;
 }
 // 去掉 ruoyi 的样式
 .avue-crud :deep(.el-card__body) {

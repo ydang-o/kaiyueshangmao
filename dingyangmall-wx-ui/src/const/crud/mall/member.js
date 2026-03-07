@@ -6,15 +6,23 @@ export const tableOption = {
   menuAlign: 'center',
   align: 'center',
   menuType: 'text',
-  searchShow: false,
+  searchShow: true,
   excelBtn: true,
   printBtn: true,
   viewBtn: true,
   column: [
     {
-      label: '用户信息',
+      label: '昵称',
       prop: 'nickname',
       search: true,
+      editDisplay: false,
+      addDisplay: false
+    },
+    {
+      label: '手机号',
+      prop: 'phone',
+      search: true,
+      width: 120,
       editDisplay: false,
       addDisplay: false
     },

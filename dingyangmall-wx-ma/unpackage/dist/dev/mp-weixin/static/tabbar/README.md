@@ -1,6 +1,6 @@
 # TabBar 图标说明
 
-本目录存放**小程序底部导航栏图标**，图标随小程序包上传，不请求后端。请使用**微信官方或腾讯系设计资源**中的图标。
+本目录存放**小程序底部导航栏图标**，图标随小程序包上传，不请求后端。可使用**微信/腾讯系**或 **Element UI / Element Plus** 风格图标。
 
 ## 所需文件
 
@@ -12,6 +12,8 @@
 | `category-active.png` | 分类-选中 | 81×81 px |
 | `user.png` | 我的-未选中 | 81×81 px |
 | `user-active.png` | 我的-选中 | 81×81 px |
+| `cart.png` | 购物车-未选中 | 81×81 px |
+| `cart-active.png` | 购物车-选中 | 81×81 px |
 
 微信建议：单张 ≤ 40KB，格式 png。放置完成后无需改代码，`pages.json` 已配置上述路径。
 
@@ -44,10 +46,22 @@
 
 ## 一键下载（使用官方/开源图标）
 
-项目提供脚本从**腾讯系开源示例**拉取 tabBar 图标到本目录（若源可用）：
+### 方式 A：腾讯 WeUI 图标
 
 ```bash
 node scripts/download-tabbar-icons.js
 ```
+
+### 方式 B：Element UI / Element Plus 风格图标（推荐）
+
+从 [Element Plus 图标集](https://element-plus.org/zh-CN/component/icon.html)（Iconify `ep` 集）拉取首页、分类、购物车、我的对应图标，风格与 Element UI 一致：
+
+```bash
+node scripts/download-tabbar-icons-element.js
+```
+
+- 会从 `api.iconify.design/ep/` 下载 SVG 并保存到本目录。
+- 若已安装 `sharp`（`npm install sharp --save-dev`），会自动转为 81×81 PNG；否则仅生成 SVG，可用 [CloudConvert](https://cloudconvert.com/svg-to-png) 等转为 PNG 后按上表重命名。
+- 图标对应：首页 `house` / `home-filled`，分类 `grid`，购物车 `shopping-cart` / `shopping-cart-full`，我的 `user` / `user-filled`。
 
 若脚本中的源不可用，请按上面 1、2、4 任一渠道手动下载并放入本目录。

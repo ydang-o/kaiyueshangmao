@@ -1,13 +1,16 @@
 package com.dingyangmall.web.api;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.mall.config.CommonConstants;
 import com.dingyangmall.mall.entity.GoodsCategory;
 import com.dingyangmall.mall.entity.GoodsCategoryTree;
 import com.dingyangmall.mall.entity.GoodsSpu;
+import com.dingyangmall.mall.entity.TbBanner;
 import com.dingyangmall.mall.service.GoodsCategoryService;
 import com.dingyangmall.mall.service.GoodsSpuService;
+import com.dingyangmall.mall.service.TbBannerService;
 import com.dingyangmall.system.domain.SysNotice;
 import com.dingyangmall.system.service.ISysNoticeService;
 import lombok.AllArgsConstructor;
@@ -35,6 +38,7 @@ public class ApiMaHomeController {
     private final GoodsSpuService goodsSpuService;
     private final GoodsCategoryService goodsCategoryService;
     private final ISysNoticeService noticeService;
+    private final TbBannerService bannerService;
 
     /**
      * 首页数据：轮播图、宫格分类、公告、猜你喜欢列表、推荐大图块
@@ -43,9 +47,46 @@ public class ApiMaHomeController {
     public AjaxResult home() {
         Map<String, Object> data = new HashMap<>();
 
-        // 1. 轮播图：取前 6 条上架商品（无上架时回退为查所有未删除商品，便于首页有数据）
-        Page<GoodsSpu> pageBanner = new Page<>(1, 6);
-        List<GoodsSpu> bannerList = queryGoodsList(pageBanner, 6);
+        // 1. 轮播图：优先从 tb_banner 表取，若为空则取商品图回滚
+        List<TbBanner> bannerList = bannerService.lambdaQuery()
+                .eq(TbBanner::getStatus, "1")
+                .eq(TbBanner::getDelFlag, "0") // 增加未删除过滤
+                .orderByAsc(TbBanner::getSort)
+                .last("LIMIT 6")
+                .list();
+        
+        log.info("[Home] banner query count: {}", bannerList != null ? bannerList.size() : 0);
+
+        if (bannerList == null || bannerList.isEmpty()) {
+            // ... (保持原有的商品回滚逻辑)
+            log.info("[Home] no active banners, falling back to products");
+            Page<GoodsSpu> pageBanner = new Page<>(1, 6);
+            List<GoodsSpu> goodsBanner = queryGoodsList(pageBanner, 6);
+            bannerList = goodsBanner.stream().map(spu -> {
+                TbBanner b = new TbBanner();
+                try {
+                    b.setId(Long.parseLong(spu.getId()));
+                } catch (Exception e) {}
+                b.setTitle(spu.getName());
+                if (spu.getPicUrls() != null && spu.getPicUrls().length > 0) {
+                    b.setPicUrl(spu.getPicUrls()[0]);
+                }
+                b.setLinkUrl(spu.getId());
+                b.setLinkType("1");
+                return b;
+            }).collect(Collectors.toList());
+        }
+        
+        // 修正轮播图 URL 为完整路径（如果需要）
+        if (bannerList != null) {
+            bannerList.forEach(b -> {
+                if (b.getPicUrl() != null && b.getPicUrl().startsWith("/")) {
+                    // 如果 picUrl 是 /profile/xxx 这种相对路径，且前端没有处理拼接，后端帮它拼好
+                    // 这里我们打印一下日志看看前端传过来的到底是什么
+                    log.debug("[Home] banner image raw url: {}", b.getPicUrl());
+                }
+            });
+        }
         data.put("bannerList", bannerList);
 
         // 2. 分类树：宫格导航用

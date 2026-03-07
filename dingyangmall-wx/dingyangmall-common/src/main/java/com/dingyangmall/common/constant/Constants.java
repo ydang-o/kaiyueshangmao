@@ -141,6 +141,11 @@ public class Constants
     public static final String RESOURCE_PREFIX = "/profile";
 
     /**
+     * 管理端商品无本地图时使用的默认图（需在上传目录下放置 profile/static/logo.png，或由前端配置）
+     */
+    public static final String DEFAULT_PRODUCT_IMAGE = RESOURCE_PREFIX + "/static/logo.png";
+
+    /**
      * RMI 远程方法调用
      */
     public static final String LOOKUP_RMI = "rmi:";

@@ -45,15 +45,24 @@ public class TbLotteryConfigServiceImpl extends ServiceImpl<TbLotteryConfigMappe
     @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
     public boolean saveConfig(TbLotteryConfig config) {
         boolean result = this.saveOrUpdate(config);
-        if (result && config.getPrizeList() != null) {
-            // 删除旧奖品
+        if (!result || config.getId() == null) {
+            return result;
+        }
+        if (config.getPrizeList() != null) {
             lotteryPrizeMapper.delete(Wrappers.<TbLotteryPrize>lambdaQuery().eq(TbLotteryPrize::getConfigId, config.getId()));
-            // 保存新奖品
             if (!config.getPrizeList().isEmpty()) {
                 config.getPrizeList().forEach(prize -> prize.setConfigId(config.getId()));
                 config.getPrizeList().forEach(lotteryPrizeMapper::insert);
             }
         }
-        return result;
+        return true;
+    }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public boolean removeConfigById(Long id) {
+        if (id == null) return false;
+        lotteryPrizeMapper.delete(Wrappers.<TbLotteryPrize>lambdaQuery().eq(TbLotteryPrize::getConfigId, id));
+        return this.removeById(id);
     }
 }

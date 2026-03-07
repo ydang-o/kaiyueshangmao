@@ -48,14 +48,19 @@ export default {
   methods: {
     getList(page, params) {
       this.tableLoading = true
-      getPage(Object.assign({
+      const query = {
         current: page.currentPage,
-        size: page.pageSize
-      }, params, this.searchForm)).then(response => {
-        this.tableData = response.data.records
-        this.page.total = response.data.total
+        size: page.pageSize,
+        ...(params || {}),
+        ...(this.searchForm || {})
+      }
+      getPage(query).then(response => {
+        const res = response?.data ?? response
+        this.tableData = res.records ?? res.data?.records ?? []
+        this.page.total = res.total ?? res.data?.total ?? 0
         this.tableLoading = false
       }).catch(() => {
+        this.tableData = []
         this.tableLoading = false
       })
     },

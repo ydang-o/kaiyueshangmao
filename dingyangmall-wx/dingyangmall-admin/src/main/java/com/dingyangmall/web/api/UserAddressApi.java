@@ -42,14 +42,24 @@ public class UserAddressApi {
         return AjaxResult.success(userAddressService.page(page,Wrappers.query(userAddress)));
     }
 
+    /** 单个用户最多 10 个收货地址 */
+    private static final int MAX_ADDRESS_COUNT = 10;
+
     /**
-    * 新增、修改用户收货地址
+    * 新增、修改用户收货地址（最多 10 个，设默认时会将其他地址改为非默认）
     * @param userAddress 用户收货地址
     * @return AjaxResult
     */
     @PostMapping
     public AjaxResult save(@RequestBody UserAddress userAddress){
-		userAddress.setUserId(MemberUtils.getMemberId());
+		String userId = MemberUtils.getMemberId();
+		userAddress.setUserId(userId);
+		if (userAddress.getId() == null || userAddress.getId().isEmpty()) {
+			long count = userAddressService.count(com.baomidou.mybatisplus.core.toolkit.Wrappers.<UserAddress>lambdaQuery().eq(UserAddress::getUserId, userId));
+			if (count >= MAX_ADDRESS_COUNT) {
+				return AjaxResult.error("收货地址最多保存 " + MAX_ADDRESS_COUNT + " 个，请先删除再添加");
+			}
+		}
         return AjaxResult.success(userAddressService.saveOrUpdate(userAddress));
     }
 

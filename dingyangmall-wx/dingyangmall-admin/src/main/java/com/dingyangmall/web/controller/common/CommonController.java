@@ -28,7 +28,7 @@ import com.dingyangmall.web.service.SysUploadFileService;
  * @author ruoyi
  */
 @RestController
-@RequestMapping("/common")
+@RequestMapping({"/common", "/dev-api/common"})
 public class CommonController
 {
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);

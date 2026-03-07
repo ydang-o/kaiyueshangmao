@@ -58,6 +58,8 @@
 
 <script>
 import numberUtil from '@/utils/numberUtil'
+import util from '@/utils/util'
+import apiModule from '@/utils/api'
 export default {
   name: 'OrderConfirmPage',
   data() {
@@ -77,12 +79,27 @@ export default {
     }
   },
   onLoad() {
-    getApp().initPage().then(() => {
-      this.userAddressPage()
-      this.orderConfirmDo()
+    util.requireLogin('请先登录后再提交订单').then((ok) => {
+      if (!ok) {
+        setTimeout(() => { uni.navigateBack({ fail: () => { uni.switchTab({ url: '/pages/home/index' }) } }) }, 100)
+        return
+      }
+      getApp().initPage().then(() => {
+        this.userAddressPage()
+        this.orderConfirmDo()
+      })
     })
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
+    _parseAddressList(res) {
+      const data = (res && res.data) || res || {}
+      const list = data.records || data.rows || data.list || data.content || data.data || []
+      return Array.isArray(list) ? list : []
+    },
     orderConfirmDo() {
       uni.getStorage({
         key: 'param-orderConfirm',
@@ -103,21 +120,34 @@ export default {
       })
     },
     userAddressPage() {
-      getApp().api.userAddressPage({ searchCount: false, current: 1, size: 1, isDefault: '1' }).then(res => {
-        const records = (res.data && res.data.records) || []
-        if (records.length > 0) this.userAddress = records[0]
-      })
+      const api = this.getApi()
+      if (!api || typeof api.userAddressPage !== 'function') return
+      api.userAddressPage({ searchCount: false, current: 1, size: 1, isDefault: '1' }).then(res => {
+        const list = this._parseAddressList(res)
+        if (list.length > 0) this.userAddress = list[0]
+      }).catch(() => {})
     },
     orderSub() {
       if (this.orderSubParm.deliveryWay == '1' && !this.userAddress) {
         uni.showToast({ title: '请选择收货地址', icon: 'none' })
         return
       }
+      const api = this.getApi()
+      if (!api || typeof api.orderSub !== 'function') {
+        uni.showToast({ title: '提交订单接口不可用', icon: 'none' })
+        return
+      }
       this.loading = true
       const skus = this.orderConfirmData
       const userAddressId = this.orderSubParm.deliveryWay == '1' ? this.userAddress.id : null
-      getApp().api.orderSub(Object.assign({}, this.orderSubParm, { skus, userAddressId })).then(res => {
-        uni.redirectTo({ url: '/pages/order/order-detail/index?callPay=true&id=' + res.data.id })
+      api.orderSub(Object.assign({}, this.orderSubParm, { skus, userAddressId })).then(res => {
+        const id = (res && res.data != null && res.data.id != null) ? res.data.id : (res && res.id)
+        if (id != null) {
+          uni.redirectTo({ url: '/pages/order/order-detail/index?callPay=true&id=' + id })
+        } else {
+          this.loading = false
+          uni.showToast({ title: '提交成功，请到订单列表查看', icon: 'none' })
+        }
       }).catch(() => { this.loading = false })
     }
   }

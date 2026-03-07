@@ -1,4 +1,4 @@
-﻿import { createApp } from "vue";
+import { createApp } from "vue";
 
 import Cookies from "js-cookie";
 
@@ -43,6 +43,8 @@ import ImagePreview from "@/components/ImagePreview";
 import TreeSelect from "@/components/TreeSelect";
 // 字典标签组件
 import DictTag from "@/components/DictTag";
+// 基础容器（积分规则、商品券等页面使用）
+import BasicContainer from "@/components/BasicContainer";
 
 const app = createApp(App);
 
@@ -65,6 +67,7 @@ app.component("ImageUpload", ImageUpload);
 app.component("ImagePreview", ImagePreview);
 app.component("RightToolbar", RightToolbar);
 app.component("Editor", Editor);
+app.component("BasicContainer", BasicContainer);
 
 app.use(router);
 app.use(store);

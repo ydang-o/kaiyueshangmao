@@ -12,14 +12,16 @@ import com.dingyangmall.mall.entity.TbLotteryConfig;
 public interface TbLotteryConfigService extends IService<TbLotteryConfig> {
     /**
      * 获取当前生效的抽奖配置（包含奖品列表）
-     * @return 抽奖配置
      */
     TbLotteryConfig getActiveConfig();
 
     /**
-     * 保存抽奖配置及其奖品
-     * @param config 抽奖配置
-     * @return 是否成功
+     * 保存抽奖配置及其奖品（新增或更新，奖品以 config.prizeList 为准覆盖）
      */
     boolean saveConfig(TbLotteryConfig config);
+
+    /**
+     * 删除配置并级联删除其下奖品
+     */
+    boolean removeConfigById(Long id);
 }

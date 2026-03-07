@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/integralrule")
+@RequestMapping({"/integralrule", "/dev-api/integralrule"})
 public class TbIntegralRuleController extends BaseController {
 
     private final TbIntegralRuleService tbIntegralRuleService;
@@ -35,6 +35,15 @@ public class TbIntegralRuleController extends BaseController {
     @PreAuthorize("@ss.hasPermi('mall:integralrule:index')")
     public AjaxResult getTbIntegralRulePage(Page page, TbIntegralRule tbIntegralRule) {
         return AjaxResult.success(tbIntegralRuleService.page(page, Wrappers.query(tbIntegralRule)));
+    }
+
+    /**
+     * 列表查询（不分页，用于下拉等）
+     */
+    @GetMapping("/list")
+    @PreAuthorize("@ss.hasPermi('mall:integralrule:index')")
+    public AjaxResult list(TbIntegralRule tbIntegralRule) {
+        return AjaxResult.success(tbIntegralRuleService.list(Wrappers.query(tbIntegralRule)));
     }
 
     /**

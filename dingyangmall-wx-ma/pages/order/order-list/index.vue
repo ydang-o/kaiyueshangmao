@@ -43,6 +43,7 @@
 
 <script>
 import util from '@/utils/util'
+import apiModule from '@/utils/api'
 import OrderOperate from '@/components/order-operate/index.vue'
 export default {
   name: 'OrderListPage',
@@ -69,7 +70,13 @@ export default {
       const i = this.orderStatus.findIndex(s => s.key === options.status)
       if (i >= 0) this.tabCur = i
     }
-    getApp().initPage().then(() => this.orderPage())
+    util.requireLogin('请先登录后查看订单').then((ok) => {
+      if (!ok) {
+        this.loadmore = false
+        return
+      }
+      getApp().initPage().then(() => this.orderPage())
+    })
   },
   onReachBottom() {
     if (this.loadmore) { this.page.current++; this.orderPage() }
@@ -81,6 +88,16 @@ export default {
     uni.stopPullDownRefresh()
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
+    /** 从订单分页响应中解析列表 */
+    _parseOrderList(res) {
+      const data = (res && res.data) || res || {}
+      const list = data.records || data.rows || data.list || data.content || data.data || []
+      return Array.isArray(list) ? list : []
+    },
     tabSelect(index, key) {
       if (index === this.tabCur) return
       this.tabCur = index
@@ -94,17 +111,30 @@ export default {
       this.orderPage()
     },
     orderPage() {
-      getApp().api.orderPage(Object.assign({}, this.page, util.filterForm(this.parameter))).then(res => {
-        const list = (res.data && res.data.records) || []
-        this.orderList = [...this.orderList, ...list]
-        if (list.length < this.page.size) this.loadmore = false
+      const api = this.getApi()
+      if (!api || typeof api.orderPage !== 'function') {
+        this.loadmore = false
+        return
+      }
+      const isFirst = this.page.current === 1
+      api.orderPage(Object.assign({}, this.page, util.filterForm(this.parameter))).then(res => {
+        const list = this._parseOrderList(res)
+        this.orderList = isFirst ? list : [...this.orderList, ...list]
+        if (list.length < (this.page.size || 10)) this.loadmore = false
+      }).catch(() => {
+        this.loadmore = false
       })
     },
     onOrderCancel(index) {
-      getApp().api.orderGet(this.orderList[index].id).then(res => {
-        this.orderList[index] = res.data
-        this.orderList = [...this.orderList]
-      })
+      const api = this.getApi()
+      if (!api || !this.orderList[index]) return
+      api.orderGet(this.orderList[index].id).then(res => {
+        const detail = (res && res.data) != null ? res.data : res
+        if (detail) {
+          this.orderList[index] = detail
+          this.orderList = [...this.orderList]
+        }
+      }).catch(() => {})
     },
     onOrderReceive(index) {
       this.onOrderCancel(index)

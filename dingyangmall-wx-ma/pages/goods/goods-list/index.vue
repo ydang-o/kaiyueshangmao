@@ -66,9 +66,11 @@ export default {
     }
   },
   onLoad(options) {
-    this.title = options.title ? decodeURIComponent(options.title) : '默认'
+    this.title = (options.title ? decodeURIComponent(options.title) : null) || '默认'
     if (options.categorySecond) this.parameter.categorySecond = options.categorySecond
-    if (options.name) this.parameter.name = options.name
+    if (options.keyword) this.parameter.keyword = decodeURIComponent(options.keyword)
+    if (options.name) this.parameter.name = decodeURIComponent(options.name)
+    if (!this.parameter.keyword && this.parameter.name) this.parameter.keyword = this.parameter.name
     if (options.type === '1') { this.title = '新品首发'; this.page.descs = 'create_time' }
     if (options.type === '2') { this.title = '热销单品'; this.page.descs = 'sale_num' }
     if (options.couponUserId) this.parameter.couponUserId = options.couponUserId
@@ -78,14 +80,21 @@ export default {
     if (this.loadmore) { this.page.current++; this.goodsPage() }
   },
   methods: {
+    _parseGoodsList(res) {
+      const data = (res && res.data) || res || {}
+      const list = data.records || data.rows || data.list || data.content || data.data || []
+      return Array.isArray(list) ? list : []
+    },
     goodsPage() {
       const app = getApp()
       const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
       if (!api || typeof api.goodsPage !== 'function') return
       api.goodsPage(Object.assign({}, this.page, util.filterForm(this.parameter))).then(res => {
-        const list = (res.data && res.data.records) || []
+        const list = this._parseGoodsList(res)
         this.goodsList = [...this.goodsList, ...list]
-        if (list.length < this.page.size) this.loadmore = false
+        if (list.length < (this.page.size || 10)) this.loadmore = false
+      }).catch(() => {
+        this.loadmore = false
       })
     },
     viewTypeEdit() { this.viewType = !this.viewType },

@@ -120,10 +120,16 @@ function handleNav(path) {
 
 function initData() {
   getDashboardData().then(response => {
-    if (response.data) {
-      statistics.value = response.data
+    const d = response.data != null ? response.data : response
+    if (d && typeof d === 'object') {
+      statistics.value = {
+        userCount: d.userCount ?? 0,
+        pointsIssued: d.pointsIssued ?? 0,
+        pendingOrders: d.pendingOrders ?? 0,
+        todayWriteOffs: d.todayWriteOffs ?? 0
+      }
     }
-  })
+  }).catch(() => {})
 }
 
 onMounted(() => {

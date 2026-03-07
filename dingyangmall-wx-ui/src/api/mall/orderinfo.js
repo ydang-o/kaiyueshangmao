@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (C) 2018-2019
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
@@ -79,6 +79,15 @@ export function doOrderRefunds(obj) {
     url: '/orderinfo/doOrderRefunds',
     method: 'put',
     data: obj
+  })
+}
+
+/** 订单发货：创建物流并更新订单状态为待收货 */
+export function shipOrder(id, data) {
+  return request({
+    url: '/orderinfo/' + id + '/ship',
+    method: 'put',
+    data
   })
 }
 

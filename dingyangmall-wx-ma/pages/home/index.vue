@@ -77,6 +77,7 @@
 import GoodsCardIndex from '@/components/goods-card-index/index.vue'
 import LoginBanner from '@/components/login-banner/index.vue'
 import apiModule from '@/utils/api'
+import util from '@/utils/util'
 export default {
   name: 'HomePage',
   components: { GoodsCardIndex, LoginBanner },
@@ -143,7 +144,7 @@ export default {
       const tabBar = page.getTabBar()
       if (tabBar && tabBar.setData) tabBar.setData({ selected: 0 })
     }
-    uni.setTabBarBadge({ index: 2, text: (app.globalData.shoppingCartCount || '') + '' })
+    util.updateCartBadge(app.globalData.shoppingCartCount || 0)
   },
   onPullDownRefresh() {
     uni.showNavigationBarLoading()
@@ -362,16 +363,19 @@ export default {
       return []
     },
     signIn() {
-      const app = getApp()
-      const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
-      if (!api || typeof api.memberSignIn !== 'function') {
-        uni.showToast({ title: '功能暂不可用', icon: 'none' })
-        return
-      }
-      api.memberSignIn().then(res => {
-        uni.showToast({ title: (res && res.msg) || '签到成功', icon: 'success' })
-      }).catch(() => {
-        uni.showToast({ title: '签到失败或今日已签到', icon: 'none' })
+      util.requireLogin('请先登录后再签到').then((ok) => {
+        if (!ok) return
+        const app = getApp()
+        const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+        if (!api || typeof api.memberSignIn !== 'function') {
+          uni.showToast({ title: '功能暂不可用', icon: 'none' })
+          return
+        }
+        api.memberSignIn().then(res => {
+          uni.showToast({ title: (res && res.msg) || '签到成功', icon: 'success' })
+        }).catch(() => {
+          uni.showToast({ title: '签到失败或今日已签到', icon: 'none' })
+        })
       })
     },
     refresh() {
@@ -390,15 +394,15 @@ export default {
 <style scoped>
 .page { padding-bottom: 20rpx; }
 .margin-top-bar { margin-top: 88rpx; }
-.swiper-wrap { margin: 8rpx 0 0; }
-.swiper-wrap .margin-top-sm { margin-top: 8rpx; }
+.swiper-wrap { margin: 0; padding-bottom: 0; }
+.swiper-wrap .margin-top-sm { margin-top: 0; }
 .adsec { width: calc(100% - 40rpx); display: flex; margin: 0 auto; padding: 10rpx 16rpx; height: 86rpx; align-items: center; border-radius: 16rpx; box-shadow: 0 8rpx 26rpx rgba(15,23,42,.06); }
 .swiper_container { height: 80rpx; width: 95%; }
-.screen-swiper { height: 308rpx; }
-.swiper-image { width: 94% !important; height: 280rpx !important; margin: 12rpx auto 8rpx !important; border-radius: 24rpx; box-shadow: 0 12rpx 36rpx rgba(15,23,42,.10); }
+.screen-swiper { height: 250rpx; box-sizing: border-box; }
+.swiper-image { width: 94% !important; height: 320rpx !important; margin: 10rpx auto 0 !important; border-radius: 20rpx; box-shadow: 0 8rpx 24rpx rgba(15,23,42,.08); display: block; }
 .text-black { color: #000 !important; }
 .search-form { border-radius: 20rpx; }
-.home-four-actions { margin-top: 0; padding: 20rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); }
+.home-four-actions { margin-top: -10rpx; padding: 12rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); position: relative; z-index: 1; }
 .section-title-bar { padding: 12rpx 0 8rpx; min-height: auto; }
 .four-actions-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
 .four-action-item { width: 25%; display: flex; flex-direction: column; align-items: center; padding: 6rpx 0; }

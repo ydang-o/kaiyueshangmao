@@ -63,7 +63,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./index.vue?vue&type=script&lang=js& */ 98);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _index_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 /* harmony import */ var _index_vue_vue_type_style_index_0_id_b375a04c_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./index.vue?vue&type=style&index=0&id=b375a04c&scoped=true&lang=css& */ 100);
-/* harmony import */ var _software_hbuilderx_HBuilderX_4_87_2025121004_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../../software/hbuilderx/HBuilderX.4.87.2025121004/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 34);
+/* harmony import */ var _software_hbuilderx_HBuilderX_4_87_2025121004_HBuilderX_plugins_uniapp_cli_node_modules_dcloudio_vue_cli_plugin_uni_packages_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../../software/hbuilderx/HBuilderX.4.87.2025121004/HBuilderX/plugins/uniapp-cli/node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/runtime/componentNormalizer.js */ 36);
 
 var renderjs
 
@@ -195,7 +195,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
-var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 65));
+var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 32));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 //
 //
 //
@@ -241,7 +242,7 @@ var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 65));
 //
 var OrderOperate = function OrderOperate() {
   __webpack_require__.e(/*! require.ensure | components/order-operate/index */ "components/order-operate/index").then((function () {
-    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 226));
+    return resolve(__webpack_require__(/*! @/components/order-operate/index.vue */ 227));
   }).bind(null, __webpack_require__)).catch(__webpack_require__.oe);
 };
 var _default = {
@@ -289,8 +290,14 @@ var _default = {
       });
       if (i >= 0) this.tabCur = i;
     }
-    getApp().initPage().then(function () {
-      return _this.orderPage();
+    _util.default.requireLogin('请先登录后查看订单').then(function (ok) {
+      if (!ok) {
+        _this.loadmore = false;
+        return;
+      }
+      getApp().initPage().then(function () {
+        return _this.orderPage();
+      });
     });
   },
   onReachBottom: function onReachBottom() {
@@ -306,6 +313,15 @@ var _default = {
     uni.stopPullDownRefresh();
   },
   methods: {
+    getApi: function getApi() {
+      var app = getApp();
+      return app && app.api || app && app.globalData && app.globalData.__api || _api.default;
+    },
+    /** 从订单分页响应中解析列表 */_parseOrderList: function _parseOrderList(res) {
+      var data = res && res.data || res || {};
+      var list = data.records || data.rows || data.list || data.content || data.data || [];
+      return Array.isArray(list) ? list : [];
+    },
     tabSelect: function tabSelect(index, key) {
       if (index === this.tabCur) return;
       this.tabCur = index;
@@ -320,18 +336,31 @@ var _default = {
     },
     orderPage: function orderPage() {
       var _this2 = this;
-      getApp().api.orderPage(Object.assign({}, this.page, _util.default.filterForm(this.parameter))).then(function (res) {
-        var list = res.data && res.data.records || [];
-        _this2.orderList = [].concat((0, _toConsumableArray2.default)(_this2.orderList), (0, _toConsumableArray2.default)(list));
-        if (list.length < _this2.page.size) _this2.loadmore = false;
+      var api = this.getApi();
+      if (!api || typeof api.orderPage !== 'function') {
+        this.loadmore = false;
+        return;
+      }
+      var isFirst = this.page.current === 1;
+      api.orderPage(Object.assign({}, this.page, _util.default.filterForm(this.parameter))).then(function (res) {
+        var list = _this2._parseOrderList(res);
+        _this2.orderList = isFirst ? list : [].concat((0, _toConsumableArray2.default)(_this2.orderList), (0, _toConsumableArray2.default)(list));
+        if (list.length < (_this2.page.size || 10)) _this2.loadmore = false;
+      }).catch(function () {
+        _this2.loadmore = false;
       });
     },
     onOrderCancel: function onOrderCancel(index) {
       var _this3 = this;
-      getApp().api.orderGet(this.orderList[index].id).then(function (res) {
-        _this3.orderList[index] = res.data;
-        _this3.orderList = (0, _toConsumableArray2.default)(_this3.orderList);
-      });
+      var api = this.getApi();
+      if (!api || !this.orderList[index]) return;
+      api.orderGet(this.orderList[index].id).then(function (res) {
+        var detail = (res && res.data) != null ? res.data : res;
+        if (detail) {
+          _this3.orderList[index] = detail;
+          _this3.orderList = (0, _toConsumableArray2.default)(_this3.orderList);
+        }
+      }).catch(function () {});
     },
     onOrderReceive: function onOrderReceive(index) {
       this.onOrderCancel(index);

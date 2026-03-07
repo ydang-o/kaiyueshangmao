@@ -2,328 +2,341 @@
   <div class="execution">
     <basic-container>
       <el-tabs v-model="activeName">
-        <el-tab-pane label="抽奖配置" name="config">
-          <el-form ref="configForm" :model="configForm" label-width="120px" :rules="configRules">
-            <el-divider content-position="left">基础设置</el-divider>
-            <el-row>
-              <el-col :span="12">
-                <el-form-item label="开启状态" prop="status">
-                  <el-switch v-model="configForm.status" active-value="1" inactive-value="0"></el-switch>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="未中奖概率(%)" prop="noPrizeProbability">
-                  <el-input-number v-model="configForm.noPrizeProbability" :precision="2" :step="0.1" :min="0" :max="100"></el-input-number>
-                </el-form-item>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-form-item label="单次消耗积分" prop="costPoints">
-                  <el-input-number v-model="configForm.costPoints" :min="0" :step="1"></el-input-number>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="每日抽奖上限" prop="dailyLimit">
-                  <el-input-number v-model="configForm.dailyLimit" :min="0" :step="1"></el-input-number>
-                </el-form-item>
-              </el-col>
-            </el-row>
-
-            <el-divider content-position="left">奖品设置 (概率总和 + 未中奖概率 应为 100%)</el-divider>
-            <el-button type="primary" icon="el-icon-plus" size="small" @click="handleAddPrize" style="margin-bottom: 10px;">添加奖品</el-button>
-            
-            <el-table :data="configForm.prizeList" border style="width: 100%">
-              <el-table-column label="排序" width="80">
-                <template slot-scope="scope">
-                  <el-input-number v-model="scope.row.sortOrder" size="small" :min="0" controls-position="right"></el-input-number>
-                </template>
-              </el-table-column>
-              <el-table-column label="奖品类型" width="120">
-                <template slot-scope="scope">
-                  <el-select v-model="scope.row.prizeType" size="small" @change="handleTypeChange(scope.row)">
-                    <el-option label="实物/商品" value="0"></el-option>
-                    <el-option label="积分" value="1"></el-option>
-                  </el-select>
-                </template>
-              </el-table-column>
-              <el-table-column label="奖品内容" min-width="200">
-                <template slot-scope="scope">
-                  <div v-if="scope.row.prizeType === '1'">
-                    <el-input-number v-model="scope.row.pointAmount" size="small" :min="1" placeholder="积分数量"></el-input-number> 积分
-                  </div>
-                  <div v-else>
-                    <el-select
-                      v-model="scope.row.goodsId"
-                      filterable
-                      remote
-                      reserve-keyword
-                      placeholder="请输入商品名称搜索"
-                      :remote-method="queryGoods"
-                      :loading="loadingGoods"
-                      size="small"
-                      @change="(val) => handleGoodsChange(val, scope.row)">
-                      <el-option
-                        v-for="item in goodsOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
-                  </div>
-                </template>
-              </el-table-column>
-              <el-table-column label="展示名称" width="150">
-                <template slot-scope="scope">
-                  <el-input v-model="scope.row.prizeName" size="small" placeholder="展示名称"></el-input>
-                </template>
-              </el-table-column>
-              <el-table-column label="中奖概率(%)" width="120">
-                <template slot-scope="scope">
-                  <el-input-number v-model="scope.row.probability" size="small" :precision="2" :step="0.1" :min="0" :max="100"></el-input-number>
-                </template>
-              </el-table-column>
-              <el-table-column label="操作" width="80" align="center">
-                <template slot-scope="scope">
-                  <el-button type="text" icon="el-icon-delete" class="red-btn" @click="handleRemovePrize(scope.$index)">删除</el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-
-            <div style="margin-top: 20px; text-align: center;">
-              <el-button type="primary" @click="submitConfig" :loading="configLoading">保存配置</el-button>
-            </div>
-          </el-form>
+        <!-- 标签页 1：活动配置列表 -->
+        <el-tab-pane label="活动列表" name="list">
+          <avue-crud
+            ref="crud"
+            :page="page"
+            :data="tableData"
+            :permission="permissionList"
+            :table-loading="tableLoading"
+            :option="tableOption"
+            @on-load="getList"
+            @refresh-change="refreshChange"
+            @row-save="handleSaveConfig"
+            @row-update="handleUpdateConfig"
+            @row-del="handleDelConfig"
+            @search-change="searchChange"
+          >
+            <!-- 奖品列表编辑插槽 -->
+            <template #prizeList-form="scope">
+              <div style="padding: 10px; border: 1px solid #ebeef5; border-radius: 4px;">
+                <el-button type="primary" icon="Plus" size="small" @click="handleAddPrize" style="margin-bottom: 10px;">添加奖品</el-button>
+                <el-table :data="form.prizeList || []" border size="small">
+                  <el-table-column label="排序" width="70">
+                    <template #default="item">
+                      <el-input-number v-model="item.row.sortOrder" :min="0" controls-position="right" style="width: 100%"></el-input-number>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="类型" width="100">
+                    <template #default="item">
+                      <el-select v-model="item.row.prizeType" @change="() => handleTypeChange(item.row)">
+                        <el-option label="商品" value="0"></el-option>
+                        <el-option label="积分" value="1"></el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="奖品内容" min-width="180">
+                    <template #default="item">
+                      <div v-if="item.row.prizeType === '1'">
+                        <el-input-number v-model="item.row.pointAmount" :min="1" size="small"></el-input-number> 积分
+                      </div>
+                      <div v-else>
+                        <el-select
+                          v-model="item.row.goodsId"
+                          filterable
+                          remote
+                          placeholder="搜索商品"
+                          :remote-method="queryGoods"
+                          :loading="loadingGoods"
+                          @change="(val) => handleGoodsChange(val, item.row)"
+                        >
+                          <el-option v-for="g in goodsOptions" :key="g.id" :label="g.name" :value="g.id"></el-option>
+                        </el-select>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="展示名称">
+                    <template #default="item">
+                      <el-input v-model="item.row.prizeName" placeholder="奖品简称"></el-input>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="概率(%)" width="100">
+                    <template #default="item">
+                      <el-input-number v-model="item.row.probability" :precision="2" :min="0" :max="100" controls-position="right" style="width: 100%"></el-input-number>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="操作" width="60" align="center">
+                    <template #default="item">
+                      <el-button link type="danger" icon="Delete" @click="handleRemovePrize(item.$index)"></el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <div class="el-upload__tip">注：(所有奖品概率 + 未中奖概率) 总和必须等于 100%</div>
+              </div>
+            </template>
+          </avue-crud>
         </el-tab-pane>
 
+        <!-- 标签页 2：抽奖记录 -->
         <el-tab-pane label="抽奖记录" name="record">
-          <avue-crud ref="crud"
-                     :page.sync="page"
-                     :data="tableData"
-                     :table-loading="tableLoading"
-                     :option="tableOption"
-                     @on-load="getList"
-                     @search-change="searchChange"
-                     @refresh-change="refreshChange">
-          </avue-crud>
+          <avue-crud
+            :page="recordPage"
+            :data="recordData"
+            :table-loading="recordLoading"
+            :option="recordOption"
+            @on-load="getRecordList"
+            @search-change="searchRecordChange"
+            @refresh-change="getRecordList"
+          ></avue-crud>
         </el-tab-pane>
       </el-tabs>
     </basic-container>
   </div>
 </template>
 
-<script>
-import { getConfig, saveConfig, getRecordPage } from '@/api/mall/lottery'
+<script setup name="Lottery">
+import { ref, reactive, computed, getCurrentInstance } from 'vue'
+import { getConfigPage, getConfigById, saveConfig, delConfig, getRecordPage } from '@/api/mall/lottery'
 import { getPage as getGoodsPage } from '@/api/mall/goodsspu'
+import { checkPermi } from '@/utils/permission'
 
-export default {
-  name: 'Lottery',
-  data() {
-    return {
-      activeName: 'config',
-      // Config
-      configLoading: false,
-      configForm: {
-        id: null,
-        status: '0',
-        costPoints: 10,
-        dailyLimit: 3,
-        noPrizeProbability: 50,
-        prizeList: []
-      },
-      configRules: {
-        costPoints: [{ required: true, message: '请输入单次消耗积分', trigger: 'blur' }],
-        dailyLimit: [{ required: true, message: '请输入每日抽奖上限', trigger: 'blur' }]
-      },
-      loadingGoods: false,
-      goodsOptions: [],
-      
-      // Record
-      page: {
-        total: 0,
-        currentPage: 1,
-        pageSize: 10
-      },
-      tableLoading: false,
-      tableData: [],
-      tableOption: {
-        border: true,
-        index: true,
-        indexLabel: '序号',
-        stripe: true,
-        menuAlign: 'center',
-        align: 'center',
-        addBtn: false,
-        editBtn: false,
-        delBtn: false,
-        column: [
-          {
-            label: '用户ID',
-            prop: 'userId',
-            search: true
-          },
-          {
-            label: '中奖状态',
-            prop: 'isWin',
-            type: 'select',
-            dicData: [
-              { label: '未中奖', value: '0' },
-              { label: '已中奖', value: '1' }
-            ],
-            search: true
-          },
-          {
-            label: '奖品名称',
-            prop: 'prizeName'
-          },
-          {
-            label: '奖品类型',
-            prop: 'prizeType',
-            type: 'select',
-            dicData: [
-              { label: '商品', value: '0' },
-              { label: '积分', value: '1' }
-            ]
-          },
-          {
-            label: '消耗积分',
-            prop: 'costPoints'
-          },
-          {
-            label: '发放状态',
-            prop: 'grantStatus',
-            type: 'select',
-            dicData: [
-              { label: '待发放', value: '0' },
-              { label: '已发放', value: '1' }
-            ]
-          },
-          {
-            label: '抽奖时间',
-            prop: 'createTime',
-            width: 160
-          }
-        ]
-      }
-    }
-  },
-  created() {
-    this.initData()
-  },
-  methods: {
-    initData() {
-      getConfig().then(response => {
-        if (response.data.data) {
-          this.configForm = response.data.data
-          // Ensure prizeList exists
-          if (!this.configForm.prizeList) {
-            this.configForm.prizeList = []
-          }
-          // Pre-load goods info if needed (for display)
-          // Actually el-select might need options to display label correctly if it's ID
-          // We can push existing goods to goodsOptions
-          this.configForm.prizeList.forEach(prize => {
-            if (prize.prizeType === '0' && prize.goodsId) {
-              this.goodsOptions.push({
-                id: prize.goodsId,
-                name: prize.prizeName // Use prizeName as temp goods name or fetch real name?
-                // Better to fetch or just trust prizeName if set
-              })
-            }
-          })
-        }
-      })
-    },
-    // Config Methods
-    handleAddPrize() {
-      this.configForm.prizeList.push({
-        sortOrder: 0,
-        prizeType: '0', // Default goods
-        goodsId: '',
-        pointAmount: 0,
-        prizeName: '',
-        probability: 0
-      })
-    },
-    handleRemovePrize(index) {
-      this.configForm.prizeList.splice(index, 1)
-    },
-    handleTypeChange(row) {
-      row.goodsId = ''
-      row.pointAmount = 0
-      row.prizeName = ''
-    },
-    queryGoods(query) {
-      if (query !== '') {
-        this.loadingGoods = true
-        getPage({
-          current: 1,
-          size: 20,
-          name: query,
-          shelf: '1' // Only shelved goods
-        }).then(response => {
-          this.loadingGoods = false
-          this.goodsOptions = response.data.data.records
-        })
-      } else {
-        this.goodsOptions = []
-      }
-    },
-    handleGoodsChange(val, row) {
-      const goods = this.goodsOptions.find(item => item.id === val)
-      if (goods) {
-        row.prizeName = goods.name
-        row.prizePic = goods.picUrls ? goods.picUrls[0] : ''
-      }
-    },
-    submitConfig() {
-      // Validate probability sum
-      let totalProb = parseFloat(this.configForm.noPrizeProbability)
-      this.configForm.prizeList.forEach(p => {
-        totalProb += parseFloat(p.probability || 0)
-      })
-      
-      if (Math.abs(totalProb - 100) > 0.01) {
-        this.$message.warning(`当前概率总和为 ${totalProb.toFixed(2)}%，请调整至 100%`)
-        return
-      }
+const { proxy } = getCurrentInstance()
+const activeName = ref('list')
+const form = ref({ prizeList: [] })
+const tableData = ref([])
+const tableLoading = ref(false)
+const page = reactive({ total: 0, currentPage: 1, pageSize: 10 })
 
-      this.configLoading = true
-      saveConfig(this.configForm).then(response => {
-        this.configLoading = false
-        this.$message.success('保存成功')
-        this.initData()
-      }).catch(() => {
-        this.configLoading = false
-      })
+// 权限控制
+const permissionList = computed(() => ({
+  addBtn: checkPermi(['mall:lottery:config']),
+  editBtn: checkPermi(['mall:lottery:config']),
+  delBtn: checkPermi(['mall:lottery:config']),
+  viewBtn: true
+}))
+
+// 配置列表 Option
+const tableOption = {
+  border: true,
+  index: true,
+  stripe: true,
+  menuAlign: 'center',
+  align: 'center',
+  dialogWidth: '80%',
+  column: [
+    { label: '活动ID', prop: 'id', display: false },
+    {
+      label: '状态',
+      prop: 'status',
+      type: 'select',
+      dicData: [{ label: '开启', value: '1' }, { label: '关闭', value: '0' }],
+      search: true,
+      rules: [{ required: true, message: '请选择状态' }]
     },
-    
-    // Record Methods
-    getList(page, params) {
-      this.tableLoading = true
-      getRecordPage(Object.assign({
-        current: page.currentPage,
-        size: page.pageSize
-      }, params)).then(response => {
-        this.tableData = response.data.data.records
-        this.page.total = response.data.data.total
-        this.tableLoading = false
-      })
+    { label: '未中奖概率(%)', prop: 'noPrizeProbability', type: 'number', precision: 2, value: 50, rules: [{ required: true }] },
+    { label: '单次消耗积分', prop: 'costPoints', type: 'number', value: 10, rules: [{ required: true }] },
+    { label: '每日抽奖上限', prop: 'dailyLimit', type: 'number', value: 3, rules: [{ required: true }] },
+    {
+      label: '奖品配置',
+      prop: 'prizeList',
+      formslot: true, // 使用奖品编辑插槽
+      span: 24,
+      hide: true // 列表隐藏
     },
-    searchChange(params, done) {
-      this.page.currentPage = 1
-      this.getList(this.page, params)
-      done()
-    },
-    refreshChange() {
-      this.getList(this.page)
-    }
+    { label: '创建时间', prop: 'createTime', display: false }
+  ]
+}
+
+// 记录列表相关
+const recordData = ref([])
+const recordLoading = ref(false)
+const recordPage = reactive({ total: 0, currentPage: 1, pageSize: 10 })
+const recordOption = {
+  border: true,
+  index: true,
+  addBtn: false,
+  editBtn: false,
+  delBtn: false,
+  column: [
+    { label: '用户ID', prop: 'userId', search: true },
+    { label: '中奖', prop: 'isWin', type: 'select', dicData: [{ label: '否', value: '0' }, { label: '是', value: '1' }], search: true },
+    { label: '奖品名称', prop: 'prizeName' },
+    { label: '消耗积分', prop: 'costPoints' },
+    { label: '发放状态', prop: 'grantStatus', type: 'select', dicData: [{ label: '待发', value: '0' }, { label: '已发', value: '1' }] },
+    { label: '抽奖时间', prop: 'createTime', width: 160 }
+  ]
+}
+
+// 方法：获取配置列表
+function getList(p, params) {
+  tableLoading.value = true
+  const query = {
+    pageNum: p.currentPage,
+    pageSize: p.pageSize,
+    ...params
   }
+  getConfigPage(query).then(res => {
+    // 兼容多种后端返回：res.data / res.data.data / res，以及 records/rows 等
+    const raw = res.data !== undefined ? res.data : res
+    const list = raw?.data?.records ?? raw?.data?.rows ?? raw?.records ?? raw?.rows ?? (Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []))
+    const total = raw?.data?.total ?? raw?.total ?? list.length
+    tableData.value = Array.isArray(list) ? list : []
+    page.total = Number(total) || 0
+  }).catch(() => {
+    tableData.value = []
+    page.total = 0
+  }).finally(() => { 
+    tableLoading.value = false 
+  })
+}
+
+// 方法：保存/修改配置（包含强制数据同步与概率校验）
+function handleSaveConfig(row, done, loading) {
+  // 强制同步：插槽里的 prizeList 可能未挂载到 row 上，需要从 ref 中获取
+  const submitData = { 
+    ...row, 
+    prizeList: form.value.prizeList || [] 
+  }
+  
+  if (!validateProbability(submitData)) {
+    loading()
+    return
+  }
+  
+  saveConfig(submitData).then(() => {
+    proxy.$modal.msgSuccess('新增成功')
+    done()
+    getList(page)
+  }).catch(() => { loading() })
+}
+
+function handleUpdateConfig(row, index, done, loading) {
+  // 强制同步
+  const submitData = { 
+    ...row, 
+    prizeList: form.value.prizeList || [] 
+  }
+
+  if (!validateProbability(submitData)) {
+    loading()
+    return
+  }
+  
+  saveConfig(submitData).then(() => {
+    proxy.$modal.msgSuccess('修改成功')
+    done()
+    getList(page)
+  }).catch(() => { loading() })
+}
+
+function handleDelConfig(row) {
+  proxy.$modal.confirm(`是否删除ID为 ${row.id} 的活动配置？`).then(() => {
+    return delConfig(row.id)
+  }).then(() => {
+    proxy.$modal.msgSuccess('删除成功')
+    getList(page)
+  })
+}
+
+// 概率校验函数
+function validateProbability(row) {
+  const prizeList = row.prizeList || []
+  if (prizeList.length === 0) {
+    proxy.$modal.msgWarning('请至少添加一个奖品')
+    return false
+  }
+  const prizeProb = prizeList.reduce((sum, p) => sum + Number(p.probability || 0), 0)
+  const total = Number(row.noPrizeProbability || 0) + prizeProb
+  if (Math.abs(total - 100) > 0.01) {
+    proxy.$modal.msgWarning(`当前概率总和为 ${total.toFixed(2)}% (未中奖${row.noPrizeProbability}% + 奖品${prizeProb.toFixed(2)}%)，必须调整至 100%`)
+    return false
+  }
+  return true
+}
+
+// 奖品编辑逻辑
+function handleAddPrize() {
+  if (!form.value.prizeList) form.value.prizeList = []
+  form.value.prizeList.push({
+    sortOrder: form.value.prizeList.length,
+    prizeType: '0',
+    goodsId: '',
+    pointAmount: 0,
+    prizeName: '',
+    probability: 0
+  })
+}
+
+function handleRemovePrize(index) {
+  form.value.prizeList.splice(index, 1)
+}
+
+function handleTypeChange(row) {
+  row.goodsId = ''
+  row.pointAmount = 0
+  row.prizeName = ''
+}
+
+// 商品搜索相关
+const goodsOptions = ref([])
+const loadingGoods = ref(false)
+function queryGoods(query) {
+  if (!query) return
+  loadingGoods.value = true
+  getGoodsPage({ current: 1, size: 20, name: query, shelf: '1' }).then(res => {
+    goodsOptions.value = res.data.records || []
+  }).finally(() => { loadingGoods.value = false })
+}
+
+function handleGoodsChange(val, row) {
+  const g = goodsOptions.value.find(item => item.id === val)
+  if (g) {
+    row.prizeName = g.name
+    row.prizePic = g.picUrls ? g.picUrls[0] : ''
+  }
+}
+
+// 抽奖记录逻辑
+function getRecordList(p, params) {
+  recordLoading.value = true
+  const query = {
+    pageNum: p.currentPage,
+    pageSize: p.pageSize,
+    ...params
+  }
+  getRecordPage(query).then(res => {
+    const raw = res.data !== undefined ? res.data : res
+    const list = raw?.data?.records ?? raw?.data?.rows ?? raw?.records ?? raw?.rows ?? (Array.isArray(raw?.data) ? raw.data : (Array.isArray(raw) ? raw : []))
+    const total = raw?.data?.total ?? raw?.total ?? list.length
+    recordData.value = Array.isArray(list) ? list : []
+    recordPage.total = Number(total) || 0
+  }).catch(() => {
+    recordData.value = []
+    recordPage.total = 0
+  }).finally(() => { 
+    recordLoading.value = false 
+  })
+}
+
+function searchRecordChange(params, done) {
+  recordPage.currentPage = 1
+  getRecordList(recordPage, params)
+  done()
+}
+
+function searchChange(params, done) {
+  page.currentPage = 1
+  getList(page, params)
+  done()
+}
+
+function refreshChange() {
+  getList(page)
 }
 </script>
 
 <style scoped>
-.red-btn {
-  color: #f56c6c;
-}
+.mb-10 { margin-bottom: 10px; }
+:deep(.el-input-number.is-controls-right .el-input__inner) { text-align: left; }
 </style>

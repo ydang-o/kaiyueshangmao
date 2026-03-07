@@ -139,5 +139,41 @@ public class OrderInfoController extends BaseController {
 		orderInfoService.doOrderRefunds(orderItem);
 		return AjaxResult.success();
 	}
+
+	/**
+	 * 订单发货：填写快递公司、快递单号，订单状态改为待收货
+	 * @param id 订单ID
+	 * @param body logistics=快递公司编码, logisticsNo=快递单号（可选：userName,telNum,address 收货信息）
+	 */
+	@PutMapping("/{id}/ship")
+	@PreAuthorize("@ss.hasPermi('mall:orderinfo:edit')")
+	public AjaxResult ship(@PathVariable String id, @RequestBody java.util.Map<String, String> body) {
+		OrderInfo order = orderInfoService.getById(id);
+		if (order == null) {
+			return AjaxResult.error("订单不存在");
+		}
+		if (!com.dingyangmall.mall.enums.OrderInfoEnum.STATUS_1.getValue().equals(order.getStatus())) {
+			return AjaxResult.error("只有待发货订单可执行发货");
+		}
+		String logisticsCode = body != null ? body.get("logistics") : null;
+		String logisticsNo = body != null ? body.get("logisticsNo") : null;
+		if (logisticsCode == null || logisticsCode.isEmpty() || logisticsNo == null || logisticsNo.isEmpty()) {
+			return AjaxResult.error("请填写快递公司和快递单号");
+		}
+		com.dingyangmall.mall.entity.OrderLogistics logistics = new com.dingyangmall.mall.entity.OrderLogistics();
+		logistics.setLogistics(logisticsCode);
+		logistics.setLogisticsNo(logisticsNo);
+		if (body != null) {
+			if (body.get("userName") != null) logistics.setUserName(body.get("userName"));
+			if (body.get("telNum") != null) logistics.setTelNum(body.get("telNum"));
+			if (body.get("address") != null) logistics.setAddress(body.get("address"));
+		}
+		orderLogisticsService.save(logistics);
+		order.setLogisticsId(logistics.getId());
+		order.setStatus(com.dingyangmall.mall.enums.OrderInfoEnum.STATUS_2.getValue());
+		order.setDeliveryTime(java.time.LocalDateTime.now());
+		orderInfoService.updateById(order);
+		return AjaxResult.success();
+	}
 }
 

@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import util from '@/utils/util'
 export default {
   name: 'IntegralPacketPage',
   data() {
@@ -48,7 +49,10 @@ export default {
     }
   },
   onLoad() {
-    getApp().initPage().then(() => this.getUserInfo())
+    util.requireLogin('请先登录后使用积分红包').then((ok) => {
+      if (!ok) return
+      getApp().initPage().then(() => this.getUserInfo())
+    })
   },
   onUnload() {
     this._destroyed = true

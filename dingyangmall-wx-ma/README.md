@@ -1,4 +1,4 @@
-﻿# 鼎阳商城 - 接口文档
+# 鼎阳商城 - 接口文档
 
 本文档汇总 **管理端（dingyangmall-admin）** 与 **移动端**（小程序、Android、iOS）所调用的全部后端接口。  
 **请求根地址**：以各端配置为准（如小程序 `config/env.js` 的 `basePath`、App 端配置的 baseUrl），默认 `http://localhost:7500`，应用 `context-path: /`。
@@ -163,6 +163,9 @@
 | PUT | `/orderinfo/cancel/{id}` | 取消订单（仅未支付） | mall:orderinfo:edit |
 | PUT | `/orderinfo/doOrderRefunds` | 操作退款（RequestBody: OrderItem） | mall:orderinfo:edit |
 
+**后端待实现：未付款订单超时自动取消**  
+需增加定时任务（如 Spring @Scheduled 每 5～10 分钟执行一次）：查询 `status=待付款(0)` 且 `createTime < 当前时间 - 30 分钟` 的订单，调用现有取消逻辑（更新状态、释放库存等）。前端无轮询，完全由后端定时任务处理。
+
 ### 5.5 会员（/mall/member）
 
 | 方法 | 路径 | 说明 | 权限 |
@@ -310,19 +313,36 @@
 
 ## 七、优惠券
 
+### 移动端（小程序）
+
+**Base path**：`/api/ma/coupon` 或 `/weixin/api/ma/coupon`（需带 Header `X-Wx-Token`）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/ma/coupon/my` | 我的优惠券/代金券列表 |
+
 | 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
 |------|----------|------|------|------------|------|
-| 29 | 我的优惠券 | GET | `/app/coupon/my` | 我的优惠券页 | Query: status |
+| 29 | 我的优惠券 | GET | `/api/ma/coupon/my` | 我的优惠券页 | 小程序优先；Query: status；备选 `/app/coupon/my` |
 
 ---
 
-## 八、抽奖
+## 八、抽奖（C 端 / App 端 用户抽奖）
+
+**小程序端**：优先使用 `/api/ma/lottery/*`（与 X-Wx-Token 同源认证，避免 401）  
+**C 端 H5**：可使用 `/app/lottery/*`（需 Bearer 或 memberId）
+
+| 方法 | 路径（小程序） | 路径（/app 链） | 说明 |
+|------|----------------|-----------------|------|
+| GET | `/api/ma/lottery/config` | `/app/lottery/config` | 获取抽奖配置（含奖品列表），未开启返回错误 |
+| POST | `/api/ma/lottery/draw` | `/app/lottery/draw` | 参与抽奖（需登录，扣积分、写记录、发奖） |
+| GET | `/api/ma/lottery/record` | `/app/lottery/record` | 中奖记录分页（pageNum, pageSize） |
 
 | 序号 | 接口说明 | 方法 | 路径 | 前端调用处 | 备注 |
 |------|----------|------|------|------------|------|
-| 30 | 抽奖配置 | GET | `/app/lottery/config` | 积分抽奖页 | |
-| 31 | 抽奖 | POST | `/app/lottery/draw` | 积分抽奖页 | |
-| 32 | 抽奖记录 | GET | `/app/lottery/record` | 积分抽奖页 | |
+| 30 | 抽奖配置 | GET | `/api/ma/lottery/config` | 积分抽奖页 | 后端需在 /api/ma 下实现或转发 |
+| 31 | 抽奖 | POST | `/api/ma/lottery/draw` | 积分抽奖页 | 需登录 |
+| 32 | 抽奖记录 | GET | `/api/ma/lottery/record` | 积分抽奖页 | Query: pageNum, pageSize |
 
 ---
 
@@ -339,6 +359,16 @@
 ---
 
 # 第三部分：接口对照与通用说明
+
+## 前端实际请求路径（联调说明）
+
+- 小程序请求根地址由 `config/env.js` 的 **basePath** 决定，所有接口在 `utils/api.js` 中统一发起。
+- 本表“路径”列为后端约定路径（如 `/weixin/api/ma/orderinfo/page`）。若后端实际部署在 **/weixin** 下，可任选其一：
+  1. 将 **basePath** 改为带 context-path（如 `http://localhost:7500/weixin`），且 `api.js` 中订单/地址/购物车等继续使用 `/api/ma/...`；或
+  2. 保持 basePath 不变，在 `api.js` 中将对应 path 改为 `/weixin/api/ma/...`。
+- 订单分页、地址分页已兼容 **pageNum/pageSize** 与 **current/size** 两种参数；列表数据已兼容 **records / rows / list / content** 等常见返回字段。
+
+---
 
 ## 管理端 vs 移动端路径对照（同业务）
 

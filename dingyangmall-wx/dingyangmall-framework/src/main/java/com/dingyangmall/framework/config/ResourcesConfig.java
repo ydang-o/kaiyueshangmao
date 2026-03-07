@@ -2,12 +2,8 @@ package com.dingyangmall.framework.config;
 
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -29,6 +25,10 @@ public class ResourcesConfig implements WebMvcConfigurer
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
+        /** 管理端默认商品图：/profile/static/** 优先从 classpath:static/ 读取（如 jar 内 logo.png） */
+        registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/static/**")
+                .addResourceLocations("classpath:static/");
+
         /** 本地文件上传路径：profile 为空或不合法时不注册，避免 /profile/xxx 请求 500 */
         String profile = DingyangmallConfig.getProfile();
         if (profile != null && !profile.trim().isEmpty()) {
@@ -37,6 +37,9 @@ public class ResourcesConfig implements WebMvcConfigurer
                 path = path + "/";
             }
             registry.addResourceHandler(Constants.RESOURCE_PREFIX + "/**")
+                    .addResourceLocations("file:" + path);
+            /** 管理端代理前缀：/dev-api/profile/** 与 /profile/** 指向同一本地目录，便于前端直接访问轮播图等本地文件 */
+            registry.addResourceHandler("/dev-api/profile/**")
                     .addResourceLocations("file:" + path);
         }
 
@@ -56,29 +59,6 @@ public class ResourcesConfig implements WebMvcConfigurer
     public void addInterceptors(InterceptorRegistry registry)
     {
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
-    }
-
-    /**
-     * 跨域配置
-     */
-    @Bean
-    public CorsFilter corsFilter()
-    {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        // 设置访问源地址
-        config.addAllowedOriginPattern("*");
-        // 设置访问源请求头
-        config.addAllowedHeader("*");
-        // 设置访问源请求方法
-        config.addAllowedMethod("*");
-        // 有效期 1800秒
-        config.setMaxAge(1800L);
-        // 添加映射路径，拦截一切请求
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        // 返回新的CorsFilter
-        return new CorsFilter(source);
     }
 }
 

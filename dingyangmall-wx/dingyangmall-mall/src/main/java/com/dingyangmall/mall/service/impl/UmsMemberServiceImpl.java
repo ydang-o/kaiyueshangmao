@@ -9,6 +9,9 @@ import com.dingyangmall.mall.service.UmsMemberService;
 import org.springframework.stereotype.Service;
 import com.dingyangmall.common.utils.StringUtils;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 @Service
 public class UmsMemberServiceImpl extends ServiceImpl<UmsMemberMapper, UmsMember> implements UmsMemberService {
 
@@ -20,6 +23,29 @@ public class UmsMemberServiceImpl extends ServiceImpl<UmsMemberMapper, UmsMember
     @Override
     public UmsMember getByPhone(String phone) {
         return getOne(Wrappers.<UmsMember>lambdaQuery().eq(UmsMember::getPhone, phone));
+    }
+
+    @Override
+    public UmsMember getOrCreateByPhone(String phone, String nickname, String avatar) {
+        if (StringUtils.isEmpty(phone)) {
+            return null;
+        }
+        UmsMember member = getByPhone(phone);
+        if (member != null) {
+            return member;
+        }
+        member = new UmsMember();
+        member.setPhone(phone);
+        member.setNickname(StringUtils.isNotEmpty(nickname) ? nickname : ("用户" + phone.substring(Math.max(0, phone.length() - 4))));
+        member.setAvatar(avatar);
+        member.setPoints(0);
+        member.setBalance(BigDecimal.ZERO);
+        member.setLevel(0);
+        member.setDelFlag("0");
+        member.setCreateTime(LocalDateTime.now());
+        member.setUpdateTime(LocalDateTime.now());
+        save(member);
+        return member;
     }
 
     @Override

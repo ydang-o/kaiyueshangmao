@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'UserAddressFormPage',
   data() {
@@ -39,6 +40,10 @@ export default {
     })
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     regionChange(e) { this.region = e.detail.value || [] },
     isDefaultChange(e) { this.userAddress.isDefault = e.detail.value ? '1' : '0' },
     userAddressSave(e) {
@@ -49,7 +54,12 @@ export default {
       if (!/^1[3-9]\d{9}$/.test(value.telNum)) { uni.showToast({ title: '请输入正确的手机号码', icon: 'none' }); return }
       if (region[0] === '选择省') { uni.showToast({ title: '请选择所在地区', icon: 'none' }); return }
       if (!value.detailInfo) { uni.showToast({ title: '请填写详细地址', icon: 'none' }); return }
-      getApp().api.userAddressSave({
+      const api = this.getApi()
+      if (!api || typeof api.userAddressSave !== 'function') {
+        uni.showToast({ title: '接口不可用', icon: 'none' })
+        return
+      }
+      api.userAddressSave({
         id: this.userAddress.id,
         userName: value.userName,
         telNum: value.telNum,
@@ -58,11 +68,15 @@ export default {
         countyName: region[2],
         detailInfo: value.detailInfo,
         isDefault: this.userAddress.isDefault || '0'
-      }).then(() => uni.navigateBack())
+      }).then(() => uni.navigateBack()).catch(() => {
+        uni.showToast({ title: '保存失败', icon: 'none' })
+      })
     },
     userAddressDelete() {
+      const api = this.getApi()
+      if (!api || typeof api.userAddressDel !== 'function') return
       uni.showModal({ content: '确认将这个地址删除吗？', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
-        if (res.confirm) getApp().api.userAddressDel(this.userAddress.id).then(() => uni.navigateBack())
+        if (res.confirm) api.userAddressDel(this.userAddress.id).then(() => uni.navigateBack()).catch(() => uni.showToast({ title: '删除失败', icon: 'none' }))
       }})
     },
     getWxAddress() {

@@ -1,4 +1,16 @@
 
 .page.data-v-5eb6174f { min-height: 100vh; background: #f3f4f7;
 }
+.tm-tab-bar.data-v-5eb6174f { padding: 24rpx 0;
+}
+.tm-tab-item.data-v-5eb6174f { min-height: 80rpx; line-height: 80rpx;
+}
+.tm-tab-hover.data-v-5eb6174f { opacity: 0.8; background-color: rgba(0,0,0,0.04);
+}
+.coupon-card .content.data-v-5eb6174f { display: flex; align-items: flex-start;
+}
+.coupon-qr-wrap.data-v-5eb6174f { flex-shrink: 0; padding: 16rpx 0 16rpx 24rpx; display: flex; align-items: center; justify-content: center;
+}
+.coupon-qr.data-v-5eb6174f { width: 160rpx; height: 160rpx; background: #fff; border: 1rpx solid #eee; border-radius: 12rpx; padding: 8rpx; box-sizing: border-box;
+}
 

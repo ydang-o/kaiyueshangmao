@@ -1,10 +1,10 @@
 @charset "UTF-8";
-/* 紧挨 tabbar 上方固定，避免被页面内容遮挡；tabbar 高度约 100rpx */
+/* 紧挨 tabbar 上方固定，避免被页面内容遮挡；tabbar 高度约 130rpx */
 .login-banner-wrap.data-v-d69631e4 {
   position: fixed;
   left: 0;
   right: 0;
-  bottom: 100rpx;
+  bottom: 130rpx;
   z-index: 9998;
   padding: 0 20rpx 16rpx;
   pointer-events: auto;

@@ -86,6 +86,7 @@
 
 <script>
 import apiModule from '@/utils/api'
+import util from '@/utils/util'
 export default {
   name: 'GoodsDetailPage',
   data() {
@@ -131,26 +132,37 @@ export default {
         api.shoppingCartCount().then(res => {
           const count = (res && res.data != null) ? res.data : (res && res.data !== undefined ? res.data : 0)
           this.shoppingCartCount = count
-          if (app && app.globalData) app.globalData.shoppingCartCount = count + ''
+          util.updateCartBadge(count)
         }).catch(() => {})
       }
     },
     toDo(type) {
       const goodsSpu = this.goodsSpu
       if (!goodsSpu) return
+      const msg = type === 1 ? '请先登录后再加入购物车' : '请先登录后再购买'
+      util.requireLogin(msg).then((ok) => {
+        if (!ok) return
+        this._toDoAction(type)
+      })
+    },
+    _toDoAction(type) {
+      const goodsSpu = this.goodsSpu
+      if (!goodsSpu) return
       const app = getApp()
-      const api = (app && app.api) || (app && app.globalData && app.globalData.__api)
+      const api = (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
       if (type === 1) {
         if (!api || typeof api.shoppingCartAdd !== 'function') {
           uni.showToast({ title: '功能暂不可用，请稍后重试', icon: 'none' })
           return
         }
+        const pic = (goodsSpu.picUrls && goodsSpu.picUrls[0]) || ''
         api.shoppingCartAdd({
           spuId: goodsSpu.id,
           quantity: this.cartNum,
           addPrice: goodsSpu.salesPrice,
+          salesPrice: goodsSpu.salesPrice,
           spuName: goodsSpu.name,
-          picUrl: (goodsSpu.picUrls && goodsSpu.picUrls[0]) || ''
+          picUrl: pic
         }).then(() => {
           uni.showToast({ title: '添加成功' })
           this.shoppingCartCountFn()
@@ -179,7 +191,7 @@ export default {
 .product-bg { width: 100%; position: relative; }
 .product-bg swiper { width: 100%; height: calc(100vw); position: relative; }
 .page-index { position: absolute; right: 30rpx; bottom: 30rpx; background: rgba(17, 24, 39, .55); color: #fff; }
-.to-down { margin-bottom: 100rpx; }
+.to-down { margin-bottom: 130rpx; }
 .screen { width: 94% !important; border-radius: 24rpx; min-height: 900rpx; margin: auto; background-color: #f2f3f5; box-shadow: 0 10rpx 34rpx rgba(15,23,42,.08); }
 .screen-image { padding-top: 80rpx; height: 780rpx !important; }
 .shopping-cart { width: 220rpx; }

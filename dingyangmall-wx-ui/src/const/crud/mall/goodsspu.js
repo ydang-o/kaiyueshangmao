@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (C) 2024
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
@@ -162,6 +162,10 @@ export const tableOption = {
             ratio: 0.1,
           },
           oss: "ali",
+          action: import.meta.env.VITE_APP_BASE_API + '/goodsspu/upload',
+          propsHttp: {
+            res: 'url'
+          },
           loadText: "附件上传中，请稍等",
           span: 24,
           tip: "只能上传jpg/png文件，且不超过50kb",

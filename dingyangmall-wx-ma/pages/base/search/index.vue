@@ -32,6 +32,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'SearchPage',
   data() {
@@ -43,30 +44,41 @@ export default {
     } catch (e) { this.searchHistory = [] }
   },
   onLoad() {
-    getApp().initPage().then(() => this.goodsPage())
+    getApp().initPage().then(() => this._loadHot())
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     searchHandle(e) {
       let value = ''
       if (typeof e === 'string') value = e
-      else if (e.detail && e.detail.value) value = e.detail.value
-      if (!value) return
+      else if (e.detail && e.detail.value != null) value = String(e.detail.value).trim()
+      if (!value) {
+        uni.showToast({ title: '请输入商品名', icon: 'none' })
+        return
+      }
       let searchHistory = [...(this.searchHistory || [])]
       searchHistory = searchHistory.filter(item => item.name !== value).slice(0, 9)
       searchHistory.unshift({ name: value })
       uni.setStorageSync('searchHistory', searchHistory)
       this.searchHistory = searchHistory
-      uni.navigateTo({ url: '/pages/goods/goods-list/index?name=' + encodeURIComponent(value) })
+      uni.navigateTo({ url: '/pages/goods/goods-list/index?keyword=' + encodeURIComponent(value) + '&title=' + encodeURIComponent('搜索：' + value) })
     },
     clearSearchHistory() {
       uni.showModal({ content: '确认删除全部历史记录？', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
         if (res.confirm) { this.searchHistory = []; uni.setStorageSync('searchHistory', []) }
       }})
     },
-    goodsPage() {
-      getApp().api.goodsPage({ searchCount: false, current: 1, size: 10, ascs: '', descs: 'sale_num' }).then(res => {
-        this.goodsList = (res.data && res.data.records) || []
-      })
+    _loadHot() {
+      const api = this.getApi()
+      if (!api || typeof api.goodsPage !== 'function') return
+      api.goodsPage({ searchCount: false, current: 1, size: 10, ascs: '', descs: 'sale_num' }).then(res => {
+        const data = (res && res.data) || res || {}
+        const list = data.records || data.rows || data.list || data.content || []
+        this.goodsList = Array.isArray(list) ? list : []
+      }).catch(() => {})
     }
   }
 }

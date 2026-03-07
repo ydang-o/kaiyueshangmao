@@ -63,25 +63,41 @@ public class TbCouponInfoServiceImpl extends ServiceImpl<TbCouponInfoMapper, TbC
     @Override
     @Transactional(rollbackFor = Exception.class)
     public TbCouponInfo createCoupon(Long userId, String goodsId) {
+        return createCoupon(userId, goodsId, 365);
+    }
+
+    /**
+     * 创建商品券（可指定有效天数）
+     */
+    public TbCouponInfo createCoupon(Long userId, String goodsId, int validityDays) {
         GoodsSpu goodsSpu = goodsSpuService.getById(goodsId);
         if (goodsSpu == null) {
             throw new RuntimeException("商品不存在");
         }
-        
         TbCouponInfo coupon = new TbCouponInfo();
         coupon.setUserId(userId);
-        // 生成10位大写核销码
         coupon.setCouponCode(IdUtil.simpleUUID().substring(0, 10).toUpperCase());
         coupon.setGoodsId(goodsId);
         coupon.setGoodsName(goodsSpu.getName());
         coupon.setGoodsPic(goodsSpu.getPicUrls() != null && goodsSpu.getPicUrls().length > 0 ? goodsSpu.getPicUrls()[0] : "");
-        coupon.setCouponStatus(1); // 1:未使用
+        coupon.setIntegralPrice(goodsSpu.getIntegralPrice());
+        coupon.setCouponStatus(1);
         coupon.setValidityStart(LocalDateTime.now());
-        coupon.setValidityEnd(LocalDateTime.now().plusYears(1)); // 默认1年有效期
+        coupon.setValidityEnd(LocalDateTime.now().plusDays(Math.max(1, validityDays)));
         coupon.setCreateTime(LocalDateTime.now());
         coupon.setUpdateTime(LocalDateTime.now());
-        
+        coupon.setCreateBy(String.valueOf(userId));
         save(coupon);
         return coupon;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public java.util.List<TbCouponInfo> distributeCoupon(Long userId, String goodsId, int count, int validityDays) {
+        java.util.List<TbCouponInfo> list = new java.util.ArrayList<>();
+        for (int i = 0; i < Math.min(count, 100); i++) { // 单次最多100张
+            list.add(createCoupon(userId, goodsId, validityDays));
+        }
+        return list;
     }
 }

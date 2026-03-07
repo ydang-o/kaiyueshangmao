@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'OrderOperate',
   props: {
@@ -29,17 +30,20 @@ export default {
     if (this.callPay) setTimeout(() => this.unifiedOrder(), 1000)
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     handleContact() {},
     orderReceive() {
-      const app = getApp()
+      const api = this.getApi()
+      if (!api || typeof api.orderReceive !== 'function') return
       uni.showModal({
         content: '是否确认收货吗？',
         cancelText: '我再想想',
         confirmColor: '#ff0000',
         success: res => {
-          if (res.confirm) {
-            app.api.orderReceive(this.orderInfo.id).then(r => this.$emit('orderReceive', r))
-          }
+          if (res.confirm) api.orderReceive(this.orderInfo.id).then(r => this.$emit('orderReceive', r)).catch(() => {})
         }
       })
     },
@@ -48,46 +52,57 @@ export default {
       uni.navigateTo({ url: '/pages/order/order-logistics/index?id=' + id })
     },
     orderCancel() {
-      const app = getApp()
+      const api = this.getApi()
+      if (!api || typeof api.orderCancel !== 'function') return
       uni.showModal({
         content: '确认取消该订单吗？',
         cancelText: '我再想想',
         confirmColor: '#ff0000',
         success: res => {
-          if (res.confirm) app.api.orderCancel(this.orderInfo.id).then(r => this.$emit('orderCancel', r))
+          if (res.confirm) api.orderCancel(this.orderInfo.id).then(r => this.$emit('orderCancel', r)).catch(() => {})
         }
       })
     },
     orderDel() {
-      const app = getApp()
+      const api = this.getApi()
+      if (!api || typeof api.orderDel !== 'function') return
       uni.showModal({
         content: '确认删除该订单吗？',
         cancelText: '我再想想',
         confirmColor: '#ff0000',
         success: res => {
-          if (res.confirm) app.api.orderDel(this.orderInfo.id).then(r => this.$emit('orderDel', r))
+          if (res.confirm) api.orderDel(this.orderInfo.id).then(r => this.$emit('orderDel', r)).catch(() => {})
         }
       })
     },
     unifiedOrder() {
-      const app = getApp()
+      const api = this.getApi()
+      if (!api || typeof api.unifiedOrder !== 'function') {
+        this.loading = false
+        return
+      }
       this.loading = true
-      app.api.unifiedOrder({ id: this.orderInfo.id }).then(res => {
+      api.unifiedOrder({ id: this.orderInfo.id }).then(res => {
         this.loading = false
         if (this.orderInfo.paymentPrice <= 0) {
           this.$emit('unifiedOrder', res)
         } else {
-          const payData = res.data
-          uni.requestPayment({
-            timeStamp: payData.timeStamp,
-            nonceStr: payData.nonceStr,
-            package: payData.packageValue,
-            signType: payData.signType,
-            paySign: payData.paySign,
-            success: () => this.$emit('unifiedOrder', res),
-            fail: () => {},
-            complete: () => {}
-          })
+          const payData = (res && res.data) || res || {}
+          const pkg = payData.packageValue || payData.package
+          if (payData.timeStamp && payData.nonceStr && pkg && payData.signType && payData.paySign) {
+            uni.requestPayment({
+              timeStamp: payData.timeStamp,
+              nonceStr: payData.nonceStr,
+              package: pkg,
+              signType: payData.signType,
+              paySign: payData.paySign,
+              success: () => this.$emit('unifiedOrder', res),
+              fail: () => {},
+              complete: () => {}
+            })
+          } else {
+            this.$emit('unifiedOrder', res)
+          }
         }
       }).catch(() => { this.loading = false })
     },

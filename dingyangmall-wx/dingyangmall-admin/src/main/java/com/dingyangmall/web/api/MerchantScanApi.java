@@ -1,6 +1,5 @@
 package com.dingyangmall.web.api;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.core.domain.entity.SysUser;
 import com.dingyangmall.common.utils.SecurityUtils;
@@ -8,8 +7,11 @@ import com.dingyangmall.mall.entity.TbCouponInfo;
 import com.dingyangmall.mall.entity.UmsMember;
 import com.dingyangmall.mall.service.TbCouponInfoService;
 import com.dingyangmall.mall.service.TbIntegralFlowService;
+import com.dingyangmall.common.utils.StringUtils;
+import com.dingyangmall.framework.web.service.SmsService;
 import com.dingyangmall.mall.service.UmsMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -30,6 +32,13 @@ public class MerchantScanApi {
 
     @Autowired
     private TbCouponInfoService couponInfoService;
+
+    @Autowired(required = false)
+    private SmsService smsService;
+
+    /** 为 true 时，商家赠送积分必须传 smsCode 且校验通过 */
+    @Value("${mall.merchant.give-points-require-sms:false}")
+    private boolean givePointsRequireSms;
 
     /**
      * 识别用户 (扫会员码)
@@ -57,15 +66,36 @@ public class MerchantScanApi {
     }
 
     /**
-     * 商家赠送积分
+     * 商家赠送积分（可选短信验证：body 传 smsCode 时校验当前商家手机号验证码；
+     * 若配置 mall.merchant.give-points-require-sms=true 则必须传 smsCode 并校验通过）
      */
     @PostMapping("/points")
     public AjaxResult givePoints(@RequestBody Map<String, Object> body) {
         String memberCode = (String) body.get("memberCode");
         Integer points = (Integer) body.get("points");
-        
+        String smsCode = body != null && body.get("smsCode") != null ? body.get("smsCode").toString().trim() : null;
+
         if (points == null || points <= 0) {
             return AjaxResult.error("积分数量必须大于0");
+        }
+
+        SysUser dealer = SecurityUtils.getLoginUser().getUser();
+        String dealerPhone = dealer != null ? dealer.getPhonenumber() : null;
+        if (givePointsRequireSms || (smsCode != null && !smsCode.isEmpty())) {
+            if (smsService == null) {
+                return AjaxResult.error("短信服务未配置，无法校验验证码");
+            }
+            if (StringUtils.isEmpty(dealerPhone)) {
+                return AjaxResult.error("请先完善商家手机号后再赠送积分");
+            }
+            if (StringUtils.isEmpty(smsCode)) {
+                return AjaxResult.error("请填写短信验证码");
+            }
+            try {
+                smsService.validateSmsCode(dealerPhone, smsCode);
+            } catch (Exception e) {
+                return AjaxResult.error("验证码错误或已过期，请重新获取");
+            }
         }
         
         UmsMember member = umsMemberService.getByMemberCode(memberCode);
@@ -77,11 +107,7 @@ public class MerchantScanApi {
             return AjaxResult.error("无效的会员码或手机号");
         }
         
-        // 获取当前操作的商家信息
-        SysUser dealer = SecurityUtils.getLoginUser().getUser();
-        String remark = "商家[" + dealer.getNickName() + "]扫码赠送";
-        
-        // 赠送积分 (类型2: 上级赠送)
+        String remark = "商家[" + (dealer != null ? dealer.getNickName() : "") + "]扫码赠送";
         integralFlowService.addPoints(member.getId(), points, 2, remark);
         
         return AjaxResult.success("赠送成功");

@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'OrderLogisticsPage',
   data() { return { orderLogistics: {} } },
@@ -26,8 +27,16 @@ export default {
     })
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
     getLogistics(id) {
-      getApp().api.orderLogistics(id).then(res => { this.orderLogistics = res.data || {} })
+      const api = this.getApi()
+      if (!api || typeof api.orderLogistics !== 'function') return
+      api.orderLogistics(id).then(res => {
+        this.orderLogistics = (res && res.data != null) ? res.data : (res || {})
+      }).catch(() => {})
     },
     copyNo() {
       uni.setClipboardData({ data: this.orderLogistics.logisticsNo || '', success: () => uni.showToast({ title: '复制成功' }) })

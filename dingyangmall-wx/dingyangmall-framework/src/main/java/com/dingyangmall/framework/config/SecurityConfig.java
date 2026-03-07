@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.dingyangmall.framework.config.properties.PermitAllUrlProperties;
@@ -55,12 +57,6 @@ public class SecurityConfig
     @Autowired
     private JwtAuthenticationTokenFilter authenticationTokenFilter;
     
-    /**
-     * 跨域过滤器
-     */
-    @Autowired
-    private CorsFilter corsFilter;
-
     /**
      * 允许匿名访问的地址
      */
@@ -120,7 +116,7 @@ public class SecurityConfig
                 // 登录、注册、验证码、门户等允许匿名
                 requests.requestMatchers("/login", "/register", "/captchaImage", "/weixin/portal/**", "/weixin/api/**", "/dingyangmall-wiki/**", "/app/member/login", "/app/member/register", "/app/member/send-sms-code").permitAll()
                     // 静态资源，可匿名访问
-                    .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**.html", "/**.css", "/**.js", "/profile/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**.html", "/**.css", "/**.js", "/profile/**", "/dev-api/profile/**").permitAll()
                     .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**", "/druid/**", "/doc.html", "/webjars/**").permitAll()
                     // 除上面外的所有请求全部需要鉴权认证
                     .anyRequest().authenticated();
@@ -130,9 +126,26 @@ public class SecurityConfig
             // 添加JWT filter
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             // 添加CORS filter
-            .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)
-            .addFilterBefore(corsFilter, LogoutFilter.class)
+            .addFilterBefore(corsFilter(), JwtAuthenticationTokenFilter.class)
+            .addFilterBefore(corsFilter(), LogoutFilter.class)
             .build();
+    }
+
+    /**
+     * 跨域过滤器（在 SecurityConfig 内定义，避免依赖 ResourcesConfig 的加载顺序）
+     */
+    @Bean
+    public CorsFilter corsFilter()
+    {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
+        config.setMaxAge(1800L);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 
     /**

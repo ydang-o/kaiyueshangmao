@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright (C) 2018-2019
  * All rights reserved, Designed By www.dingyangmall.com
  * 注意：
@@ -33,9 +33,61 @@ const filterForm = (form) => {
   return obj;
 }
 
+/**
+ * 更新购物车角标（同步 globalData 并刷新自定义 tabBar 上的数量）
+ * @param {number|string} count 购物车件数
+ */
+const updateCartBadge = (count) => {
+  const n = parseInt(count, 10) || 0
+  try {
+    const app = typeof getApp === 'function' ? getApp() : null
+    if (app && app.globalData) app.globalData.shoppingCartCount = String(n)
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1]
+    if (page && typeof page.getTabBar === 'function') {
+      const tabBar = page.getTabBar()
+      if (tabBar && tabBar.setData) tabBar.setData({ cartCount: n })
+    }
+  } catch (e) {}
+}
+
+/**
+ * 需要登录时提醒并可选跳转「我的」页登录
+ * @param {string} [content='此功能需要登录，请先登录'] 提示文案
+ * @returns {Promise<boolean>} 已登录 resolve(true)，未登录且用户点了「去登录」会 switchTab 到我的页并 resolve(false)，点取消 resolve(false)
+ */
+const requireLogin = (content) => {
+  const msg = content || '此功能需要登录，请先登录'
+  try {
+    const app = typeof getApp === 'function' ? getApp() : null
+    const token = (app && app.globalData && (app.globalData.thirdSession || app.globalData.wxToken)) || ''
+    if (token) return Promise.resolve(true)
+  } catch (e) {}
+  return new Promise((resolve) => {
+    const u = typeof uni !== 'undefined' ? uni : wx
+    u.showModal({
+      title: '提示',
+      content: msg,
+      cancelText: '取消',
+      confirmText: '去登录',
+      success: (res) => {
+        if (res.confirm) {
+          try {
+            u.switchTab({ url: '/pages/user/user-center/index' })
+          } catch (e) {}
+        }
+        resolve(false)
+      },
+      fail: () => resolve(false)
+    })
+  })
+}
+
 module.exports = {
   formatTime: formatTime,
   formatNumber: formatNumber,
-  filterForm: filterForm
+  filterForm: filterForm,
+  requireLogin: requireLogin,
+  updateCartBadge: updateCartBadge
 }
 

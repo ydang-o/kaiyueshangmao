@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import util from '@/utils/util'
+import apiModule from '@/utils/api'
 export default {
   name: 'UserAddressListPage',
   data() {
@@ -32,12 +34,35 @@ export default {
     if (options.select) this.select = true
   },
   onShow() {
-    getApp().initPage().then(() => this.userAddressPage())
+    util.requireLogin('请先登录后管理收货地址').then((ok) => {
+      if (!ok) {
+        this.loadmore = false
+        return
+      }
+      getApp().initPage().then(() => this.userAddressPage())
+    })
   },
   methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
+    /** 从地址分页响应中解析列表 */
+    _parseAddressList(res) {
+      const data = (res && res.data) || res || {}
+      const list = data.records || data.rows || data.list || data.content || data.data || []
+      return Array.isArray(list) ? list : []
+    },
     userAddressPage() {
-      getApp().api.userAddressPage(this.page).then(res => {
-        this.userAddress = (res.data && res.data.records) || []
+      const api = this.getApi()
+      if (!api || typeof api.userAddressPage !== 'function') {
+        this.loadmore = false
+        return
+      }
+      api.userAddressPage(this.page).then(res => {
+        this.userAddress = this._parseAddressList(res)
+        this.loadmore = false
+      }).catch(() => {
         this.loadmore = false
       })
     },

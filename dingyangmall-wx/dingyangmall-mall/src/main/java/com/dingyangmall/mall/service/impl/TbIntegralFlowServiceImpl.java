@@ -44,6 +44,7 @@ public class TbIntegralFlowServiceImpl extends ServiceImpl<TbIntegralFlowMapper,
             flow.setRemark(remark);
             flow.setOperTime(LocalDateTime.now());
             flow.setCreateTime(LocalDateTime.now());
+            flow.setCreateBy(String.valueOf(userId)); // create_by 为 NOT NULL，系统流水用 userId 标识
             save(flow);
         }
     }

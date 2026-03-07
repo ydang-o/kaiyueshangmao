@@ -1,14 +1,30 @@
-/* 构建后从 common 引入主样式（含 ColorUI 图标），开发时若报错可忽略 */
-@import "../common/main.wxss";
+/* 组件 wxss 不允许标签/ID/属性选择器，故不引入 main.wxss；仅保留本组件用到的图标字体与 class */
+@font-face {
+  font-family: "cuIcon";
+  src: url('//at.alicdn.com/t/font_533566_yfq2d9wdij.ttf?t=1545239985831') format('truetype');
+}
+.tab-item .icon {
+  font-family: "cuIcon";
+  font-size: inherit;
+  font-style: normal;
+}
+.cuIcon-home:before { content: "\e6b8"; }
+.cuIcon-homefill:before { content: "\e6bb"; }
+.cuIcon-apps:before { content: "\e729"; }
+.cuIcon-cart:before { content: "\e6af"; }
+.cuIcon-cartfill:before { content: "\e6b9"; }
+.cuIcon-my:before { content: "\e78b"; }
+.cuIcon-myfill:before { content: "\e78c"; }
 
 .tab-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 100rpx;
-  max-height: 100rpx;
-  padding-bottom: env(safe-area-inset-bottom);
+  height: 130rpx;
+  min-height: 130rpx;
+  padding: 16rpx 0;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   background: #ffffff;
   display: flex;
   align-items: center;
@@ -30,18 +46,18 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 12rpx 0;
+  padding: 16rpx 0;
 }
 
 .tab-item .icon {
-  font-size: 44rpx;
-  margin-bottom: 4rpx;
+  font-size: 52rpx;
+  margin-bottom: 8rpx;
   color: #9ca3af;
   transition: color 0.2s;
 }
 
 .tab-item .text {
-  font-size: 20rpx;
+  font-size: 24rpx;
   color: #9ca3af;
   transition: color 0.2s;
 }
@@ -53,4 +69,28 @@
 
 .tab-item.active .text {
   font-weight: 600;
+}
+
+.tab-item-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab-bar-badge {
+  position: absolute;
+  top: -8rpx;
+  right: 50%;
+  margin-right: -48rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  line-height: 32rpx;
+  padding: 0 8rpx;
+  font-size: 20rpx;
+  color: #fff;
+  background: #ff0036;
+  border-radius: 16rpx;
+  text-align: center;
+  box-sizing: border-box;
 }
