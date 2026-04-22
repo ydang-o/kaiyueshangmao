@@ -21,25 +21,29 @@
           </swiper-item>
         </swiper>
       </view>
-      <!-- 四大功能：优惠券、签到、抽奖、红包（紧接轮播，优先展示） -->
-      <view class="home-four-actions bg-white">
-        <view class="four-actions-grid">
-          <navigator class="four-action-item" url="/pages/coupon/my-coupons/index" hover-class="none">
-            <view class="four-action-icon-wrap orange"><text class="cuIcon-form"></text></view>
-            <text class="four-action-text">我的优惠券</text>
-          </navigator>
-          <view class="four-action-item" @tap="signIn">
-            <view class="four-action-icon-wrap blue"><text class="cuIcon-calendar"></text></view>
-            <text class="four-action-text">每日签到</text>
+      <!-- 五大功能：优惠券、签到、抽奖、红包、积分商城（紧接轮播，优先展示） -->
+      <view class="home-five-actions bg-white">
+        <view class="five-actions-grid">
+          <view class="five-action-item" @tap="goCoupons">
+            <view class="five-action-icon-wrap orange"><text class="cuIcon-form"></text></view>
+            <text class="five-action-text">我的优惠券</text>
           </view>
-          <navigator class="four-action-item" url="/pages/lottery/index/index" hover-class="none">
-            <view class="four-action-icon-wrap red"><text class="cuIcon-medal"></text></view>
-            <text class="four-action-text">积分抽奖</text>
-          </navigator>
-          <navigator class="four-action-item" url="/pages/integral/packet/index" hover-class="none">
-            <view class="four-action-icon-wrap red"><text class="cuIcon-redpacket"></text></view>
-            <text class="four-action-text">积分红包</text>
-          </navigator>
+          <view class="five-action-item" @tap="signIn">
+            <view class="five-action-icon-wrap blue"><text class="cuIcon-calendar"></text></view>
+            <text class="five-action-text">每日签到</text>
+          </view>
+          <view class="five-action-item" @tap="goLottery">
+            <view class="five-action-icon-wrap red"><text class="cuIcon-medal"></text></view>
+            <text class="five-action-text">积分抽奖</text>
+          </view>
+          <view class="five-action-item" @tap="goPacket">
+            <view class="five-action-icon-wrap red"><text class="cuIcon-redpacket"></text></view>
+            <text class="five-action-text">积分红包</text>
+          </view>
+          <view class="five-action-item" @tap="goIntegralShop">
+            <view class="five-action-icon-wrap purple"><text class="cuIcon-shopfill"></text></view>
+            <text class="five-action-text">积分商城</text>
+          </view>
         </view>
       </view>
       <!-- 公告：来自接口，无则不展示 -->
@@ -163,6 +167,15 @@ export default {
   },
   methods: {
     change() {},
+    getApi() {
+      try {
+        const app = typeof getApp === 'function' ? getApp() : null
+        const fromApp = app && app.api && typeof app.api === 'object'
+        return (fromApp ? app.api : null) || (apiModule && typeof apiModule === 'object' ? apiModule : null) || {}
+      } catch (e) {
+        return apiModule || {}
+      }
+    },
     onProfileSkipOrConfirm() {
       const app = getApp()
       if (app && app.globalData) app.globalData.profileSkipped = true
@@ -206,7 +219,9 @@ export default {
       uni.getUserProfile({
         desc: '用于完善会员资料、展示昵称与头像',
         success: (detail) => {
-          getApp().api.wxUserSave(detail).then(res => {
+          const api = this.getApi()
+          if (!api || typeof api.wxUserSave !== 'function') return
+          api.wxUserSave(detail).then(res => {
             const data = res.data || res
             const user = {
               headimgUrl: data.headimgUrl || data.avatar,
@@ -378,6 +393,30 @@ export default {
         })
       })
     },
+    goCoupons() {
+      util.requireLogin('请先登录后查看优惠券').then((ok) => {
+        if (!ok) return
+        uni.navigateTo({ url: '/pages/coupon/my-coupons/index' })
+      })
+    },
+    goLottery() {
+      util.requireLogin('请先登录后参与抽奖').then((ok) => {
+        if (!ok) return
+        uni.navigateTo({ url: '/pages/lottery/index/index' })
+      })
+    },
+    goPacket() {
+      util.requireLogin('请先登录后领取红包').then((ok) => {
+        if (!ok) return
+        uni.navigateTo({ url: '/pages/integral/packet/index' })
+      })
+    },
+    goIntegralShop() {
+      util.requireLogin('请先登录后查看积分商城').then((ok) => {
+        if (!ok) return
+        uni.navigateTo({ url: '/pages/integral/shop/index' })
+      })
+    },
     refresh() {
       this.loadmore = true
       this.page.current = 1
@@ -402,15 +441,16 @@ export default {
 .swiper-image { width: 94% !important; height: 320rpx !important; margin: 10rpx auto 0 !important; border-radius: 20rpx; box-shadow: 0 8rpx 24rpx rgba(15,23,42,.08); display: block; }
 .text-black { color: #000 !important; }
 .search-form { border-radius: 20rpx; }
-.home-four-actions { margin-top: -10rpx; padding: 12rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); position: relative; z-index: 1; }
+.home-five-actions { margin-top: -10rpx; padding: 12rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); position: relative; z-index: 1; }
 .section-title-bar { padding: 12rpx 0 8rpx; min-height: auto; }
-.four-actions-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
-.four-action-item { width: 25%; display: flex; flex-direction: column; align-items: center; padding: 6rpx 0; }
-.four-action-icon-wrap { width: 96rpx; height: 96rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; font-size: 44rpx; color: #fff; margin-bottom: 10rpx; }
-.four-action-icon-wrap.orange { background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%); }
-.four-action-icon-wrap.blue { background: linear-gradient(135deg, #5b9cf5 0%, #3b82f6 100%); }
-.four-action-icon-wrap.red { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); }
-.four-action-text { font-size: 24rpx; color: #374151; }
+.five-actions-grid { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.five-action-item { width: 20%; display: flex; flex-direction: column; align-items: center; padding: 6rpx 0; }
+.five-action-icon-wrap { width: 88rpx; height: 88rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; font-size: 40rpx; color: #fff; margin-bottom: 10rpx; }
+.five-action-icon-wrap.orange { background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%); }
+.five-action-icon-wrap.blue { background: linear-gradient(135deg, #5b9cf5 0%, #3b82f6 100%); }
+.five-action-icon-wrap.red { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%); }
+.five-action-icon-wrap.purple { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); }
+.five-action-text { font-size: 22rpx; color: #374151; }
 .ad-wrap { position: relative; z-index: 0; min-height: 80rpx; }
 .login-banner-bottom-spacer { height: 140rpx; }
 </style>

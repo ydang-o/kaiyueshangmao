@@ -1,9 +1,9 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages/home/index"],{
 
 /***/ 38:
-/*!******************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fhome%2Findex"} ***!
-  \******************************************************************************************************/
+/*!**************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fhome%2Findex"} ***!
+  \**************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22,9 +22,9 @@ createPage(_index.default);
 /***/ }),
 
 /***/ 39:
-/*!***********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue ***!
-  \***********************************************************************************/
+/*!*******************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue ***!
+  \*******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -63,9 +63,9 @@ component.options.__file = "pages/home/index.vue"
 /***/ }),
 
 /***/ 40:
-/*!******************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=template&id=71e217db&scoped=true& ***!
-  \******************************************************************************************************************************/
+/*!**************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=template&id=71e217db&scoped=true& ***!
+  \**************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -85,9 +85,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 41:
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=template&id=71e217db&scoped=true& ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=template&id=71e217db&scoped=true& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -134,9 +134,9 @@ render._withStripped = true
 /***/ }),
 
 /***/ 42:
-/*!************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=script&lang=js& ***!
-  \************************************************************************************************************/
+/*!********************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -150,9 +150,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 43:
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=script&lang=js& ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -164,10 +164,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _slicedToArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/slicedToArray */ 5));
 var _toConsumableArray2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/toConsumableArray */ 18));
 var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ 11));
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 32));
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
@@ -280,6 +280,15 @@ var _default = {
   },
   methods: {
     change: function change() {},
+    getApi: function getApi() {
+      try {
+        var app = typeof getApp === 'function' ? getApp() : null;
+        var fromApp = app && app.api && (0, _typeof2.default)(app.api) === 'object';
+        return (fromApp ? app.api : null) || (_api.default && (0, _typeof2.default)(_api.default) === 'object' ? _api.default : null) || {};
+      } catch (e) {
+        return _api.default || {};
+      }
+    },
     onProfileSkipOrConfirm: function onProfileSkipOrConfirm() {
       var app = getApp();
       if (app && app.globalData) app.globalData.profileSkipped = true;
@@ -326,11 +335,14 @@ var _default = {
       });
     },
     fetchUserProfileAuth: function fetchUserProfileAuth() {
+      var _this3 = this;
       if (typeof uni.getUserProfile !== 'function') return;
       uni.getUserProfile({
         desc: '用于完善会员资料、展示昵称与头像',
         success: function success(detail) {
-          getApp().api.wxUserSave(detail).then(function (res) {
+          var api = _this3.getApi();
+          if (!api || typeof api.wxUserSave !== 'function') return;
+          api.wxUserSave(detail).then(function (res) {
             var data = res.data || res;
             var user = _objectSpread({
               headimgUrl: data.headimgUrl || data.avatar,
@@ -349,7 +361,7 @@ var _default = {
       });
     },
     loadData: function loadData() {
-      var _this3 = this;
+      var _this4 = this;
       var app = typeof getApp === 'function' ? getApp() : {};
       // 发请求前再次从 storage 同步 token，避免 GET 请求未带 X-Wx-Token
       if (app && app.globalData && !app.globalData.wxToken && !app.globalData.thirdSession) {
@@ -375,7 +387,7 @@ var _default = {
         this._loadDataRetryCount = retryCount + 1;
         if (retryCount === 0) console.warn('[Home] api 未就绪，将重试最多 10 次');
         setTimeout(function () {
-          return _this3.loadData();
+          return _this4.loadData();
         }, 200);
         return;
       }
@@ -390,23 +402,23 @@ var _default = {
           var noticeList = data.noticeList || [];
           var goodsList = data.goodsList || [];
           var promoList = data.promoList || [];
-          _this3.buildSwiper(bannerList);
-          _this3.buildNavList(categoryTree);
-          _this3.noticeList = Array.isArray(noticeList) ? noticeList : [];
-          _this3.goodsList = [].concat((0, _toConsumableArray2.default)(_this3.goodsList), (0, _toConsumableArray2.default)(Array.isArray(goodsList) ? goodsList : []));
-          _this3.promoList = Array.isArray(promoList) ? promoList : [];
-          _this3.loadmore = _this3.goodsList.length >= (_this3.page.size || 10);
-          console.log('[Home] 首页聚合成功', '轮播:', bannerList.length, '分类:', categoryTree.length, '商品:', _this3.goodsList.length, '推荐:', _this3.promoList.length);
+          _this4.buildSwiper(bannerList);
+          _this4.buildNavList(categoryTree);
+          _this4.noticeList = Array.isArray(noticeList) ? noticeList : [];
+          _this4.goodsList = [].concat((0, _toConsumableArray2.default)(_this4.goodsList), (0, _toConsumableArray2.default)(Array.isArray(goodsList) ? goodsList : []));
+          _this4.promoList = Array.isArray(promoList) ? promoList : [];
+          _this4.loadmore = _this4.goodsList.length >= (_this4.page.size || 10);
+          console.log('[Home] 首页聚合成功', '轮播:', bannerList.length, '分类:', categoryTree.length, '商品:', _this4.goodsList.length, '推荐:', _this4.promoList.length);
         }).catch(function (err) {
           console.warn('[Home] 首页聚合接口失败，回退到分接口', err);
-          _this3._loadDataFallback(api);
+          _this4._loadDataFallback(api);
         });
         return;
       }
       this._loadDataFallback(api);
     },
     _loadDataFallback: function _loadDataFallback(api) {
-      var _this4 = this;
+      var _this5 = this;
       Promise.all([api.goodsPage(this.page), api.goodsPage({
         searchCount: false,
         current: 1,
@@ -415,30 +427,30 @@ var _default = {
         var _ref2 = (0, _slicedToArray2.default)(_ref, 2),
           resPage = _ref2[0],
           resBanner = _ref2[1];
-        var pageRecords = _this4._getRecords(resPage);
+        var pageRecords = _this5._getRecords(resPage);
         if (!pageRecords.length && resPage) {
           try {
             console.warn('[Home] 商品分页返回空，请检查后端数据或响应格式。原始响应:', JSON.stringify(resPage).slice(0, 500));
           } catch (e) {}
         }
-        _this4.goodsList = [].concat((0, _toConsumableArray2.default)(_this4.goodsList), (0, _toConsumableArray2.default)(pageRecords));
-        if (!pageRecords.length || pageRecords.length < _this4.page.size) _this4.loadmore = false;
-        _this4.buildSwiper(_this4._getRecords(resBanner));
-        _this4.loadNotice();
-        console.log('[Home] loadData 成功', '列表:', _this4.goodsList.length, '首页条数:', pageRecords.length);
+        _this5.goodsList = [].concat((0, _toConsumableArray2.default)(_this5.goodsList), (0, _toConsumableArray2.default)(pageRecords));
+        if (!pageRecords.length || pageRecords.length < _this5.page.size) _this5.loadmore = false;
+        _this5.buildSwiper(_this5._getRecords(resBanner));
+        _this5.loadNotice();
+        console.log('[Home] loadData 成功', '列表:', _this5.goodsList.length, '首页条数:', pageRecords.length);
       }).catch(function (err) {
         console.error('[Home] loadData 请求失败', err);
-        _this4.loadmore = false;
+        _this5.loadmore = false;
       });
     },
     loadNotice: function loadNotice() {
-      var _this5 = this;
+      var _this6 = this;
       var app = typeof getApp === 'function' ? getApp() : null;
       var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
       if (!api || typeof api.getNoticeList !== 'function') return;
       api.getNoticeList().then(function (res) {
         var raw = res && res.data || [];
-        if (Array.isArray(raw)) _this5.noticeList = raw;else if (raw && raw.content && Array.isArray(raw.content)) _this5.noticeList = raw.content;else if (raw && raw.records && Array.isArray(raw.records)) _this5.noticeList = raw.records.map(function (r) {
+        if (Array.isArray(raw)) _this6.noticeList = raw;else if (raw && raw.content && Array.isArray(raw.content)) _this6.noticeList = raw.content;else if (raw && raw.records && Array.isArray(raw.records)) _this6.noticeList = raw.records.map(function (r) {
           return r.content || r.title || r.name;
         });
       }).catch(function () {});
@@ -477,14 +489,14 @@ var _default = {
       });
     },
     goodsPage: function goodsPage() {
-      var _this6 = this;
+      var _this7 = this;
       var app = getApp();
       var api = app && app.api || app && app.globalData && app.globalData.__api || _api.default;
       if (!api || typeof api.goodsPage !== 'function') return;
       api.goodsPage(this.page).then(function (res) {
-        var list = _this6._getRecords(res);
-        _this6.goodsList = [].concat((0, _toConsumableArray2.default)(_this6.goodsList), (0, _toConsumableArray2.default)(list));
-        if (list.length < _this6.page.size) _this6.loadmore = false;
+        var list = _this7._getRecords(res);
+        _this7.goodsList = [].concat((0, _toConsumableArray2.default)(_this7.goodsList), (0, _toConsumableArray2.default)(list));
+        if (list.length < _this7.page.size) _this7.loadmore = false;
       }).catch(function () {});
     },
     _getRecords: function _getRecords(r) {
@@ -528,6 +540,38 @@ var _default = {
         });
       });
     },
+    goCoupons: function goCoupons() {
+      _util.default.requireLogin('请先登录后查看优惠券').then(function (ok) {
+        if (!ok) return;
+        uni.navigateTo({
+          url: '/pages/coupon/my-coupons/index'
+        });
+      });
+    },
+    goLottery: function goLottery() {
+      _util.default.requireLogin('请先登录后参与抽奖').then(function (ok) {
+        if (!ok) return;
+        uni.navigateTo({
+          url: '/pages/lottery/index/index'
+        });
+      });
+    },
+    goPacket: function goPacket() {
+      _util.default.requireLogin('请先登录后领取红包').then(function (ok) {
+        if (!ok) return;
+        uni.navigateTo({
+          url: '/pages/integral/packet/index'
+        });
+      });
+    },
+    goIntegralShop: function goIntegralShop() {
+      _util.default.requireLogin('请先登录后查看积分商城').then(function (ok) {
+        if (!ok) return;
+        uni.navigateTo({
+          url: '/pages/integral/shop/index'
+        });
+      });
+    },
     refresh: function refresh() {
       this.loadmore = true;
       this.page.current = 1;
@@ -545,9 +589,9 @@ exports.default = _default;
 /***/ }),
 
 /***/ 44:
-/*!********************************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=style&index=0&id=71e217db&scoped=true&lang=css& ***!
-  \********************************************************************************************************************************************/
+/*!****************************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=style&index=0&id=71e217db&scoped=true&lang=css& ***!
+  \****************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -561,9 +605,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 45:
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=style&index=0&id=71e217db&scoped=true&lang=css& ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/home/index.vue?vue&type=style&index=0&id=71e217db&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

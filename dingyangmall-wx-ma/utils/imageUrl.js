@@ -1,6 +1,6 @@
 /**
  * 将后端返回的相对路径图片转为小程序可请求的完整 URL，避免 /profile/upload/xxx 请求到错误域名导致 500/404。
- * 规则：以 / 开头且非 // 的路径，拼上 basePath（如 http://localhost:7500）。
+ * 规则：以 / 开头且非 // 的路径，拼上 basePath（如 https://kaiyueshangmao.xyz）。
  */
 let getBasePath = () => {
   try {
@@ -9,7 +9,8 @@ let getBasePath = () => {
       return app.globalData.config.basePath
     }
   } catch (e) {}
-  return (typeof __config !== 'undefined' && __config && __config.basePath) ? __config.basePath : 'http://localhost:7500'
+  // 默认使用服务器地址，避免 localhost 在微信小程序中无法访问
+  return (typeof __config !== 'undefined' && __config && __config.basePath) ? __config.basePath : 'https://kaiyueshangmao.xyz'
 }
 
 export function fullImageUrl(url) {

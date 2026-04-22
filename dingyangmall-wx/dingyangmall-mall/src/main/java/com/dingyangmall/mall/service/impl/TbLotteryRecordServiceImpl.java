@@ -59,7 +59,7 @@ public class TbLotteryRecordServiceImpl extends ServiceImpl<TbLotteryRecordMappe
         if (config.getCostPoints() != null && config.getCostPoints() > 0) {
             try {
                 // 8: 抽奖获得 (这里是消耗，传负数)
-                integralFlowService.addPoints(userId, 8, -config.getCostPoints(), "抽奖消耗");
+                integralFlowService.addPoints(userId, -config.getCostPoints(), 8, "抽奖消耗");
             } catch (Exception e) {
                 throw new RuntimeException("积分不足，无法抽奖");
             }

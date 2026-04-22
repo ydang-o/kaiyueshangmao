@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'MerchantIndexPage',
   data() {
@@ -74,6 +75,15 @@ export default {
     if (!token) uni.redirectTo({ url: '/pages/merchant/login/index' })
   },
   methods: {
+    getApi() {
+      try {
+        const app = typeof getApp === 'function' ? getApp() : null
+        const fromApp = app && app.api && typeof app.api === 'object'
+        return (fromApp ? app.api : null) || (apiModule && typeof apiModule === 'object' ? apiModule : null) || {}
+      } catch (e) {
+        return apiModule || {}
+      }
+    },
     scanUser() {
       uni.scanCode({ success: (res) => this.fetchUserInfo(res.result) })
     },
@@ -87,8 +97,13 @@ export default {
       else this.verifyCoupon(this.manualCode)
     },
     fetchUserInfo(code) {
+      const api = this.getApi()
+      if (!api || typeof api.merchantScanUser !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
       uni.showLoading({ title: '查询中' })
-      getApp().api.merchantScanUser(code).then(res => {
+      api.merchantScanUser(code).then(res => {
         uni.hideLoading()
         if (res.code === 200) {
           this.userInfo = res.data || {}
@@ -101,10 +116,15 @@ export default {
       uni.scanCode({ success: (res) => this.verifyCoupon(res.result) })
     },
     verifyCoupon(code) {
+      const api = this.getApi()
+      if (!api || typeof api.merchantVerifyCoupon !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
       uni.showModal({ title: '确认核销', content: '确定要核销该商品券吗？', success: (res) => {
         if (res.confirm) {
           uni.showLoading({ title: '核销中' })
-          getApp().api.merchantVerifyCoupon({ couponCode: code }).then(resp => {
+          api.merchantVerifyCoupon({ couponCode: code }).then(resp => {
             uni.hideLoading()
             if (resp.code === 200) uni.showToast({ title: '核销成功' })
             else uni.showToast({ title: resp.msg || '核销失败', icon: 'none' })
@@ -115,8 +135,13 @@ export default {
     hideUserModal() { this.showUserModal = false; this.pointsToGive = '' },
     givePoints() {
       if (!this.pointsToGive || this.pointsToGive <= 0) { uni.showToast({ title: '请输入有效积分', icon: 'none' }); return }
+      const api = this.getApi()
+      if (!api || typeof api.merchantGivePoints !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
       uni.showLoading({ title: '处理中' })
-      getApp().api.merchantGivePoints({ memberCode: this.memberCode, points: Number(this.pointsToGive) }).then(res => {
+      api.merchantGivePoints({ memberCode: this.memberCode, points: Number(this.pointsToGive) }).then(res => {
         uni.hideLoading()
         if (res.code === 200) { uni.showToast({ title: '赠送成功' }); this.hideUserModal() }
         else uni.showToast({ title: res.msg || '赠送失败', icon: 'none' })

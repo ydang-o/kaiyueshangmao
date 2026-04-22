@@ -1,9 +1,9 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages/merchant/login/index"],{
 
 /***/ 167:
-/*!******************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fmerchant%2Flogin%2Findex"} ***!
-  \******************************************************************************************************************/
+/*!**************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fmerchant%2Flogin%2Findex"} ***!
+  \**************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22,9 +22,9 @@ createPage(_index.default);
 /***/ }),
 
 /***/ 168:
-/*!*********************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue ***!
-  \*********************************************************************************************/
+/*!*****************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue ***!
+  \*****************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -63,9 +63,9 @@ component.options.__file = "pages/merchant/login/index.vue"
 /***/ }),
 
 /***/ 169:
-/*!****************************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=template&id=72fe6344&scoped=true& ***!
-  \****************************************************************************************************************************************/
+/*!************************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=template&id=72fe6344&scoped=true& ***!
+  \************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -85,9 +85,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 170:
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=template&id=72fe6344&scoped=true& ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=template&id=72fe6344&scoped=true& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -112,9 +112,9 @@ render._withStripped = true
 /***/ }),
 
 /***/ 171:
-/*!**********************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=script&lang=js& ***!
-  \**********************************************************************************************************************/
+/*!******************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=script&lang=js& ***!
+  \******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -128,19 +128,22 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 172:
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=script&lang=js& ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(uni) {
 
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ 4);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 //
 //
 //
@@ -181,9 +184,20 @@ var _default = {
     this.getCaptcha();
   },
   methods: {
+    getApi: function getApi() {
+      try {
+        var app = typeof getApp === 'function' ? getApp() : null;
+        var fromApp = app && app.api && (0, _typeof2.default)(app.api) === 'object';
+        return (fromApp ? app.api : null) || (_api.default && (0, _typeof2.default)(_api.default) === 'object' ? _api.default : null) || {};
+      } catch (e) {
+        return _api.default || {};
+      }
+    },
     getCaptcha: function getCaptcha() {
       var _this = this;
-      getApp().api.getCaptcha().then(function (res) {
+      var api = this.getApi();
+      if (!api || typeof api.getCaptcha !== 'function') return;
+      api.getCaptcha().then(function (res) {
         if (res.captchaEnabled === undefined || res.captchaEnabled) {
           _this.captchaEnabled = true;
           _this.captchaImg = 'data:image/gif;base64,' + (res.img || '');
@@ -191,7 +205,7 @@ var _default = {
         } else {
           _this.captchaEnabled = false;
         }
-      });
+      }).catch(function () {});
     },
     login: function login() {
       var _this2 = this;
@@ -209,8 +223,16 @@ var _default = {
         });
         return;
       }
+      var api = this.getApi();
+      if (!api || typeof api.merchantLogin !== 'function') {
+        uni.showToast({
+          title: '接口未就绪',
+          icon: 'none'
+        });
+        return;
+      }
       this.loading = true;
-      getApp().api.merchantLogin({
+      api.merchantLogin({
         username: this.username,
         password: this.password,
         code: this.code,
@@ -247,9 +269,9 @@ exports.default = _default;
 /***/ }),
 
 /***/ 173:
-/*!******************************************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=style&index=0&id=72fe6344&scoped=true&lang=css& ***!
-  \******************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=style&index=0&id=72fe6344&scoped=true&lang=css& ***!
+  \**************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -263,9 +285,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 174:
-/*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=style&index=0&id=72fe6344&scoped=true&lang=css& ***!
-  \**********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/merchant/login/index.vue?vue&type=style&index=0&id=72fe6344&scoped=true&lang=css& ***!
+  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

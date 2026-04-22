@@ -19,23 +19,25 @@
 }
 .search-form.data-v-71e217db { border-radius: 20rpx;
 }
-.home-four-actions.data-v-71e217db { margin-top: -10rpx; padding: 12rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); position: relative; z-index: 1;
+.home-five-actions.data-v-71e217db { margin-top: -10rpx; padding: 12rpx 20rpx 24rpx; border-radius: 20rpx; margin-left: 20rpx; margin-right: 20rpx; box-shadow: 0 8rpx 28rpx rgba(15,23,42,.06); position: relative; z-index: 1;
 }
 .section-title-bar.data-v-71e217db { padding: 12rpx 0 8rpx; min-height: auto;
 }
-.four-actions-grid.data-v-71e217db { display: flex; flex-wrap: wrap; justify-content: space-between;
+.five-actions-grid.data-v-71e217db { display: flex; flex-wrap: wrap; justify-content: space-between;
 }
-.four-action-item.data-v-71e217db { width: 25%; display: flex; flex-direction: column; align-items: center; padding: 6rpx 0;
+.five-action-item.data-v-71e217db { width: 20%; display: flex; flex-direction: column; align-items: center; padding: 6rpx 0;
 }
-.four-action-icon-wrap.data-v-71e217db { width: 96rpx; height: 96rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; font-size: 44rpx; color: #fff; margin-bottom: 10rpx;
+.five-action-icon-wrap.data-v-71e217db { width: 88rpx; height: 88rpx; border-radius: 24rpx; display: flex; align-items: center; justify-content: center; font-size: 40rpx; color: #fff; margin-bottom: 10rpx;
 }
-.four-action-icon-wrap.orange.data-v-71e217db { background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+.five-action-icon-wrap.orange.data-v-71e217db { background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
 }
-.four-action-icon-wrap.blue.data-v-71e217db { background: linear-gradient(135deg, #5b9cf5 0%, #3b82f6 100%);
+.five-action-icon-wrap.blue.data-v-71e217db { background: linear-gradient(135deg, #5b9cf5 0%, #3b82f6 100%);
 }
-.four-action-icon-wrap.red.data-v-71e217db { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+.five-action-icon-wrap.red.data-v-71e217db { background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
 }
-.four-action-text.data-v-71e217db { font-size: 24rpx; color: #374151;
+.five-action-icon-wrap.purple.data-v-71e217db { background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+}
+.five-action-text.data-v-71e217db { font-size: 22rpx; color: #374151;
 }
 .ad-wrap.data-v-71e217db { position: relative; z-index: 0; min-height: 80rpx;
 }

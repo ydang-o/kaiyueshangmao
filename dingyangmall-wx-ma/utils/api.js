@@ -532,5 +532,39 @@ module.exports = {
   /** 客服配置：供「联系客服」展示电话/微信，后端可读 sys_config 提供 GET /api/public/ma/config/service */
   getServiceConfig: () => {
     return request('/api/public/ma/config/service', 'get', null, false)
+  },
+  /** 积分商城商品分页：使用 goodsType=3 筛选积分商品 */
+  integralGoodsPage: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    // 积分商品通过 goodsType=3 标识
+    p.goodsType = 3
+    return request('/api/ma/goodsspu/page', 'get', p, false)
+  },
+  /** 积分商城商品详情：使用现有商品详情接口 */
+  integralGoodsGet: (id) => {
+    return request('/api/ma/goodsspu/' + id, 'get', null, false)
+  },
+  /** 积分兑换商品：调用后端积分兑换接口 */
+  integralExchange: (data) => {
+    return request('/api/ma/integralflow/exchange', 'post', data, true)
+  },
+  /** 我的积分兑换记录 */
+  integralOrderPage: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    // 积分订单通过 orderType=2 标识
+    p.orderType = 2
+    return request('/api/ma/orderinfo/page', 'get', p, false)
+  },
+  /** 积分兑换订单详情 */
+  integralOrderGet: (id) => {
+    return request('/api/ma/orderinfo/' + id, 'get', null, false)
+  },
+  /** 获取用户积分余额 */
+  getUserPoints: () => {
+    return request('/api/ma/integralflow/points', 'get', null, false)
   }
 }

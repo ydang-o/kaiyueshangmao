@@ -33,6 +33,7 @@
 
 <script>
 import util from '@/utils/util'
+import apiModule from '@/utils/api'
 export default {
   name: 'IntegralPacketPage',
   data() {
@@ -63,16 +64,35 @@ export default {
     if (this.timer) { clearInterval(this.timer); this.timer = null }
   },
   methods: {
+    getApi() {
+      try {
+        const app = typeof getApp === 'function' ? getApp() : null
+        const fromApp = app && app.api && typeof app.api === 'object'
+        return (fromApp ? app.api : null) || (apiModule && typeof apiModule === 'object' ? apiModule : null) || {}
+      } catch (e) {
+        return apiModule || {}
+      }
+    },
     getUserInfo() {
-      getApp().api.memberInfo().then(res => { this.userInfo = res.data || {} })
+      const api = this.getApi()
+      const fn = (api && api.wxUserGet) || (api && api.memberInfo)
+      if (typeof fn !== 'function') return
+      try {
+        fn.call(api).then(res => { this.userInfo = (res && res.data) || res || {} }).catch(() => {})
+      } catch (e) {}
     },
     sendSms() {
       if (this.smsDisabled) return
       if (!this.userInfo.phone) { uni.showToast({ title: '无法获取您的手机号', icon: 'none' }); return }
-      getApp().api.sendSmsCode(this.userInfo.phone).then(() => {
+      const api = this.getApi()
+      if (!api || typeof api.sendSmsCode !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
+      api.sendSmsCode(this.userInfo.phone).then(() => {
         uni.showToast({ title: '验证码已发送', icon: 'none' })
         this.startTimer()
-      })
+      }).catch(() => {})
     },
     startTimer() {
       let time = 60
@@ -94,8 +114,13 @@ export default {
       if (!this.amount || Number(this.amount) <= 0) { uni.showToast({ title: '请输入正确的积分数量', icon: 'none' }); return }
       if (!this.code) { uni.showToast({ title: '请输入验证码', icon: 'none' }); return }
       if (Number(this.amount) > (this.userInfo.points || 0)) { uni.showToast({ title: '积分余额不足', icon: 'none' }); return }
+      const api = this.getApi()
+      if (!api || typeof api.sendPacket !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
       this.loading = true
-      getApp().api.sendPacket({ phone: this.phone, amount: Number(this.amount), code: this.code }).then(res => {
+      api.sendPacket({ phone: this.phone, amount: Number(this.amount), code: this.code }).then(res => {
         this.loading = false
         if (res.code === 0) {
           uni.showModal({ title: '发送成功', content: res.msg || '红包已发送', showCancel: false, success: () => uni.navigateBack() })

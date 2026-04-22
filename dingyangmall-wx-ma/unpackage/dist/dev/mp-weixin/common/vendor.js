@@ -9558,9 +9558,9 @@ internalMixin(Vue);
 
 /***/ }),
 /* 26 */
-/*!*************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages.json ***!
-  \*************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages.json ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9571,9 +9571,9 @@ internalMixin(Vue);
 /* 28 */,
 /* 29 */,
 /* 30 */
-/*!***************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/api.js ***!
-  \***************************************************************************/
+/*!***********************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/api.js ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10157,15 +10157,49 @@ module.exports = {
   /** 客服配置：供「联系客服」展示电话/微信，后端可读 sys_config 提供 GET /api/public/ma/config/service */
   getServiceConfig: function getServiceConfig() {
     return request('/api/public/ma/config/service', 'get', null, false);
+  },
+  /** 积分商城商品分页：使用 goodsType=3 筛选积分商品 */
+  integralGoodsPage: function integralGoodsPage(data) {
+    var p = data && (0, _typeof2.default)(data) === 'object' ? _objectSpread({}, data) : {};
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current;
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size;
+    // 积分商品通过 goodsType=3 标识
+    p.goodsType = 3;
+    return request('/api/ma/goodsspu/page', 'get', p, false);
+  },
+  /** 积分商城商品详情：使用现有商品详情接口 */
+  integralGoodsGet: function integralGoodsGet(id) {
+    return request('/api/ma/goodsspu/' + id, 'get', null, false);
+  },
+  /** 积分兑换商品：调用后端积分兑换接口 */
+  integralExchange: function integralExchange(data) {
+    return request('/api/ma/integralflow/exchange', 'post', data, true);
+  },
+  /** 我的积分兑换记录 */
+  integralOrderPage: function integralOrderPage(data) {
+    var p = data && (0, _typeof2.default)(data) === 'object' ? _objectSpread({}, data) : {};
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current;
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size;
+    // 积分订单通过 orderType=2 标识
+    p.orderType = 2;
+    return request('/api/ma/orderinfo/page', 'get', p, false);
+  },
+  /** 积分兑换订单详情 */
+  integralOrderGet: function integralOrderGet(id) {
+    return request('/api/ma/orderinfo/' + id, 'get', null, false);
+  },
+  /** 获取用户积分余额 */
+  getUserPoints: function getUserPoints() {
+    return request('/api/ma/integralflow/points', 'get', null, false);
   }
 };
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/wx.js */ 1)["default"], __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 2)["default"]))
 
 /***/ }),
 /* 31 */
-/*!****************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/config/env.js ***!
-  \****************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/config/env.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10182,11 +10216,11 @@ exports.default = void 0;
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
  *
- * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath，端口与后端一致（7500）。
+ * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath
  */
 var _default = {
-  // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
-  basePath: 'http://localhost:7500',
+  // 后端接口根地址 - 使用 https://kaiyueshangmao.xyz/ 域名
+  basePath: 'https://kaiyueshangmao.xyz',
   // 接口联调日志开关（建议联调期开启，上线前可关闭）
   apiDebug: true,
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame
@@ -10203,9 +10237,9 @@ exports.default = _default;
 
 /***/ }),
 /* 32 */
-/*!****************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/util.js ***!
-  \****************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/util.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10307,9 +10341,9 @@ module.exports = {
 
 /***/ }),
 /* 33 */
-/*!********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/validate.js ***!
-  \********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/validate.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10727,9 +10761,9 @@ function normalizeComponent (
 
 /***/ }),
 /* 37 */
-/*!********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/imageUrl.js ***!
-  \********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/imageUrl.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10743,7 +10777,7 @@ exports.default = void 0;
 exports.fullImageUrl = fullImageUrl;
 /**
  * 将后端返回的相对路径图片转为小程序可请求的完整 URL，避免 /profile/upload/xxx 请求到错误域名导致 500/404。
- * 规则：以 / 开头且非 // 的路径，拼上 basePath（如 http://localhost:7500）。
+ * 规则：以 / 开头且非 // 的路径，拼上 basePath（如 https://kaiyueshangmao.xyz）。
  */
 var getBasePath = function getBasePath() {
   try {
@@ -10752,7 +10786,8 @@ var getBasePath = function getBasePath() {
       return app.globalData.config.basePath;
     }
   } catch (e) {}
-  return typeof __config !== 'undefined' && __config && __config.basePath ? __config.basePath : 'http://localhost:7500';
+  // 默认使用服务器地址，避免 localhost 在微信小程序中无法访问
+  return typeof __config !== 'undefined' && __config && __config.basePath ? __config.basePath : 'https://kaiyueshangmao.xyz';
 };
 function fullImageUrl(url) {
   if (url == null || typeof url !== 'string' || url === '') return '';
@@ -10849,9 +10884,9 @@ exports.default = _default;
 /* 114 */,
 /* 115 */,
 /* 116 */
-/*!**********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/numberUtil.js ***!
-  \**********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/numberUtil.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

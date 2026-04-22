@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import apiModule from '@/utils/api'
 export default {
   name: 'MerchantLoginPage',
   data() {
@@ -39,8 +40,19 @@ export default {
     this.getCaptcha()
   },
   methods: {
+    getApi() {
+      try {
+        const app = typeof getApp === 'function' ? getApp() : null
+        const fromApp = app && app.api && typeof app.api === 'object'
+        return (fromApp ? app.api : null) || (apiModule && typeof apiModule === 'object' ? apiModule : null) || {}
+      } catch (e) {
+        return apiModule || {}
+      }
+    },
     getCaptcha() {
-      getApp().api.getCaptcha().then(res => {
+      const api = this.getApi()
+      if (!api || typeof api.getCaptcha !== 'function') return
+      api.getCaptcha().then(res => {
         if (res.captchaEnabled === undefined || res.captchaEnabled) {
           this.captchaEnabled = true
           this.captchaImg = 'data:image/gif;base64,' + (res.img || '')
@@ -48,7 +60,7 @@ export default {
         } else {
           this.captchaEnabled = false
         }
-      })
+      }).catch(() => {})
     },
     login() {
       if (!this.username || !this.password) {
@@ -59,8 +71,13 @@ export default {
         uni.showToast({ title: '请输入验证码', icon: 'none' })
         return
       }
+      const api = this.getApi()
+      if (!api || typeof api.merchantLogin !== 'function') {
+        uni.showToast({ title: '接口未就绪', icon: 'none' })
+        return
+      }
       this.loading = true
-      getApp().api.merchantLogin({
+      api.merchantLogin({
         username: this.username,
         password: this.password,
         code: this.code,

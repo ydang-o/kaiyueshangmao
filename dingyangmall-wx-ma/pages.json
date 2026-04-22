@@ -19,6 +19,8 @@
     { "path": "pages/merchant/login/index", "style": { "navigationBarTitleText": "商家登录" } },
     { "path": "pages/lottery/index/index", "style": { "navigationBarTitleText": "积分抽奖" } },
     { "path": "pages/integral/packet/index", "style": { "navigationBarTitleText": "积分红包" } },
+    { "path": "pages/integral/shop/index", "style": { "navigationBarTitleText": "积分商城", "enablePullDownRefresh": true } },
+    { "path": "pages/integral/shop/detail/index", "style": { "navigationBarTitleText": "商品详情" } },
     { "path": "pages/debug/api-test/index", "style": { "navigationBarTitleText": "接口调试" } }
   ],
   "globalStyle": {

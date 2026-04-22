@@ -19,6 +19,8 @@
     "pages/merchant/login/index",
     "pages/lottery/index/index",
     "pages/integral/packet/index",
+    "pages/integral/shop/index",
+    "pages/integral/shop/detail/index",
     "pages/debug/api-test/index"
   ],
   "subPackages": [],

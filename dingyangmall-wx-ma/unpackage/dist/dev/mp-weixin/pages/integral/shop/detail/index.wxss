@@ -1,0 +1,122 @@
+
+.goods-swiper.data-v-053d16ba {
+  position: relative;
+}
+.swiper-image.data-v-053d16ba {
+  width: 100%;
+  height: 600rpx;
+}
+.page-index.data-v-053d16ba {
+  position: absolute;
+  bottom: 20rpx;
+  right: 20rpx;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+}
+.goods-info.data-v-053d16ba {
+  border-bottom: 1rpx solid #f0f0f0;
+}
+.integral-price.data-v-053d16ba {
+  display: flex;
+  align-items: baseline;
+}
+.integral-num.data-v-053d16ba {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #ff6b6b;
+}
+.integral-unit.data-v-053d16ba {
+  font-size: 28rpx;
+  color: #ff6b6b;
+  margin-left: 8rpx;
+}
+.goods-stock.data-v-053d16ba {
+  font-size: 26rpx;
+}
+.goods-detail.data-v-053d16ba, .exchange-notice.data-v-053d16ba {
+  padding-bottom: 20rpx;
+}
+.notice-item.data-v-053d16ba {
+  font-size: 26rpx;
+  line-height: 1.6;
+}
+.cu-bar.foot.data-v-053d16ba {
+  padding: 0 30rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.integral-info .integral-num.data-v-053d16ba {
+  font-size: 32rpx;
+}
+.exchange-btn.data-v-053d16ba {
+  padding: 0 60rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 30rpx;
+}
+.exchange-btn[disabled].data-v-053d16ba {
+  background: #ccc;
+  color: #fff;
+}
+.exchange-info.data-v-053d16ba {
+  font-size: 28rpx;
+  color: #666;
+}
+.exchange-info .integral-num.data-v-053d16ba {
+  font-size: 32rpx;
+}
+.address-section.data-v-053d16ba {
+  text-align: left;
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 20rpx;
+}
+.section-title.data-v-053d16ba {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+.address-card.data-v-053d16ba {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f8f8;
+  padding: 20rpx;
+  border-radius: 8rpx;
+}
+.user-info.data-v-053d16ba {
+  margin-bottom: 10rpx;
+}
+.user-info .name.data-v-053d16ba {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-right: 20rpx;
+}
+.user-info .phone.data-v-053d16ba {
+  font-size: 26rpx;
+  color: #666;
+}
+.address-text.data-v-053d16ba {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+.no-address.data-v-053d16ba {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f8f8;
+  padding: 30rpx;
+  border-radius: 8rpx;
+  color: #666;
+  font-size: 28rpx;
+}
+.no-address text.data-v-053d16ba:first-child {
+  margin-right: 10rpx;
+  font-size: 32rpx;
+}
+

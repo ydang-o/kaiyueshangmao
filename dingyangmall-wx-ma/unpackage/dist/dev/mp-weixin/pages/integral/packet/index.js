@@ -1,9 +1,9 @@
 (global["webpackJsonp"] = global["webpackJsonp"] || []).push([["pages/integral/packet/index"],{
 
 /***/ 183:
-/*!*******************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fintegral%2Fpacket%2Findex"} ***!
-  \*******************************************************************************************************************/
+/*!***************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/main.js?{"page":"pages%2Fintegral%2Fpacket%2Findex"} ***!
+  \***************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -22,9 +22,9 @@ createPage(_index.default);
 /***/ }),
 
 /***/ 184:
-/*!**********************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue ***!
-  \**********************************************************************************************/
+/*!******************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue ***!
+  \******************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -63,9 +63,9 @@ component.options.__file = "pages/integral/packet/index.vue"
 /***/ }),
 
 /***/ 185:
-/*!*****************************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=template&id=fa1b4336&scoped=true& ***!
-  \*****************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=template&id=fa1b4336&scoped=true& ***!
+  \*************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -85,9 +85,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 186:
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=template&id=fa1b4336&scoped=true& ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--17-0!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/template.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-uni-app-loader/page-meta.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=template&id=fa1b4336&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns, recyclableRender, components */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -112,9 +112,9 @@ render._withStripped = true
 /***/ }),
 
 /***/ 187:
-/*!***********************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=script&lang=js& ***!
-  \***********************************************************************************************************************/
+/*!*******************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -128,9 +128,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 188:
-/*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=script&lang=js& ***!
-  \******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--13-1!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/script.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -142,7 +142,9 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+var _typeof2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/typeof */ 13));
 var _util = _interopRequireDefault(__webpack_require__(/*! @/utils/util */ 32));
+var _api = _interopRequireDefault(__webpack_require__(/*! @/utils/api */ 30));
 //
 //
 //
@@ -215,11 +217,25 @@ var _default = {
     }
   },
   methods: {
+    getApi: function getApi() {
+      try {
+        var app = typeof getApp === 'function' ? getApp() : null;
+        var fromApp = app && app.api && (0, _typeof2.default)(app.api) === 'object';
+        return (fromApp ? app.api : null) || (_api.default && (0, _typeof2.default)(_api.default) === 'object' ? _api.default : null) || {};
+      } catch (e) {
+        return _api.default || {};
+      }
+    },
     getUserInfo: function getUserInfo() {
       var _this2 = this;
-      getApp().api.memberInfo().then(function (res) {
-        _this2.userInfo = res.data || {};
-      });
+      var api = this.getApi();
+      var fn = api && api.wxUserGet || api && api.memberInfo;
+      if (typeof fn !== 'function') return;
+      try {
+        fn.call(api).then(function (res) {
+          _this2.userInfo = res && res.data || res || {};
+        }).catch(function () {});
+      } catch (e) {}
     },
     sendSms: function sendSms() {
       var _this3 = this;
@@ -231,13 +247,21 @@ var _default = {
         });
         return;
       }
-      getApp().api.sendSmsCode(this.userInfo.phone).then(function () {
+      var api = this.getApi();
+      if (!api || typeof api.sendSmsCode !== 'function') {
+        uni.showToast({
+          title: '接口未就绪',
+          icon: 'none'
+        });
+        return;
+      }
+      api.sendSmsCode(this.userInfo.phone).then(function () {
         uni.showToast({
           title: '验证码已发送',
           icon: 'none'
         });
         _this3.startTimer();
-      });
+      }).catch(function () {});
     },
     startTimer: function startTimer() {
       var _this4 = this;
@@ -298,8 +322,16 @@ var _default = {
         });
         return;
       }
+      var api = this.getApi();
+      if (!api || typeof api.sendPacket !== 'function') {
+        uni.showToast({
+          title: '接口未就绪',
+          icon: 'none'
+        });
+        return;
+      }
       this.loading = true;
-      getApp().api.sendPacket({
+      api.sendPacket({
         phone: this.phone,
         amount: Number(this.amount),
         code: this.code
@@ -330,9 +362,9 @@ exports.default = _default;
 /***/ }),
 
 /***/ 189:
-/*!*******************************************************************************************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=style&index=0&id=fa1b4336&scoped=true&lang=css& ***!
-  \*******************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=style&index=0&id=fa1b4336&scoped=true&lang=css& ***!
+  \***************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -346,9 +378,9 @@ __webpack_require__.r(__webpack_exports__);
 /***/ }),
 
 /***/ 190:
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=style&index=0&id=fa1b4336&scoped=true&lang=css& ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/mini-css-extract-plugin/dist/loader.js??ref--6-oneOf-1-0!./node_modules/css-loader/dist/cjs.js??ref--6-oneOf-1-1!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/webpack-preprocess-loader??ref--6-oneOf-1-2!./node_modules/postcss-loader/src??ref--6-oneOf-1-3!./node_modules/@dcloudio/vue-cli-plugin-uni/packages/vue-loader/lib??vue-loader-options!./node_modules/@dcloudio/webpack-uni-mp-loader/lib/style.js!D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages/integral/packet/index.vue?vue&type=style&index=0&id=fa1b4336&scoped=true&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
