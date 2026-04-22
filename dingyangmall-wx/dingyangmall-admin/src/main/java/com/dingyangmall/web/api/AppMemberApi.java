@@ -280,4 +280,71 @@ public class AppMemberApi {
 
         return AjaxResult.success("红包发送成功");
     }
+
+    /**
+     * 重置密码（通过短信验证码）
+     */
+    @PostMapping("/reset-password")
+    public AjaxResult resetPassword(@RequestBody AppRegisterBody body) {
+        String phone = body.getPhone();
+        String code = body.getCode();
+        String password = body.getPassword();
+        
+        if (StringUtils.isAnyBlank(phone, code, password)) {
+            return AjaxResult.error("参数不能为空");
+        }
+        
+        // 校验验证码
+        smsService.validateSmsCode(phone, code);
+        
+        // 查找用户
+        UmsMember member = umsMemberService.getOne(Wrappers.<UmsMember>lambdaQuery().eq(UmsMember::getPhone, phone));
+        if (member == null) {
+            return AjaxResult.error("用户不存在");
+        }
+        
+        // 更新密码
+        member.setPassword(bCryptPasswordEncoder.encode(password));
+        member.setUpdateTime(LocalDateTime.now());
+        umsMemberService.updateById(member);
+        
+        return AjaxResult.success("密码重置成功");
+    }
+
+    /**
+     * 修改密码（需要旧密码）
+     */
+    @PutMapping("/update-pwd")
+    public AjaxResult updatePassword(@RequestBody Map<String, String> body) {
+        String oldPassword = body.get("oldPassword");
+        String newPassword = body.get("newPassword");
+        
+        if (StringUtils.isAnyBlank(oldPassword, newPassword)) {
+            return AjaxResult.error("参数不能为空");
+        }
+        
+        // 获取当前用户
+        String memberIdStr = MemberUtils.getMemberId();
+        if (StringUtils.isEmpty(memberIdStr)) {
+            return AjaxResult.error("未登录");
+        }
+        
+        Long memberId = Long.parseLong(memberIdStr);
+        UmsMember member = umsMemberService.getById(memberId);
+        if (member == null) {
+            return AjaxResult.error("用户不存在");
+        }
+        
+        // 校验旧密码
+        if (!bCryptPasswordEncoder.matches(oldPassword, member.getPassword())) {
+            return AjaxResult.error("旧密码错误");
+        }
+        
+        // 更新密码
+        member.setPassword(bCryptPasswordEncoder.encode(newPassword));
+        member.setUpdateTime(LocalDateTime.now());
+        umsMemberService.updateById(member);
+        
+        return AjaxResult.success("密码修改成功");
+    }
 }

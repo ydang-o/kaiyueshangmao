@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="register">
     <el-form
       ref="registerRef"
@@ -188,7 +188,7 @@ getCode();
   justify-content: center;
   align-items: center;
   height: 100%;
-  background-image: url("../assets/images/login-background.jpg");
+  background-image: url("/logo.jpg");
   background-size: cover;
 }
 .title {

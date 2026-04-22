@@ -46,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  */
 @RestController
-@RequestMapping(value = { "/weixin/api/ma/wxuser", "/api/ma/wxuser" })
+@RequestMapping(value = { "/weixin/api/ma/wxuser", "/api/ma/wxuser", "/wxuser" })
 public class WxUserApi {
 
     /** 仅用于文档：登录响应字段说明 */

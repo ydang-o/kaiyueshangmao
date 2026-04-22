@@ -4,11 +4,11 @@
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
  *
- * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath，端口与后端一致（7500）。
+ * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath
  */
 export default {
-  // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
-  basePath: 'http://localhost:7500',
+  // 后端接口根地址 - 使用 https://kaiyueshangmao.xyz/ 域名
+  basePath: 'https://kaiyueshangmao.xyz',
   // 接口联调日志开关（建议联调期开启，上线前可关闭）
   apiDebug: true,
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame

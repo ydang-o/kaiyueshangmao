@@ -463,7 +463,7 @@ div {
   left: 0px;
   width: 300px;
   height: 64px;
-  background: transparent url(assets/menu_head.png) no-repeat 0 0;
+  background: transparent url(/logo.jpg) no-repeat 0 0;
   background-position: 0 0;
   background-size: 100%;
 }
@@ -477,7 +477,7 @@ div {
   left: 0px;
 }
 .weixin-menu {
-  background: transparent url(assets/menu_foot.png) no-repeat 0 0;
+  background: transparent url(/logo.jpg) no-repeat 0 0;
   padding-left: 43px;
   font-size: 12px;
 }
@@ -493,7 +493,7 @@ div {
     display: inline-block;
     width: 350px;
     height: 715px;
-    background: url("assets/iphone_backImg.png") no-repeat;
+    background: url("/logo.jpg") no-repeat;
     background-size: 100% auto;
     padding: 518px 25px 88px;
     position: relative;

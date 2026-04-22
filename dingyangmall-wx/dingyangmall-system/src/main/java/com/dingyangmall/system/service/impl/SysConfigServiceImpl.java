@@ -37,7 +37,12 @@ public class SysConfigServiceImpl implements ISysConfigService
     @PostConstruct
     public void init()
     {
-        loadingConfigCache();
+        try {
+            loadingConfigCache();
+        } catch (Exception e) {
+            // Redis 未启动时，跳过缓存加载
+            System.err.println("[SysConfig] Redis 连接失败，跳过配置缓存加载: " + e.getMessage());
+        }
     }
 
     /**
@@ -64,17 +69,25 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public String selectConfigByKey(String configKey)
     {
-        String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));
-        if (StringUtils.isNotEmpty(configValue))
-        {
-            return configValue;
+        try {
+            String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));
+            if (StringUtils.isNotEmpty(configValue))
+            {
+                return configValue;
+            }
+        } catch (Exception e) {
+            // Redis 未启动时，跳过缓存查询
         }
         SysConfig config = new SysConfig();
         config.setConfigKey(configKey);
         SysConfig retConfig = configMapper.selectConfig(config);
         if (StringUtils.isNotNull(retConfig))
         {
-            redisCache.setCacheObject(getCacheKey(configKey), retConfig.getConfigValue());
+            try {
+                redisCache.setCacheObject(getCacheKey(configKey), retConfig.getConfigValue());
+            } catch (Exception e) {
+                // Redis 未启动时，跳过缓存设置
+            }
             return retConfig.getConfigValue();
         }
         return StringUtils.EMPTY;

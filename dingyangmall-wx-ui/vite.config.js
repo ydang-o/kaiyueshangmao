@@ -3,7 +3,7 @@ import path from "path";
 import createVitePlugins from "./vite/plugins";
 
 // 连接服务器地址
-const url = "http://localhost:7500";
+const url = "https://kaiyueshangmao.xyz";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
