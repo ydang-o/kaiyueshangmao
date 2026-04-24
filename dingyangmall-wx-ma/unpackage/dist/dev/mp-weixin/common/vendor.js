@@ -9558,9 +9558,9 @@ internalMixin(Vue);
 
 /***/ }),
 /* 26 */
-/*!*************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/pages.json ***!
-  \*************************************************************************/
+/*!*********************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/pages.json ***!
+  \*********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -9571,9 +9571,9 @@ internalMixin(Vue);
 /* 28 */,
 /* 29 */,
 /* 30 */
-/*!***************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/api.js ***!
-  \***************************************************************************/
+/*!***********************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/api.js ***!
+  \***********************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10163,9 +10163,9 @@ module.exports = {
 
 /***/ }),
 /* 31 */
-/*!****************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/config/env.js ***!
-  \****************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/config/env.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10182,11 +10182,11 @@ exports.default = void 0;
  * 注意：
  * 本软件为www.dingyangmall.com开发研制，项目使用请保留此说明
  *
- * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath，端口与后端一致（7500）。
+ * 全项目唯一后端地址：小程序、所有 request 均通过 utils/api.js 使用本 basePath
  */
 var _default = {
-  // 后端接口根地址（与后端 http-nio-7500 一致）。若有 context-path 请追加，如: 'http://localhost:7500/prod-api'
-  basePath: 'http://localhost:7500',
+  // 后端接口根地址 - 使用 https://kaiyueshangmao.xyz/ 域名
+  basePath: 'https://kaiyueshangmao.xyz',
   // 接口联调日志开关（建议联调期开启，上线前可关闭）
   apiDebug: true,
   //广告配置，小程序流量主：https://mp.weixin.qq.com/wxopen/frame
@@ -10203,9 +10203,9 @@ exports.default = _default;
 
 /***/ }),
 /* 32 */
-/*!****************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/util.js ***!
-  \****************************************************************************/
+/*!************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/util.js ***!
+  \************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10307,9 +10307,9 @@ module.exports = {
 
 /***/ }),
 /* 33 */
-/*!********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/validate.js ***!
-  \********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/validate.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10727,9 +10727,9 @@ function normalizeComponent (
 
 /***/ }),
 /* 37 */
-/*!********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/imageUrl.js ***!
-  \********************************************************************************/
+/*!****************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/imageUrl.js ***!
+  \****************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -10849,9 +10849,9 @@ exports.default = _default;
 /* 114 */,
 /* 115 */,
 /* 116 */
-/*!**********************************************************************************!*\
-  !*** D:/work_boss/dingyangMall/JooLun-wx/dingyangmall-wx-ma/utils/numberUtil.js ***!
-  \**********************************************************************************/
+/*!******************************************************************************************!*\
+  !*** D:/work_boss/kaiyueshangmao/dingyangmall-wx/dingyangmall-wx-ma/utils/numberUtil.js ***!
+  \******************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
