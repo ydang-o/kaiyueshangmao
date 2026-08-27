@@ -10,7 +10,8 @@ export const staticSidebarRoutes = [
     meta: { title: '系统管理', icon: 'system' },
     children: [
       { path: 'notice', component: 'system/notice/index', meta: { title: '通知公告', icon: 'message' } },
-      { path: 'config', component: 'system/config/index', meta: { title: '参数设置', icon: 'edit' } }
+      { path: 'config', component: 'system/config/index', meta: { title: '参数设置', icon: 'edit' } },
+      { path: 'dict-data', component: 'system/dict/data/index', meta: { title: '字典数据', icon: 'dict' } }
     ]
   },
   {
@@ -20,7 +21,9 @@ export const staticSidebarRoutes = [
     meta: { title: '系统监控', icon: 'monitor' },
     children: [
       { path: 'operlog', component: 'monitor/operlog/index', meta: { title: '操作日志', icon: 'form' } },
-      { path: 'logininfor', component: 'monitor/logininfor/index', meta: { title: '登录日志', icon: 'logininfor' } }
+      { path: 'logininfor', component: 'monitor/logininfor/index', meta: { title: '登录日志', icon: 'logininfor' } },
+      { path: 'online', component: 'monitor/online/index', meta: { title: '在线用户', icon: 'online' } },
+      { path: 'server', component: 'monitor/server/index', meta: { title: '服务监控', icon: 'server' } }
     ]
   },
   {
@@ -44,7 +47,8 @@ export const staticSidebarRoutes = [
       { path: 'lottery', component: 'mall/lottery/index', meta: { title: '抽奖活动管理', icon: 'star' } },
       { path: 'coupon', component: 'mall/coupon/index', meta: { title: '商品券核销', icon: 'validCode' } },
       { path: 'integralRule', component: 'mall/integralRule/index', meta: { title: '积分规则配置', icon: 'money' } },
-      { path: 'integralflow', component: 'mall/integralflow/index', meta: { title: '积分流水', icon: 'list' } }
+      { path: 'integralflow', component: 'mall/integralflow/index', meta: { title: '积分流水', icon: 'list' } },
+      { path: 'referral', component: 'mall/referral/index', meta: { title: '推荐关系', icon: 'peoples' } }
     ]
   },
   {
@@ -56,7 +60,8 @@ export const staticSidebarRoutes = [
       { path: 'distributorL1', component: 'member/distributorL1/index', meta: { title: '一级经销商', icon: 'user' } },
       { path: 'distributorL2', component: 'member/distributorL2/index', meta: { title: '二级经销商', icon: 'user' } },
       { path: 'member', component: 'mall/member/index', meta: { title: '会员', icon: 'peoples' } },
-      { path: 'normalUser', component: 'member/normalUser/index', meta: { title: '普通用户', icon: 'user' } }
+      { path: 'normalUser', component: 'member/normalUser/index', meta: { title: '普通用户', icon: 'user' } },
+      { path: 'users', component: 'mall/distributor/index', meta: { title: '系统用户', icon: 'user' } }
     ]
   }
 ]

@@ -68,6 +68,16 @@
       </el-col>
     </el-row>
 
+    <!-- 最新接口统计：与后端 dashboard statistics/* 接口对应 -->
+    <el-row :gutter="20" class="mb-20 stats-extra">
+      <el-col v-for="item in extraCards" :key="item.key" :span="6" :xs="12">
+        <el-card shadow="hover" class="extra-card">
+          <div class="extra-label">{{ item.label }}</div>
+          <div class="extra-value">{{ extraStats[item.key] }}</div>
+        </el-card>
+      </el-col>
+    </el-row>
+
     <!-- 业务流程与快捷入口 -->
     <el-row :gutter="20">
       <el-col :span="12">
@@ -104,7 +114,7 @@
 <script setup name="ViewIndex">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { getDashboardData } from '@/api/system/dashboard'
+import { getDashboardData, getStatisticsCashSales, getStatisticsGoodsSales, getStatisticsGoodsStock, getStatisticsIntegralExchange, getStatisticsIntegralGrant, getStatisticsMemberNew, getStatisticsMemberReferralDetail, getStatisticsMemberReferralSummary } from '@/api/system/dashboard'
 
 const router = useRouter()
 const statistics = ref({
@@ -113,6 +123,17 @@ const statistics = ref({
   pendingOrders: 0,
   todayWriteOffs: 0
 })
+const extraStats = ref({ cashSales: 0, goodsSales: 0, goodsStock: 0, integralExchange: 0, integralGrant: 0, memberNew: 0, referralDetail: 0, referralSummary: 0 })
+const extraCards = [
+  { key: 'cashSales', label: '累计销售额' },
+  { key: 'goodsSales', label: '商品销售数量' },
+  { key: 'goodsStock', label: '商品库存数量' },
+  { key: 'integralExchange', label: '积分兑换量' },
+  { key: 'integralGrant', label: '积分发放量' },
+  { key: 'memberNew', label: '新增会员数' },
+  { key: 'referralDetail', label: '推荐明细数' },
+  { key: 'referralSummary', label: '推荐人数量' }
+]
 
 function handleNav(path) {
   router.push(path)
@@ -132,8 +153,21 @@ function initData() {
   }).catch(() => {})
 }
 
+function initExtraStats() {
+  const calls = [
+    ['cashSales', getStatisticsCashSales()], ['goodsSales', getStatisticsGoodsSales()], ['goodsStock', getStatisticsGoodsStock()],
+    ['integralExchange', getStatisticsIntegralExchange()], ['integralGrant', getStatisticsIntegralGrant()], ['memberNew', getStatisticsMemberNew()],
+    ['referralDetail', getStatisticsMemberReferralDetail()], ['referralSummary', getStatisticsMemberReferralSummary()]
+  ]
+  calls.forEach(([key, promise]) => promise.then(response => {
+    const d = response && response.data != null ? response.data : response || {}
+    extraStats.value[key] = d.totalSales ?? d.totalQuantity ?? d.totalStock ?? d.totalPoints ?? d.count ?? d.referralDetails?.length ?? d.referralSummary?.length ?? (typeof d === 'object' ? Object.keys(d).length : 0)
+  }).catch(() => {}))
+}
+
 onMounted(() => {
   initData()
+  initExtraStats()
 })
 </script>
 
@@ -211,4 +245,7 @@ onMounted(() => {
 .box-card {
   height: 100%;
 }
+.extra-card { min-height: 105px; }
+.extra-label { color: #909399; font-size: 13px; }
+.extra-value { color: #303133; font-size: 24px; font-weight: 600; margin-top: 12px; }
 </style>
