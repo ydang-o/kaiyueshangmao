@@ -40,3 +40,37 @@ export function getStatisticsUser() {
     method: 'get'
   })
 }
+
+
+// 最新后端补充的经营统计
+export function getStatisticsCashSales(params) {
+  return request({ url: '/system/dashboard/statistics/cash-sales', method: 'get', params })
+}
+
+export function getStatisticsGoodsSales(params) {
+  return request({ url: '/system/dashboard/statistics/goods-sales', method: 'get', params })
+}
+
+export function getStatisticsGoodsStock(params) {
+  return request({ url: '/system/dashboard/statistics/goods-stock', method: 'get', params })
+}
+
+export function getStatisticsIntegralExchange(params) {
+  return request({ url: '/system/dashboard/statistics/integral-exchange', method: 'get', params })
+}
+
+export function getStatisticsIntegralGrant(params) {
+  return request({ url: '/system/dashboard/statistics/integral-grant', method: 'get', params })
+}
+
+export function getStatisticsMemberNew(params) {
+  return request({ url: '/system/dashboard/statistics/member-new', method: 'get', params })
+}
+
+export function getStatisticsMemberReferralDetail(params) {
+  return request({ url: '/system/dashboard/statistics/member-referral-detail', method: 'get', params })
+}
+
+export function getStatisticsMemberReferralSummary(params) {
+  return request({ url: '/system/dashboard/statistics/member-referral-summary', method: 'get', params })
+}

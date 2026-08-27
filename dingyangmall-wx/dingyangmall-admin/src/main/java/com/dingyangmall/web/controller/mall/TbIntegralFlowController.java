@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 
 /**
  * 积分流水（管理端）
@@ -50,6 +51,19 @@ public class TbIntegralFlowController extends BaseController {
                 .orderByDesc(TbIntegralFlow::getOperTime);
         com.baomidou.mybatisplus.core.metadata.IPage<TbIntegralFlow> result = integralFlowService.page(page, wrapper);
         return AjaxResult.success(result);
+    }
+
+    /** 管理端/经销商手动发放积分。 */
+    @PostMapping("/grant")
+    @PreAuthorize("@ss.hasPermi('mall:integralflow:grant')")
+    public AjaxResult grant(@RequestBody Map<String, Object> body) {
+        if (body == null || body.get("userId") == null) return AjaxResult.error("用户不能为空");
+        Number points = body.get("points") instanceof Number ? (Number) body.get("points") : null;
+        if (points == null || points.intValue() <= 0) return AjaxResult.error("积分必须大于0");
+        Long userId = ((Number) body.get("userId")).longValue();
+        String remark = body.get("remark") == null ? "平台发放积分" : String.valueOf(body.get("remark"));
+        integralFlowService.addPoints(userId, points.intValue(), 2, remark);
+        return AjaxResult.success("发放成功");
     }
 
     private static LocalDateTime parseTime(String s, boolean startOfDay) {

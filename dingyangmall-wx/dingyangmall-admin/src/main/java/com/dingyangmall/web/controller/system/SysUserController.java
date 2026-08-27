@@ -5,6 +5,7 @@ import com.dingyangmall.common.core.domain.AjaxResult;
 import com.dingyangmall.common.core.domain.entity.SysUser;
 import com.dingyangmall.common.core.page.TableDataInfo;
 import com.dingyangmall.common.constant.HttpStatus;
+import com.dingyangmall.framework.web.service.SmsService;
 import com.dingyangmall.system.service.ISysUserService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class SysUserController extends BaseController {
 
     @Autowired
     private ISysUserService userService;
+
+    @Autowired(required = false)
+    private SmsService smsService;
 
     /**
      * 用户列表：一级/二级经销商等，支持按 dealerLevel、parentDistributorId 筛选；
@@ -63,6 +67,36 @@ public class SysUserController extends BaseController {
         dataInfo.setRows(rows);
         dataInfo.setTotal(new PageInfo(list).getTotal());
         return dataInfo;
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:user:add')")
+    @PostMapping
+    public AjaxResult add(@RequestBody SysUser user) {
+        if (user == null || !userService.checkUserNameUnique(user)) return AjaxResult.error("新增用户失败，登录账号已存在");
+        if (user.getDealerLevel() == null) user.setDealerLevel(0);
+        return toAjax(userService.insertUser(user));
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:user:edit')")
+    @PutMapping
+    public AjaxResult edit(@RequestBody SysUser user) {
+        if (user == null || user.getUserId() == null) return AjaxResult.error("用户 ID 不能为空");
+        return toAjax(userService.updateUser(user));
+    }
+
+    @PreAuthorize("@ss.hasPermi('system:user:remove')")
+    @DeleteMapping("/{userId}")
+    public AjaxResult remove(@PathVariable Long userId) {
+        if (userId == null || SysUser.isAdmin(userId)) return AjaxResult.error("不允许删除管理员账号");
+        return toAjax(userService.deleteUserById(userId));
+    }
+
+    @GetMapping("/send-sms-code")
+    public AjaxResult sendSmsCode(@RequestParam String phone) {
+        if (phone == null || !phone.matches("1[3-9]\\d{9}")) return AjaxResult.error("手机号格式不正确");
+        if (smsService == null) return AjaxResult.error("短信服务未配置");
+        smsService.sendSmsCode(phone);
+        return AjaxResult.success("验证码已发送");
     }
 
     /**

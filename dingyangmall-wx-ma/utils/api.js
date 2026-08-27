@@ -512,6 +512,45 @@ module.exports = {
   lotteryList: () => {
     return request('/api/ma/lottery/list', 'get', null, false)
   },
+  dynamicMemberCode: () => {
+    return request('/app/dynamic-code/member', 'get', null, false)
+  },
+  dynamicCouponCode: (couponId) => {
+    return request('/app/dynamic-code/coupon/' + couponId, 'get', null, false)
+  },
+  dynamicCoupons: () => {
+    return request('/app/dynamic-code/coupons', 'get', null, false)
+  },
+  dealerIdentify: (memberCode) => {
+    return request('/api/ma/dealer/identify', 'get', { memberCode }, false)
+  },
+  dealerVerifyCode: (memberCode) => {
+    return request('/api/ma/dealer/verify-code', 'get', { memberCode }, false)
+  },
+  dealerGrantPoints: (data) => {
+    return request('/api/ma/dealer/grant-points', 'post', data, true)
+  },
+  dealerDeductPoints: (data) => {
+    return request('/api/ma/dealer/deduct-points', 'post', data, true)
+  },
+  dealerCoupons: (memberCode) => {
+    return request('/api/ma/dealer/coupons', 'get', { memberCode }, false)
+  },
+  dealerVerifyCoupon: (data) => {
+    return request('/api/ma/dealer/verify-coupon', 'post', data, true)
+  },
+  referralGift: (data) => {
+    return request('/api/mall/referral-code/gift', 'post', data, true)
+  },
+  referralMembers: (data) => {
+    return request('/api/mall/referral-code/members', 'get', data, false)
+  },
+  referralRecords: (data) => {
+    return request('/api/mall/referral-code/records', 'get', data, false)
+  },
+  noticeType: (noticeType) => {
+    return request('/api/public/ma/notice/type/' + noticeType, 'get', null, false)
+  },
   /** 订单分页：兼容 current/size 与 pageNum/pageSize，README 路径 /weixin/api/ma/orderinfo/page */
   orderPage: (data) => {
     const p = data && typeof data === 'object' ? { ...data } : {}

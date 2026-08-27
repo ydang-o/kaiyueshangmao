@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+
 /**
  * C端抽奖接口
  * 小程序 token 中 memberId 为 openid，需解析为 ums_member.id 供抽奖/积分等使用
@@ -67,6 +69,16 @@ public class AppLotteryApi {
             return AjaxResult.error("当前没有开启的抽奖活动");
         }
         return AjaxResult.success(config);
+    }
+
+    /** 最新移动端活动列表接口；当前业务只有一个启用活动。 */
+    @GetMapping("/list")
+    public AjaxResult getList() {
+        TbLotteryConfig config = lotteryConfigService.getActiveConfig();
+        if (config == null || "0".equals(config.getStatus())) {
+            return AjaxResult.success(Collections.emptyList());
+        }
+        return AjaxResult.success(Collections.singletonList(config));
     }
 
     /**

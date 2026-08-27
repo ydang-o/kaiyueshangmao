@@ -5,6 +5,7 @@ import com.dingyangmall.system.domain.SysNotice;
 import com.dingyangmall.system.service.ISysNoticeService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,4 +29,13 @@ public class PublicNoticeApi {
         List<SysNotice> list = noticeService.selectNoticeList(query);
         return AjaxResult.success(list);
     }
+    @GetMapping("/type/{noticeType}")
+    public AjaxResult getByType(@PathVariable String noticeType) {
+        SysNotice query = new SysNotice();
+        query.setStatus("0");
+        query.setNoticeType(noticeType);
+        List<SysNotice> list = noticeService.selectNoticeList(query);
+        return AjaxResult.success(list.isEmpty() ? null : list.get(0));
+    }
+
 }

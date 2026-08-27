@@ -163,6 +163,49 @@ public class AppMemberApi {
         return ajax;
     }
 
+    /** 手机号验证码登录。验证码校验后签发与密码登录相同的长期 token。 */
+    @PostMapping("/login-by-sms")
+    public AjaxResult loginBySms(@RequestBody Map<String, String> body) {
+        String phone = body == null ? null : body.get("phone");
+        String code = body == null ? null : body.get("code");
+        if (StringUtils.isAnyBlank(phone, code)) return AjaxResult.error("手机号和验证码不能为空");
+        if (!phone.matches("1[3-9]\\d{9}")) return AjaxResult.error("手机号格式不正确");
+        smsService.validateSmsCode(phone, code);
+        UmsMember member = umsMemberService.getByPhone(phone);
+        if (member == null) return AjaxResult.error("该手机号未注册，请先注册");
+        LoginUser loginUser = new LoginUser();
+        loginUser.setUserId(member.getId());
+        SysUser user = new SysUser();
+        user.setUserId(member.getId()); user.setUserName(phone); user.setNickName(member.getNickname()); user.setPassword(member.getPassword());
+        loginUser.setUser(user);
+        String token = tokenService.createToken(loginUser);
+        member.setPassword(null);
+        AjaxResult result = AjaxResult.success(member); result.put("token", token); result.put("expireDays", 180);
+        return result;
+    }
+
+    /** 手机号验证码注册，邀请码由注册积分规则处理。 */
+    @PostMapping("/register-by-sms")
+    public AjaxResult registerBySms(@RequestBody Map<String, String> body) {
+        String phone = body == null ? null : body.get("phone");
+        String code = body == null ? null : body.get("code");
+        String inviteCode = body == null ? null : body.get("inviteCode");
+        if (StringUtils.isAnyBlank(phone, code)) return AjaxResult.error("手机号和验证码不能为空");
+        if (!phone.matches("1[3-9]\\d{9}")) return AjaxResult.error("手机号格式不正确");
+        smsService.validateSmsCode(phone, code);
+        if (umsMemberService.getByPhone(phone) != null) return AjaxResult.error("该手机号已注册，请直接登录");
+        UmsMember member = new UmsMember();
+        member.setPhone(phone); member.setNickname("用户" + phone.substring(7)); member.setCreateTime(LocalDateTime.now()); member.setUpdateTime(LocalDateTime.now());
+        member.setPoints(0); member.setBalance(BigDecimal.ZERO); member.setLevel(0); member.setDelFlag("0");
+        if (!umsMemberService.save(member)) return AjaxResult.error("注册失败");
+        integralRuleService.distributeRegisterPoints(member.getId());
+        if (StringUtils.isNotEmpty(inviteCode)) {
+            UmsMember inviter = umsMemberService.getByMemberCode(inviteCode);
+            if (inviter != null) integralRuleService.distributeInvitePoints(member.getId(), inviter.getId());
+        }
+        return AjaxResult.success("注册成功");
+    }
+
     /**
      * C端用户注册
      */

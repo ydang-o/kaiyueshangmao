@@ -10,6 +10,7 @@ import com.dingyangmall.mall.service.TbIntegralFlowService;
 import com.dingyangmall.common.utils.StringUtils;
 import com.dingyangmall.framework.web.service.SmsService;
 import com.dingyangmall.mall.service.UmsMemberService;
+import com.dingyangmall.system.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,9 @@ public class MerchantScanApi {
 
     @Autowired(required = false)
     private SmsService smsService;
+
+    @Autowired
+    private ISysUserService sysUserService;
 
     /** 为 true 时，商家赠送积分必须传 smsCode 且校验通过 */
     @Value("${mall.merchant.give-points-require-sms:false}")
@@ -135,4 +139,19 @@ public class MerchantScanApi {
             return AjaxResult.error("核销失败");
         }
     }
+    /** 商家修改当前登录账号密码。 */
+    @PostMapping("/change-password")
+    public AjaxResult changePassword(@RequestBody Map<String, String> body) {
+        String oldPassword = body == null ? null : body.get("oldPassword");
+        String newPassword = body == null ? null : body.get("newPassword");
+        if (StringUtils.isEmpty(oldPassword)) return AjaxResult.error("请输入原密码");
+        if (StringUtils.isEmpty(newPassword)) return AjaxResult.error("请输入新密码");
+        if (newPassword.length() < 6) return AjaxResult.error("新密码长度不能少于6位");
+        if (oldPassword.equals(newPassword)) return AjaxResult.error("新密码不能与原密码相同");
+        SysUser current = SecurityUtils.getLoginUser().getUser();
+        if (current == null || !SecurityUtils.matchesPassword(oldPassword, current.getPassword())) return AjaxResult.error("原密码错误");
+        int updated = sysUserService.resetUserPwd(current.getUserName(), SecurityUtils.encryptPassword(newPassword));
+        return updated > 0 ? AjaxResult.success("密码修改成功") : AjaxResult.error("密码修改失败");
+    }
+
 }
