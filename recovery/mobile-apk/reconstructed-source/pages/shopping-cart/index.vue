@@ -1,0 +1,290 @@
+<!--
+  Copyright (C) 2018-2019 www.dingyangmall.com
+-->
+<template>
+  <view class="page tm-page">
+    <view class="cu-bar bg-white fixed" style="min-height: 80rpx;">
+      <view class="grid col-3 response text-center text-gray">
+        <view><text class="cuIcon-selection margin-right-xs"></text>100%正品保证</view>
+        <view><text class="cuIcon-discover margin-right-xs"></text>精挑细选</view>
+        <view><text class="cuIcon-squarecheck margin-right-xs"></text>售后无忧</view>
+      </view>
+    </view>
+    <view class="cu-bar bg-white solid-bottom solid-top fixed bar-top">
+      <view class="action">共{{ shoppingCartData.length }}件宝贝</view>
+      <view class="action"><button class="cu-btn line-gray sm tm-pill" @tap="toggleOperation">{{ operation ? '管理' : '完成' }}</button></view>
+    </view>
+    <view class="content-wrap">
+      <checkbox-group @change="checkboxChange">
+        <view class="cu-card article no-card solid-bottom">
+          <view class="cu-item padding-top-xs" v-for="(item, index) in shoppingCartData" :key="index">
+            <view class="flex align-center">
+              <checkbox class="blue round margin-left" :value="item.id" :disabled="(item.quantity > (item.goodsSpu && item.goodsSpu.stock) || !item.goodsSpu) && operation" :checked="item.checked" />
+              <navigator hover-class="none" class="flex-sub" :url="'/pages/goods/goods-detail/index?id=' + item.spuId">
+                <view class="content">
+                  <image :src="$imgUrl(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img margin-top-xs" />
+                  <view class="desc row-info">
+                    <view class="text-black margin-top-sm overflow-2">{{ item.goodsSpu && item.goodsSpu.name }}</view>
+                    <view class="text-gray margin-top-sm text-right text-sm">库存{{ item.goodsSpu && item.goodsSpu.stock }}</view>
+                    <view v-if="item.goodsSpu" class="flex">
+                      <view class="flex-sub"><view class="text-price text-bold text-blue text-xl margin-top-sm">{{ item.goodsSpu.salesPrice }}</view></view>
+                      <view class="flex-sub margin-top-sm" @tap.stop>
+                        <base-stepper :stNum="item.quantity" :min="1" :max="item.goodsSpu.stock" @numChange="(n) => cartNumChange(n, index)" />
+                      </view>
+                    </view>
+                    <view v-if="!item.goodsSpu" class="margin-top-sm text-red">请重新选择规格</view>
+                  </view>
+                </view>
+              </navigator>
+            </view>
+          </view>
+        </view>
+      </checkbox-group>
+      <view v-if="shoppingCartDataInvalid.length > 0" class="cu-bar bg-white solid-bottom margin-top">
+        <view class="action">失效宝贝{{ shoppingCartDataInvalid.length }}件</view>
+        <view class="action"><button class="cu-btn line-blue round tm-pill" @tap="clearInvalid">清空失效宝贝</button></view>
+      </view>
+      <view class="cu-card article no-card" v-for="(item, index) in shoppingCartDataInvalid" :key="index">
+        <view class="cu-item">
+          <navigator hover-class="none" :url="'/pages/goods/goods-detail/index?id=' + item.spuId">
+            <view class="content">
+              <image :src="$imgUrl(item.goodsSpu && item.goodsSpu.picUrls && item.goodsSpu.picUrls[0]) || '/static/img/no_pic.png'" mode="aspectFill" class="row-img" />
+              <view class="desc row-info">
+                <view class="text-black margin-top-sm overflow-2">{{ item.goodsSpu && item.goodsSpu.name }}</view>
+                <view class="text-sm margin-top-lg text-blue">已下架</view>
+              </view>
+            </view>
+          </navigator>
+        </view>
+      </view>
+      <view class="cu-load bg-gray" :class="loadmore ? 'loading' : ''"></view>
+      <view v-if="shoppingCartData.length <= 0 && !loadmore" class="text-center margin-bottom empty-cart-wrap">
+        <view class="text-xsl margin-top without"><image class="margin-top-sm" src="/static/img/shopping-cart.jpg" mode="widthFix" /></view>
+        <text v-if="!isLoggedIn" class="text-gray">请先登录后查看购物车</text>
+        <text v-else>购物车空空如也~</text>
+        <navigator v-if="!isLoggedIn" hover-class="none" url="/pages/user/user-center/index"><button class="cu-btn tm-primary-btn margin-top">去登录</button></navigator>
+        <navigator v-else hover-class="none" url="/pages/goods/goods-list/index"><button class="cu-btn tm-secondary-btn margin-top">去逛逛</button></navigator>
+      </view>
+      <ad v-if="config.adEnable" :unit-id="config.adBannerID"></ad>
+      <view v-if="shoppingCartData.length <= 0" class="cu-bar justify-center bg-white margin-top-sm">
+        <view class="action tm-brand text-bold">为您推荐</view>
+      </view>
+      <goods-card-index v-if="shoppingCartData.length <= 0" :goodsList="goodsListRecom" />
+    </view>
+    <view class="cu-bar bg-white tabbar border shop foot">
+      <view class="flex align-center">
+        <checkbox-group @change="checkboxAllChange">
+          <checkbox class="blue round margin-left" value="all" :checked="isAllSelect" />
+        </checkbox-group>
+        <view class="text-lg margin-left-xs">全选</view>
+      </view>
+      <view class="action bar-rt" v-if="operation">
+        <text class="text-xs text-bold">合计：</text>
+        <text class="text-xl text-bold text-price text-blue margin-right-sm">{{ settlePrice }}</text>
+        <button class="cu-btn shadow-blur margin-left-sm settle-bt tm-primary-btn" :disabled="selectValue.length <= 0" @tap="orderConfirm">结算{{ selectValue.length > 0 ? '(' + selectValue.length + ')' : '' }}</button>
+      </view>
+      <view class="action bar-rt" v-else>
+        <button class="cu-btn shadow-blur collection tm-secondary-btn" :disabled="selectValue.length <= 0" @tap="userCollectAdd">移入收藏夹</button>
+        <button class="cu-btn shadow-blur margin-left-sm delete tm-primary-btn" :disabled="selectValue.length <= 0" @tap="shoppingCartDel">删除</button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import BaseStepper from '@/components/base-stepper/index.vue'
+import GoodsCardIndex from '@/components/goods-card-index/index.vue'
+import apiModule from '@/utils/api'
+import util from '@/utils/util'
+export default {
+  name: 'ShoppingCartPage',
+  components: { BaseStepper, GoodsCardIndex },
+  data() {
+    const app = getApp()
+    return {
+      config: (app && app.globalData && app.globalData.config) || {},
+      page: { current: 1, size: 50, ascs: '', descs: 'create_time' },
+      loadmore: true,
+      operation: true,
+      shoppingCartData: [],
+      shoppingCartDataInvalid: [],
+      isAllSelect: false,
+      selectValue: [],
+      settlePrice: 0,
+      goodsListRecom: [],
+      isLoggedIn: !!(app && app.globalData && (app.globalData.thirdSession || app.globalData.wxToken))
+    }
+  },
+  onShow() {
+    const app = getApp()
+    this.isLoggedIn = !!(app && app.globalData && (app.globalData.thirdSession || app.globalData.wxToken))
+    const pages = getCurrentPages()
+    const page = pages[pages.length - 1]
+    if (page && typeof page.getTabBar === 'function') {
+      const tabBar = page.getTabBar()
+      if (tabBar && tabBar.setData) tabBar.setData({ selected: 2 })
+    }
+    util.updateCartBadge(app.globalData.shoppingCartCount || 0)
+    if (!this.isLoggedIn) {
+      util.requireLogin('请先登录后使用购物车').then(() => {})
+      this.loadmore = false
+      return
+    }
+    getApp().initPage().then(() => {
+      this.shoppingCartPage()
+      this.goodsRecom()
+    })
+  },
+  onLoad() {
+    getApp().initPage().then(() => this.goodsRecom())
+  },
+  methods: {
+    getApi() {
+      const app = getApp()
+      return (app && app.api) || (app && app.globalData && app.globalData.__api) || apiModule
+    },
+    /** 从购物车分页接口响应中解析列表与总数 */
+    _parseCartPageResponse(res) {
+      const data = (res && res.data) || res || {}
+      const list = data.records || data.rows || data.list || data.content || data.data || []
+      const total = data.total != null ? data.total : (Array.isArray(list) ? list.length : 0)
+      return { list: Array.isArray(list) ? list : [], total }
+    },
+    toggleOperation() { this.operation = !this.operation; this.checkboxHandle(this.selectValue) },
+    shoppingCartPage() {
+      const api = this.getApi()
+      if (!api || typeof api.shoppingCartPage !== 'function') {
+        this.loadmore = false
+        this.shoppingCartData = []
+        this.shoppingCartDataInvalid = []
+        return
+      }
+      api.shoppingCartPage(this.page).then(res => {
+        const { list: records, total } = this._parseCartPageResponse(res)
+        const app = getApp()
+        util.updateCartBadge(total != null ? total : 0)
+        const valid = [], invalid = []
+        records.forEach(r => {
+          if (!r.goodsSpu || r.goodsSpu.shelf === '0') invalid.push(r)
+          else valid.push(r)
+        })
+        this.shoppingCartData = valid
+        this.shoppingCartDataInvalid = invalid
+        this.loadmore = false
+        this.checkboxHandle(this.selectValue)
+      }).catch(() => {
+        this.loadmore = false
+        this.shoppingCartData = []
+        this.shoppingCartDataInvalid = []
+        util.updateCartBadge(0)
+      })
+    },
+    goodsRecom() {
+      const api = this.getApi()
+      if (!api || typeof api.goodsPage !== 'function') return
+      api.goodsPage({ searchCount: false, current: 1, size: 4, descs: 'create_time' }).then(res => {
+        const data = (res && res.data) || res || {}
+        const list = data.records || data.rows || data.list || data.content || []
+        this.goodsListRecom = Array.isArray(list) ? list : []
+      }).catch(() => {})
+    },
+    cartNumChange(n, index) {
+      this.shoppingCartData[index].quantity = n
+      const api = this.getApi()
+      if (api && typeof api.shoppingCartEdit === 'function') {
+        api.shoppingCartEdit({ id: this.shoppingCartData[index].id, quantity: n }).catch(() => {})
+      }
+      this.countSelect()
+    },
+    checkboxChange(e) { this.checkboxHandle(e.detail.value || []) },
+    checkboxAllChange(e) {
+      const value = e.detail.value || []
+      this.setAllSelectValue(value.length > 0)
+    },
+    checkboxHandle(selectValue) {
+      const list = this.shoppingCartData
+      let isAll = false
+      if (list.length && selectValue.length === list.length) isAll = true
+      list.forEach(c => {
+        c.checked = selectValue.indexOf(c.id) > -1 && (this.operation ? (c.goodsSpu && c.quantity <= c.goodsSpu.stock) : true)
+      })
+      this.selectValue = selectValue.filter(id => list.some(c => c.id === id))
+      this.isAllSelect = isAll
+      this.countSelect()
+    },
+    setAllSelectValue(status) {
+      const list = this.shoppingCartData
+      const selectValue = status ? list.filter(c => this.operation ? (c.goodsSpu && c.quantity <= c.goodsSpu.stock) : true).map(c => c.id) : []
+      this.checkboxHandle(selectValue)
+    },
+    countSelect() {
+      let total = 0
+      this.shoppingCartData.forEach(c => {
+        if (this.selectValue.indexOf(c.id) > -1 && c.goodsSpu && c.quantity <= c.goodsSpu.stock)
+          total += Number(c.quantity) * Number(c.goodsSpu.salesPrice)
+      })
+      this.settlePrice = total.toFixed(2)
+    },
+    userCollectAdd() {
+      uni.showToast({ title: '收藏功能敬请期待', icon: 'none' })
+    },
+    shoppingCartDel() {
+      if (this.selectValue.length <= 0) return
+      const api = this.getApi()
+      if (!api || typeof api.shoppingCartDel !== 'function') {
+        uni.showToast({ title: '功能暂不可用', icon: 'none' })
+        return
+      }
+      uni.showModal({ content: '确认将这' + this.selectValue.length + '个宝贝删除', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
+        if (res.confirm) {
+          api.shoppingCartDel(this.selectValue).then(() => {
+            this.selectValue = []
+            this.isAllSelect = false
+            this.settlePrice = 0
+            this.shoppingCartPage()
+            uni.showToast({ title: '已删除', icon: 'success' })
+          }).catch(() => { uni.showToast({ title: '删除失败', icon: 'none' }) })
+        }
+      }})
+    },
+    clearInvalid() {
+      const ids = this.shoppingCartDataInvalid.map(c => c.id)
+      if (!ids.length) return
+      const api = this.getApi()
+      if (!api || typeof api.shoppingCartDel !== 'function') return
+      uni.showModal({ content: '确认清空失效的宝贝吗', cancelText: '我再想想', confirmColor: '#ff0000', success: (res) => {
+        if (res.confirm) {
+          api.shoppingCartDel(ids).then(() => {
+            this.shoppingCartDataInvalid = []
+            uni.showToast({ title: '已清空', icon: 'success' })
+          }).catch(() => {})
+        }
+      }})
+    },
+    orderConfirm() {
+      const params = this.shoppingCartData.filter(c => c.checked && c.goodsSpu && c.goodsSpu.shelf === '1' && c.quantity <= c.goodsSpu.stock).map(c => ({
+        spuId: c.spuId, quantity: c.quantity, salesPrice: c.goodsSpu.salesPrice, spuName: c.goodsSpu.name, picUrl: (c.goodsSpu.picUrls && c.goodsSpu.picUrls[0]) || ''
+      }))
+      if (!params.length) {
+        uni.showToast({ title: '请勾选要结算的商品', icon: 'none' })
+        return
+      }
+      uni.setStorage({ key: 'param-orderConfirm', data: params })
+      uni.navigateTo({ url: '/pages/order/order-confirm/index' })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.bar-top { margin-top: 80rpx; box-shadow: none; }
+.content-wrap { margin-top: 160rpx; margin-bottom: 220rpx; padding-top: 40rpx; padding-bottom: 50px; }
+.bar-rt { width: 480rpx !important; text-align: right !important; margin-right: 10rpx !important; }
+.settle-bt { width: 220rpx; }
+.row-img { width: 30% !important; border-radius: 14rpx; }
+.row-info { display: block !important; width: 60%; }
+.without image { padding-top: 50rpx; width: 360rpx; height: 305rpx; }
+.collection { width: 220rpx; }
+.delete { width: 220rpx; }
+.shop { bottom: 130rpx; }
+</style>

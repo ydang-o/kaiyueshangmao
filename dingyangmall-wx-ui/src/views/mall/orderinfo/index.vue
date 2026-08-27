@@ -431,6 +431,7 @@ import {
   shipOrder,
 } from "@/api/mall/orderinfo";
 import { tableOption } from "@/const/crud/mall/orderinfo";
+import { resolveImageUrl } from "@/utils/imageUrl";
 const crud = ref(null);
 const { proxy } = getCurrentInstance();
 

@@ -48,6 +48,7 @@
 
 <script setup>
 import { getToken } from "@/utils/auth";
+import { resolveImageUrl } from "@/utils/imageUrl";
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -112,7 +113,7 @@ watch(
         if (typeof item === "string") {
           // 判断如果不是http开头
           if (item.indexOf(baseUrl) === -1 && !item.startsWith("http")) {
-            item = { name: baseUrl + item, url: baseUrl + item };
+            item = { name: resolveImageUrl(item), url: resolveImageUrl(item) };
           } else {
             item = { name: item, url: item };
           }
@@ -219,7 +220,7 @@ function handleUploadError() {
 
 // 预览
 function handlePictureCardPreview(file) {
-  dialogImageUrl.value = file.url;
+  dialogImageUrl.value = resolveImageUrl(file.url);
   dialogVisible.value = true;
 }
 
@@ -252,3 +253,5 @@ function listToArray(list) {
   display: none;
 }
 </style>
+
+

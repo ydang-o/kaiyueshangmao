@@ -1,0 +1,217 @@
+{
+  "sourceApk": "D:\\work\\kaiyueshangmao\\__UNI__FABA405__20260704201833.apk.1.1",
+  "sizeBytes": 15230933,
+  "sha256": "FC94F9D14C0B2ED5DD89D4BF006B9CFD992E35B7F2B8E39819B24DCEC13614B3",
+  "archiveEntryCount": 816,
+  "technology": "uni-app Vue 2 / App Plus",
+  "appManifest": {
+    "@platforms": [
+      "android",
+      "iPhone",
+      "iPad"
+    ],
+    "id": "__UNI__FABA405",
+    "name": "如囍优选",
+    "version": {
+      "name": "1.0.0",
+      "code": "100"
+    },
+    "description": "dingyangmall uni-app project",
+    "launch_path": "__uniappview.html",
+    "developer": {
+      "name": "",
+      "email": "",
+      "url": ""
+    },
+    "permissions": {
+      "Barcode": {},
+      "UniNView": {
+        "description": "UniNView原生渲染"
+      }
+    },
+    "plus": {
+      "useragent": {
+        "value": "uni-app",
+        "concatenate": true
+      },
+      "splashscreen": {
+        "autoclose": true,
+        "delay": 0,
+        "target": "id:1",
+        "waiting": true
+      },
+      "popGesture": "close",
+      "launchwebview": {
+        "id": "1",
+        "kernel": "WKWebview"
+      },
+      "statusbar": {
+        "immersed": "supportedDevice",
+        "style": "dark",
+        "background": "#fefefe"
+      },
+      "usingComponents": true,
+      "nvueStyleCompiler": "uni-app",
+      "compilerVersion": 3,
+      "splashview": false,
+      "optimization": {
+        "subPackages": true
+      },
+      "distribute": {
+        "icons": {
+          "android": {
+            "hdpi": "icon-android-hdpi.png",
+            "xhdpi": "icon-android-xhdpi.png",
+            "xxhdpi": "icon-android-xxhdpi.png",
+            "xxxhdpi": "icon-android-xxxhdpi.png"
+          },
+          "ios": {
+            "appstore": "unpackage/res/icons/1024x1024.png",
+            "ipad": {
+              "app": "unpackage/res/icons/76x76.png",
+              "app@2x": "unpackage/res/icons/152x152.png",
+              "notification": "unpackage/res/icons/20x20.png",
+              "notification@2x": "unpackage/res/icons/40x40.png",
+              "proapp@2x": "unpackage/res/icons/167x167.png",
+              "settings": "unpackage/res/icons/29x29.png",
+              "settings@2x": "unpackage/res/icons/58x58.png",
+              "spotlight": "unpackage/res/icons/40x40.png",
+              "spotlight@2x": "unpackage/res/icons/80x80.png"
+            },
+            "iphone": {
+              "app@2x": "unpackage/res/icons/120x120.png",
+              "app@3x": "unpackage/res/icons/180x180.png",
+              "notification@2x": "unpackage/res/icons/40x40.png",
+              "notification@3x": "unpackage/res/icons/60x60.png",
+              "settings@2x": "unpackage/res/icons/58x58.png",
+              "settings@3x": "unpackage/res/icons/87x87.png",
+              "spotlight@2x": "unpackage/res/icons/80x80.png",
+              "spotlight@3x": "unpackage/res/icons/120x120.png"
+            },
+            "prerendered": "false"
+          }
+        },
+        "google": {
+          "permissions": [
+            "<uses-permission android:name=\"android.permission.INTERNET\" />",
+            "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+            "<uses-permission android:name=\"android.permission.ACCESS_WIFI_STATE\" />"
+          ],
+          "packagename": "uni.app.UNIFABA405",
+          "aliasname": "app01",
+          "password": "[REDACTED]",
+          "storepwd": "[REDACTED]",
+          "keypwd": "[REDACTED]",
+          "keystore": "google-keystore.keystore",
+          "custompermissions": true
+        },
+        "apple": {
+          "dSYMs": false,
+          "devices": "universal"
+        },
+        "plugins": {
+          "audio": {
+            "mp3": {
+              "description": "Android平台录音支持MP3格式文件"
+            }
+          }
+        },
+        "orientation": "portrait-primary"
+      },
+      "allowsInlineMediaPlayback": true,
+      "safearea": {
+        "background": "#ffffff",
+        "bottom": {
+          "offset": "auto"
+        }
+      },
+      "uni-app": {
+        "compilerVersion": "4.87",
+        "control": "uni-v3",
+        "nvueCompiler": "uni-app",
+        "renderer": "auto",
+        "nvue": {
+          "flex-direction": "column"
+        },
+        "nvueLaunchMode": "normal"
+      },
+      "tabBar": {
+        "custom": false,
+        "backgroundColor": "#ffffff",
+        "color": "#9ca3af",
+        "selectedColor": "#ff0036",
+        "borderStyle": "rgba(0,0,0,0.4)",
+        "list": [
+          {
+            "pagePath": "pages/home/index",
+            "text": "首页",
+            "iconPath": "static/tabbar/home.png",
+            "selectedIconPath": "static/tabbar/home-active.png"
+          },
+          {
+            "pagePath": "pages/goods/goods-category/index",
+            "text": "分类",
+            "iconPath": "static/tabbar/category.png",
+            "selectedIconPath": "static/tabbar/category-active.png"
+          },
+          {
+            "pagePath": "pages/shopping-cart/index",
+            "text": "购物车",
+            "iconPath": "static/tabbar/cart.png",
+            "selectedIconPath": "static/tabbar/cart-active.png"
+          },
+          {
+            "pagePath": "pages/user/user-center/index",
+            "text": "我的",
+            "iconPath": "static/tabbar/user.png",
+            "selectedIconPath": "static/tabbar/user-active.png"
+          }
+        ],
+        "height": "50px",
+        "child": [
+          "lauchwebview"
+        ],
+        "selected": 0
+      },
+      "launch_path": "__uniappview.html",
+      "adid": "124922270004"
+    }
+  },
+  "wwwRoot": "D:\\work\\kaiyueshangmao\\recovery\\mobile-apk\\apk-extracted\\assets\\apps\\__UNI__FABA405\\www",
+  "routes": [
+    "pages/home/index",
+    "pages/goods/goods-category/index",
+    "pages/goods/goods-detail/index",
+    "pages/goods/goods-list/index",
+    "pages/user/user-center/index",
+    "pages/base/search/index",
+    "pages/shopping-cart/index",
+    "pages/order/order-list/index",
+    "pages/order/order-detail/index",
+    "pages/order/order-confirm/index",
+    "pages/order/order-logistics/index",
+    "pages/order/order-refunds/form/index",
+    "pages/user/user-address/list/index",
+    "pages/user/user-address/form/index",
+    "pages/coupon/my-coupons/index",
+    "pages/merchant/index/index",
+    "pages/merchant/login/index",
+    "pages/merchant/change-password/index",
+    "pages/lottery/index/index",
+    "pages/lottery/detail/index",
+    "pages/lottery/record/index",
+    "pages/integral/packet/index",
+    "pages/integral/flow/index",
+    "pages/integral/shop/index",
+    "pages/integral/shop/detail/index",
+    "pages/debug/api-test/index",
+    "pages/auth/phone-login/index"
+  ],
+  "routeCount": 27,
+  "sourceRecovery": {
+    "method": "从仓库已有 mp-weixin sourcemap 的 sourcesContent 恢复可读 Vue/JS 源码；积分商城两页从 origin/master 提交 c0b6e0d 恢复；APK-only 页面按 app-service 编译产物重建。",
+    "sourcemapSourceCount": 35,
+    "reconstructedSourceRoot": "D:\\work\\kaiyueshangmao\\recovery\\mobile-apk\\reconstructed-source",
+    "compiledModuleRoot": "D:\\work\\kaiyueshangmao\\recovery\\mobile-apk\\modules-all"
+  }
+}

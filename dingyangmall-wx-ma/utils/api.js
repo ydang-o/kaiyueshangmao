@@ -471,11 +471,46 @@ module.exports = {
   merchantVerifyCoupon: (data) => {
     return merchantRequest('/api/mall/merchant/scan/coupon/verify', 'post', data, true)
   },
+  merchantChangePassword: (data) => {
+    return merchantRequest('/api/mall/merchant/change-password', 'post', data, true)
+  },
   sendPacket: (data) => {//发送积分红包
     return request('/app/member/send-packet', 'post', data, true)
   },
   sendSmsCode: (phone) => {//发送短信验证码
     return request('/app/member/send-sms-code', 'get', { phone: phone }, true)
+  },
+  /** APK 1.1.1 中使用的短信登录/注册接口（无需先携带会员 token） */
+  loginBySms: (data) => {
+    return request('/app/member/login-by-sms', 'post', data, false)
+  },
+  registerBySms: (data) => {
+    return request('/app/member/register-by-sms', 'post', data, false)
+  },
+  /** 最新 APK 的积分商城与积分流水接口 */
+  integralGoodsPage: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    if (p.current != null && p.pageNum == null) p.pageNum = p.current
+    if (p.size != null && p.pageSize == null) p.pageSize = p.size
+    p.goodsType = 3
+    p.integralPriceGt = 0
+    return request('/api/ma/goodsspu/page', 'get', p, false)
+  },
+  integralGoodsGet: (id) => {
+    return request('/api/ma/goodsspu/' + id, 'get', null, false)
+  },
+  integralExchange: (data) => {
+    return request('/api/ma/integralflow/exchange', 'post', data, true)
+  },
+  integralFlowPage: (data) => {
+    const p = data && typeof data === 'object' ? { ...data } : {}
+    return request('/api/ma/integralflow/list', 'get', p, false)
+  },
+  getUserPoints: () => {
+    return request('/api/ma/integralflow/points', 'get', null, false)
+  },
+  lotteryList: () => {
+    return request('/api/ma/lottery/list', 'get', null, false)
   },
   /** 订单分页：兼容 current/size 与 pageNum/pageSize，README 路径 /weixin/api/ma/orderinfo/page */
   orderPage: (data) => {

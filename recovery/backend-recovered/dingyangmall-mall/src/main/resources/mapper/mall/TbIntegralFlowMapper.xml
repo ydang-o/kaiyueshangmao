@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dingyangmall.mall.mapper.TbIntegralFlowMapper">
+    <resultMap id="BaseResultMap" type="com.dingyangmall.mall.entity.TbIntegralFlow">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="oper_type" property="operType" />
+        <result column="integral_num" property="integralNum" />
+        <result column="source_user_id" property="sourceUserId" />
+        <result column="business_id" property="businessId" />
+        <result column="remark" property="remark" />
+        <result column="oper_time" property="operTime" />
+        <result column="create_time" property="createTime" />
+        <result column="create_by" property="createBy" />
+        <result column="del_flag" property="delFlag" />
+    </resultMap>
+</mapper>

@@ -1,1 +1,0 @@
-INSERT INTO dingyangmall_ry.ums_member (id, phone, password, create_time) VALUES ('999', '13800138000', '$2a$10$a16NO6mOZukuPu8ZGQImuOHA3aXc61rH1bEy7L1p54FpfXoj4Ezju', NOW()) ON DUPLICATE KEY UPDATE password='$2a$10$a16NO6mOZukuPu8ZGQImuOHA3aXc61rH1bEy7L1p54FpfXoj4Ezju';

@@ -1,15 +1,30 @@
 import Cookies from 'js-cookie'
 
-const TokenKey = 'Admin-Token'
+const TokenKey = 'Admin-Token-Online'
 
 export function getToken() {
-  return Cookies.get(TokenKey)
+  try {
+    return localStorage.getItem(TokenKey) || Cookies.get(TokenKey)
+  } catch (e) {
+    return Cookies.get(TokenKey)
+  }
 }
 
 export function setToken(token) {
-  return Cookies.set(TokenKey, token)
+  try {
+    localStorage.setItem(TokenKey, token)
+  } catch (e) {
+    // Some privacy modes disable localStorage; keep the cookie fallback.
+  }
+  return Cookies.set(TokenKey, token, { path: '/' })
 }
 
 export function removeToken() {
-  return Cookies.remove(TokenKey)
+  try {
+    localStorage.removeItem(TokenKey)
+  } catch (e) {
+    // Ignore storage cleanup errors.
+  }
+  return Cookies.remove(TokenKey, { path: '/' })
 }
+

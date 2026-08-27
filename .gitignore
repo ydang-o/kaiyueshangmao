@@ -1,0 +1,71 @@
+# Local runtime, caches, logs and generated output
+.local-runtime/
+logs/
+**/node_modules/
+**/.vite/
+**/target/
+**/dist/
+**/coverage/
+
+# Local build/recovery binaries and downloaded archives
+*.jar
+*.war
+*.apk
+*.apk.*
+*.xapk
+*.apks
+*.zip
+*.tar.gz
+recovery/backend/
+recovery/frontend-dist/
+recovery/frontend-recovered/dist/
+recovery/frontend-recovered/bundles-readable/
+recovery/mobile-apk/apk-extracted/
+
+# Environment and private IDE/project settings
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.*.example
+**/project.private.config.json
+**/local.properties
+**/settings.local.json
+**/application*.yml
+**/application*.yaml
+**/application*.properties
+!**/*application*.example.yml
+!**/*application*.example.yaml
+!**/*application*.example.properties
+**/docker-compose*.yml
+**/docker-compose*.yaml
+!**/*docker-compose*.example.yml
+!**/*docker-compose*.example.yaml
+
+# Credentials, certificates and signing material
+**/*secret*
+**/*credential*
+**/*credentials*
+**/*keystore*
+**/*private-key*
+**/id_rsa*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.jks
+**/*.keystore
+**/*.crt
+**/*.cer
+**/*.der
+**/*service-account*.json
+**/*google-services*.json
+
+# Local test data that contains account/password hashes
+sql/test_*.sql
+
+# Editor/OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp

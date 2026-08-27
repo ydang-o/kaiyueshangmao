@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author ruoyi
  */
 @EnableScheduling
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class, org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration.class })
+@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
 public class DingyangmallApplication
 {
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(DingyangmallApplication.class);
@@ -23,5 +23,3 @@ public class DingyangmallApplication
         log.info("如囍优选启动成功");
     }
 }
-
-

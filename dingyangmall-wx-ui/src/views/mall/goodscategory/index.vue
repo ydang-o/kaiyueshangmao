@@ -1,4 +1,4 @@
-﻿<!--
+<!--
   - Copyright (C) 2024
   - All rights reserved, Designed By www.dingyangmall.com
 -->
@@ -30,6 +30,13 @@
         >
         </el-switch>
       </template>
+      <template #picUrl="scope">
+        <ImagePreview
+          :src="scope.row.picUrl"
+          width="80px"
+          height="80px"
+        />
+      </template>
       <template #picUrl-form="scope">
         <ImageUpload
           :limit="1"
@@ -51,6 +58,7 @@ import {
   delObj,
 } from "@/api/mall/goodscategory";
 import { tableOption } from "@/const/crud/mall/goodscategory";
+import ImagePreview from "@/components/ImagePreview/index.vue";
 
 const { proxy } = getCurrentInstance();
 const crud = ref(null);

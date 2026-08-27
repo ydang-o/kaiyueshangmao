@@ -59,6 +59,7 @@
 <script setup name="Banner">
 import { ref, reactive, computed, getCurrentInstance, watch } from 'vue'
 import { getPage, delObj, uploadBanner, updateBannerWithFile } from '@/api/mall/banner'
+import { resolveImageUrl } from "@/utils/imageUrl";
 import { Plus } from '@element-plus/icons-vue'
 
 const { proxy } = getCurrentInstance()
@@ -90,30 +91,7 @@ const getImageUrl = (row) => {
 }
 
 // 图片路径格式化：确保所有图片都能正确显示
-const baseApi = import.meta.env.VITE_APP_BASE_API || ''
-const formatImageUrl = (url) => {
-  if (!url) return ''
-  // 1. 如果是 http/https 开头，或已经是 blob 预览图，直接返回
-  if (/^https?:\/\//i.test(url) || url.startsWith('blob:')) return url
-  
-  // 2. 如果是纯数字 ID，拼成 /profile/file/{id} 路径
-  if (/^\d+$/.test(url)) {
-    const path = '/profile/file/' + url
-    return baseApi ? baseApi + path : path
-  }
-  
-  // 3. 处理相对路径：统一补全前缀
-  let path = url.startsWith('/') ? url : '/' + url
-  
-  // 避免重复拼接 baseApi（如 /dev-api/dev-api/...）
-  if (baseApi && baseApi !== '/' && path.startsWith(baseApi)) {
-    return path
-  }
-  
-  // 如果路径不带 baseApi 且非根目录，则拼接
-  return baseApi + path
-}
-
+const formatImageUrl = resolveImageUrl
 // 文件变动处理
 const handleFileChange = (file) => {
   currentFile.value = file.raw

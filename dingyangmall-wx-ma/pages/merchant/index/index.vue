@@ -5,6 +5,7 @@
   <view class="page tm-page padding">
     <view class="bg-white padding radius shadow-lg margin-bottom">
       <view class="text-xl text-bold margin-bottom">常用功能</view>
+      <navigator url="/pages/merchant/change-password/index" class="text-right text-blue text-sm margin-bottom">修改密码</navigator>
       <view class="grid col-2 text-center">
         <view class="padding" @tap="scanUser"><view class="cuIcon-scan text-blue text-sl"></view><view class="margin-top-sm">扫会员码</view><view class="text-gray text-xs margin-top-xs">赠送积分</view></view>
         <view class="padding" @tap="scanCoupon"><view class="cuIcon-qrcode text-orange text-sl"></view><view class="margin-top-sm">扫核销码</view><view class="text-gray text-xs margin-top-xs">核销商品券</view></view>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dingyangmall.mall.mapper.UmsMemberMapper">
+    <resultMap id="BaseResultMap" type="com.dingyangmall.mall.entity.UmsMember">
+        <id column="id" property="id" />
+        <result column="nickname" property="nickname" />
+        <result column="real_name" property="realName" />
+        <result column="phone" property="phone" />
+        <result column="identity_type" property="identityType" />
+        <result column="member_code" property="memberCode" />
+        <result column="points" property="points" />
+        <result column="balance" property="balance" />
+        <result column="level" property="level" />
+        <result column="avatar" property="avatar" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="del_flag" property="delFlag" />
+    </resultMap>
+
+    <!-- 原子更新积分：扣减时保障余额充足（WHERE points + #{points} >= 0），防止并发超扣 -->
+    <update id="updatePointsAtomic">
+        UPDATE ums_member
+        SET points = points + #{points}
+        WHERE id = #{memberId}
+        <if test="points != null and points &lt; 0">
+            AND points + #{points} &gt;= 0
+        </if>
+    </update>
+</mapper>

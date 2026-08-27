@@ -68,7 +68,7 @@
       <template #picUrls="scope">
         <el-image
           style="width: 100px; height: 100px"
-          :src="scope.row.picUrls ? scope.row.picUrls[0] : ''"
+          :src="resolveImageUrl(scope.row.picUrls ? scope.row.picUrls[0] : '')"
         >
         </el-image>
       </template>
@@ -89,6 +89,7 @@ import {
 } from "@/api/mall/goodsspu";
 import { tableOption } from "@/const/crud/mall/goodsspu";
 import BaseEditor from "@/components/Editor/index.vue";
+import { resolveImageUrl } from "@/utils/imageUrl";
 
 const { proxy } = getCurrentInstance();
 const crud = ref(null);
